@@ -1,17 +1,15 @@
 package de.warsteiner.jobs.events;
 
 import java.util.UUID;
-
-import org.bukkit.Bukkit;
+ 
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import org.bukkit.event.Listener; 
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.InventoryView;
+import org.bukkit.event.player.PlayerQuitEvent; 
 import org.bukkit.scheduler.BukkitRunnable;
 
 import de.warsteiner.jobs.UltimateJobs;
@@ -23,8 +21,7 @@ import de.warsteiner.jobs.utils.objects.JobsPlayer;
 public class PlayerExistEvent implements Listener {
 
 	private UltimateJobs plugin = UltimateJobs.getPlugin();
-
-	
+ 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(PlayerJoinEvent event) {
 		plugin.getExecutor().execute(() -> {
@@ -42,7 +39,7 @@ public class PlayerExistEvent implements Listener {
 			if (data.ExistPlayer("" + UUID) == false) {
 				data.createPlayer("" + UUID, name);
 
-				data.addPlayerToPlayersList("" + UUID, name);
+				data.addPlayerToPlayersList("" + UUID, name, name);
 
 				String lang = plugin.getFileManager().getLanguageConfig().getString("PlayerDefaultLanguage");
 
@@ -65,17 +62,22 @@ public class PlayerExistEvent implements Listener {
 			}
 
 			plugin.getLocationAPI().setLocation(player.getLocation(), "LastLoc." + UUID);
+			
+			data.updateName(""+UUID, name.toUpperCase());
+			data.updateDisplay(""+UUID, name);
 
 			new BukkitRunnable() {
 
 				@Override
 				public void run() {
 					if (!plugin.getPlayerDataAPI().isFirstPluginStart()) {
-						player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 2, 3);
-						new JsonMessage()
-								.append("§7\n§8[§9UltimateJobs§8] §7Welcome, §6" + name
-										+ "§7.\n §7Please Click here, to view the §afirst §7Steps of the Plugin!\n§7")
-								.setClickAsExecuteCmd("/jobsadmin first").save().send(player);
+						if(player.hasPermission("ultimatejobs.admin.first")) { 
+							player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 2, 3);
+							new JsonMessage()
+									.append("§7\n§8[§9UltimateJobs§8] §7Welcome, §6" + name
+											+ "§7.\n §7Please Click here, to view the §afirst §7Steps of the Plugin!\n§7")
+									.setClickAsExecuteCmd("/jobsadmin first").save().send(player);
+							}
 					}
 					
 					if(plugin.getWebManager().canUpdate) {

@@ -599,7 +599,7 @@ public class JobWorkManager {
 			Job jub = plugin.getJobCache().get(job);
 
 			if (jub.getConfigIDOfRealID(ac, real, jub) == null) {
-				return null;
+				continue;
 			}
 
 			if (jub.getListOfRealIDS(ac).contains(real.toUpperCase())) {

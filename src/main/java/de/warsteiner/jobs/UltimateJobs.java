@@ -3,23 +3,29 @@ package de.warsteiner.jobs;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException; 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap; 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import de.warsteiner.jobs.events.*;
-import org.bukkit.Bukkit; 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player; 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import de.warsteiner.jobs.api.DataBaseAPI;
 import de.warsteiner.jobs.api.ItemAPI;
@@ -32,6 +38,7 @@ import de.warsteiner.jobs.api.PlayerAPI;
 import de.warsteiner.jobs.api.PlayerChunkAPI;
 import de.warsteiner.jobs.api.PlayerDataAPI;
 import de.warsteiner.jobs.api.SkullCreatorAPI;
+import de.warsteiner.jobs.api.plugins.ItemsAdderManager;
 import de.warsteiner.jobs.api.plugins.MythicMobsManager;
 import de.warsteiner.jobs.api.plugins.PlaceHolderManager;
 import de.warsteiner.jobs.api.plugins.WorldGuardManager;
@@ -65,6 +72,7 @@ import de.warsteiner.jobs.command.playercommand.LeaveSub;
 import de.warsteiner.jobs.command.playercommand.LevelsSub;
 import de.warsteiner.jobs.command.playercommand.LimitSub;
 import de.warsteiner.jobs.command.playercommand.PointsSub;
+import de.warsteiner.jobs.command.playercommand.RankingSub;
 import de.warsteiner.jobs.command.playercommand.RewardsSub;
 import de.warsteiner.jobs.command.playercommand.StatsSub;
 import de.warsteiner.jobs.command.playercommand.WithdrawSub;
@@ -76,6 +84,7 @@ import de.warsteiner.jobs.inventorys.HelpMenuClickEvent;
 import de.warsteiner.jobs.inventorys.LeaveConfirmMenuClickEvent;
 import de.warsteiner.jobs.inventorys.LevelsMenuClickEvent;
 import de.warsteiner.jobs.inventorys.MainMenuClickEvent;
+import de.warsteiner.jobs.inventorys.RankingMenuClickEvent;
 import de.warsteiner.jobs.inventorys.RewardsMenuClickEvent;
 import de.warsteiner.jobs.inventorys.SettingsMenuClickEvent;
 import de.warsteiner.jobs.inventorys.StatsMenuClickEvent;
@@ -84,7 +93,7 @@ import de.warsteiner.jobs.jobs.DefaultJobActions;
 import de.warsteiner.jobs.jobs.JobActionAdvancement;
 import de.warsteiner.jobs.jobs.JobActionBreak;
 import de.warsteiner.jobs.jobs.JobActionBreed;
-import de.warsteiner.jobs.jobs.JobActionCraft; 
+import de.warsteiner.jobs.jobs.JobActionCraft;
 import de.warsteiner.jobs.jobs.JobActionDrinkPotion;
 import de.warsteiner.jobs.jobs.JobActionEat;
 import de.warsteiner.jobs.jobs.JobActionEnchant;
@@ -94,7 +103,7 @@ import de.warsteiner.jobs.jobs.JobActionFarm_Grow;
 import de.warsteiner.jobs.jobs.JobActionFindATreasure;
 import de.warsteiner.jobs.jobs.JobActionFish;
 import de.warsteiner.jobs.jobs.JobActionGrowSapling;
-import de.warsteiner.jobs.jobs.JobActionHoney; 
+import de.warsteiner.jobs.jobs.JobActionHoney;
 import de.warsteiner.jobs.jobs.JobActionKillByBow;
 import de.warsteiner.jobs.jobs.JobActionKillMob;
 import de.warsteiner.jobs.jobs.JobActionMMKill;
@@ -105,6 +114,8 @@ import de.warsteiner.jobs.jobs.JobActionSmelt;
 import de.warsteiner.jobs.jobs.JobActionStripLog;
 import de.warsteiner.jobs.jobs.JobActionTame;
 import de.warsteiner.jobs.jobs.JobActionVillagerTrade_Buy;
+import de.warsteiner.jobs.jobs.JobAction_IA_Break;
+import de.warsteiner.jobs.jobs.JobAction_IA_Kill;
 import de.warsteiner.jobs.jobs.JobActionsCollectBerrys;
 import de.warsteiner.jobs.manager.ClickManager;
 import de.warsteiner.jobs.manager.FileManager;
@@ -114,7 +125,7 @@ import de.warsteiner.jobs.manager.GuiOpenManager;
 import de.warsteiner.jobs.manager.JobWorkManager;
 import de.warsteiner.jobs.manager.PluginManager;
 import de.warsteiner.jobs.manager.WebManager;
-import de.warsteiner.jobs.utils.BossBarHandler; 
+import de.warsteiner.jobs.utils.BossBarHandler;
 import de.warsteiner.jobs.utils.JsonMessage;
 import de.warsteiner.jobs.utils.Metrics;
 import de.warsteiner.jobs.utils.PlayerDataFile;
@@ -162,6 +173,8 @@ public class UltimateJobs extends JavaPlugin {
 	private PlayerDataFile chunk;
 	private PlayerChunkAPI capi;
 	
+	private ItemsAdderManager aim;
+
 	public void onLoad() {
 
 		plugin = this;
@@ -215,7 +228,7 @@ public class UltimateJobs extends JavaPlugin {
 
 		loc = new PlayerDataFile("locations");
 		loc.create();
-		
+
 		chunk = new PlayerDataFile("chunk");
 		chunk.create();
 
@@ -236,10 +249,24 @@ public class UltimateJobs extends JavaPlugin {
 			new PlaceHolderManager().register();
 			Bukkit.getConsoleSender().sendMessage("§bLoaded PlaceHolderAPI Support...");
 		}
+		
+		if(getPluginManager().isInstalled("ItemsAdder")) {
+			aim = new ItemsAdderManager();
+			
+			if (getFileManager().getConfig().getBoolean("Actions.IABreak")) {
+				Bukkit.getPluginManager().registerEvents(new JobAction_IA_Break(), this);
+			}
+			
+			if (getFileManager().getConfig().getBoolean("Actions.IAKill")) {
+				Bukkit.getPluginManager().registerEvents(new JobAction_IA_Kill(), this);
+			}
+			
+			Bukkit.getConsoleSender().sendMessage("§bLoaded ItemsAdder Support...");
+		}
 
 		getCommand("jobs").setExecutor(new JobsCommand());
 		getCommand("jobs").setTabCompleter(new JobTabComplete());
- 
+
 		getCommand("jobsadmin").setExecutor(new AdminCommand());
 		getCommand("jobsadmin").setTabCompleter(new AdminTabComplete());
 
@@ -252,7 +279,9 @@ public class UltimateJobs extends JavaPlugin {
 		createBackups();
 
 		new Metrics(this, 15424);
-	 
+		
+		getPlayerAPI().calculateRanking();
+
 		Bukkit.getConsoleSender().sendMessage("§7");
 		Bukkit.getConsoleSender().sendMessage("§7");
 		Bukkit.getConsoleSender().sendMessage(
@@ -274,7 +303,7 @@ public class UltimateJobs extends JavaPlugin {
 		Bukkit.getConsoleSender().sendMessage("§7");
 
 	}
-
+	 
 	public void connect() {
 
 		FileConfiguration cfg = getFileManager().getDataConfig();
@@ -301,7 +330,7 @@ public class UltimateJobs extends JavaPlugin {
 	public WebManager getWebManager() {
 		return web;
 	}
-	
+
 	public PlayerDataFile getChunkData() {
 		return chunk;
 	}
@@ -418,7 +447,7 @@ public class UltimateJobs extends JavaPlugin {
 		getSubCommandManager().getSubCommandList().add(new EarningsSub());
 		getSubCommandManager().getSubCommandList().add(new RewardsSub());
 		getSubCommandManager().getSubCommandList().add(new WithdrawSub());
-
+		getSubCommandManager().getSubCommandList().add(new RankingSub());
 		// admin
 
 		getAdminSubCommandManager().getSubCommandList().add(new HelpSub());
@@ -439,7 +468,7 @@ public class UltimateJobs extends JavaPlugin {
 		getAdminSubCommandManager().getSubCommandList().add(new SetExpSub());
 		getAdminSubCommandManager().getSubCommandList().add(new AddExpSub());
 		getAdminSubCommandManager().getSubCommandList().add(new RemoveExpSub());
-		
+
 		getAdminSubCommandManager().getSubCommandList().add(new SetPointsSub());
 		getAdminSubCommandManager().getSubCommandList().add(new AddPointsSub());
 		getAdminSubCommandManager().getSubCommandList().add(new RemovePointsSub());
@@ -468,16 +497,19 @@ public class UltimateJobs extends JavaPlugin {
 		papi = new PlayerAPI(plugin);
 
 		dataapi = new PlayerDataAPI();
-
+	 
 		i = new ItemAPI();
 		skull = new SkullCreatorAPI();
 		locapi = new LocationAPI();
 		ogui = new GuiOpenManager();
-		
+
 		capi = new PlayerChunkAPI();
 	}
 	
- 
+	public ItemsAdderManager getItemsAdderManager() {
+		return aim;
+	}
+
 	public PlayerChunkAPI getPlayerChunkAPI() {
 		return capi;
 	}
@@ -604,35 +636,85 @@ public class UltimateJobs extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new ClickAtUpdateMenuEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new WithdrawMenuClickEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new LeaveConfirmMenuClickEvent(), this);
-		 
+		Bukkit.getPluginManager().registerEvents(new RankingMenuClickEvent(), this);
 	}
 
 	public void loadEvents() {
 
-		Bukkit.getPluginManager().registerEvents(new JobActionBreak(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionFarm_Break(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionPlace(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionFish(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionMilk(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionKillMob(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionShear(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionCraft(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionAdvancement(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionEat(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionHoney(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionTame(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionStripLog(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionBreed(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionDrinkPotion(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionsCollectBerrys(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionKillByBow(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionGrowSapling(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionFarm_Grow(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionFindATreasure(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionVillagerTrade_Buy(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionSmelt(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionExploreChunks(), this);
-		Bukkit.getPluginManager().registerEvents(new JobActionEnchant(), this); 
+		FileConfiguration cfg = getFileManager().getUtilsConfig();
+
+		if (cfg.getBoolean("Actions.Break")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionBreak(), this);
+		}
+		if (cfg.getBoolean("Actions.FarmBreak")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionFarm_Break(), this);
+		}
+		if (cfg.getBoolean("Actions.Place")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionPlace(), this);
+		}
+		if (cfg.getBoolean("Actions.Fish")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionFish(), this);
+		}
+		if (cfg.getBoolean("Actions.Milk")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionMilk(), this);
+		}
+		if (cfg.getBoolean("Actions.KillMob")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionKillMob(), this);
+		}
+		if (cfg.getBoolean("Actions.Shear")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionShear(), this);
+		}
+		if (cfg.getBoolean("Actions.Craft")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionCraft(), this);
+		}
+		if (cfg.getBoolean("Actions.Advancement")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionAdvancement(), this);
+		}
+		if (cfg.getBoolean("Actions.Eat")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionEat(), this);
+		}
+		if (cfg.getBoolean("Actions.Honey")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionHoney(), this);
+		}
+		if (cfg.getBoolean("Actions.Tame")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionTame(), this);
+		}
+		if (cfg.getBoolean("Actions.StripLog")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionStripLog(), this);
+		}
+		if (cfg.getBoolean("Actions.Breed")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionBreed(), this);
+		}
+		if (cfg.getBoolean("Actions.DrinkPotion")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionDrinkPotion(), this);
+		}
+		if (cfg.getBoolean("Actions.CollectBerrys")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionsCollectBerrys(), this);
+		}
+		if (cfg.getBoolean("Actions.KillByBow")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionKillByBow(), this);
+		}
+		if (cfg.getBoolean("Actions.GrowSapling")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionGrowSapling(), this);
+		}
+		if (cfg.getBoolean("Actions.FarmGrow")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionFarm_Grow(), this);
+		}
+		if (cfg.getBoolean("Actions.FindTreasure")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionFindATreasure(), this);
+		}
+		if (cfg.getBoolean("Actions.VillagerTradeBuy")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionVillagerTrade_Buy(), this);
+		}
+		if (cfg.getBoolean("Actions.Smelt")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionSmelt(), this);
+		}
+		if (cfg.getBoolean("Actions.Explore")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionExploreChunks(), this);
+		}
+		if (cfg.getBoolean("Actions.Enchant")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionEnchant(), this);
+		}
 		Bukkit.getPluginManager().registerEvents(new DefaultJobActions(), this);
 
 		if (getPluginManager().isInstalled("MythicMobs")) {
@@ -640,7 +722,7 @@ public class UltimateJobs extends JavaPlugin {
 			Bukkit.getPluginManager().registerEvents(new JobActionMMKill(), this);
 			Bukkit.getConsoleSender().sendMessage("§bLoaded Support for MythicMobs");
 		}
-		 
+
 	}
 
 	public MythicMobsManager getMythicMobsManager() {

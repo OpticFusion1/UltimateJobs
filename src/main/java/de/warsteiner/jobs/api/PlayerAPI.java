@@ -5,18 +5,27 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.scheduler.BukkitRunnable;
- 
+
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.manager.GuiOpenManager;
-import de.warsteiner.jobs.utils.JobAction; 
+import de.warsteiner.jobs.utils.JobAction;
 import de.warsteiner.jobs.utils.objects.JobStats;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
 import de.warsteiner.jobs.utils.objects.Language;
@@ -39,9 +48,192 @@ public class PlayerAPI {
 	public JobsPlayer getRealJobPlayer(String ID) {
 		return getCacheJobPlayers().get(ID);
 	}
-	
+
 	public JobsPlayer getRealJobPlayer(UUID ID) {
-		return getCacheJobPlayers().get(""+ID);
+		return getCacheJobPlayers().get("" + ID);
+	}
+
+	public void calculateRanking() {
+		FileConfiguration cfg = plugin.getFileManager().getConfig();
+		if (cfg.getBoolean("CalculateRanking")) {
+
+			int every = cfg.getInt("CalculateRankingEvery");
+
+			new BukkitRunnable() {
+
+				@Override
+				public void run() {
+					plugin.getExecutor().execute(() -> {
+
+						if (plugin.getFileManager().getRankingGlobalConfig().getBoolean("EnabledGlobalRanking")) {
+
+							List<String> players = plugin.getPlayerDataAPI().getAllPlayers();
+
+							Map<String, Double> map = new HashMap<String, Double>();
+
+							for (String member : players) {
+
+								if (plugin.getPlayerAPI().getPoints(member) >= 0) {
+									map.put(member, plugin.getPlayerAPI().getPoints(member));
+								}
+
+							}
+
+							if (map.size() >= 1) {
+								Map<String, Double> sort = SortByValue(map);
+
+								ArrayList<String> f = new ArrayList<String>();
+
+								sort.forEach((k, v) -> {
+									f.add(k);
+								});
+
+								Collections.reverse(f);
+
+								ranked_points.clear();
+
+								for (int i = 0; i != f.size(); i++) {
+
+									ranked_points.put(i, f.get(i));
+
+								}
+							}
+						}
+						if (plugin.getFileManager().getRankingPerJobConfig().getBoolean("EnabledRankingPerJob")) {
+							List<String> d = plugin.getFileManager().getRankingPerJobConfig()
+									.getStringList("Categories.List");
+
+							if (d.size() != 0) {
+
+								List<String> players = plugin.getPlayerDataAPI().getAllPlayers();
+
+							 
+									today_ranked.clear();
+									blocks_ranked.clear();
+									level_ranked.clear();
+ 
+									plugin.getJobCache().forEach((k, v) -> {
+										HashMap<Double, String> ma = new HashMap<Double, String>();
+										
+										HashMap<Double, String> ma2 = new HashMap<Double, String>();
+
+										HashMap<Double, String> ma3 = new HashMap<Double, String>();
+										
+										for (String member : players) {
+
+											if (plugin.getPlayerAPI().getOwnedJobs(member).contains(v.getConfigID())) {
+
+												double earnings_all = plugin.getPlayerAPI().getEarningsOfToday(member,
+														v);
+
+												ma.put(earnings_all, member);
+												
+												double d3 = plugin.getPlayerAPI().getBrokenTimes(member,
+														v);
+
+												ma2.put(d3, member);
+												
+												double d4 = plugin.getPlayerAPI().getLevelOF(member, v);
+
+												ma3.put(d4, member);
+											}
+
+										}
+
+										if (ma.size() >= 0) {
+											Map<Object, Object> c = ma.entrySet().stream()
+													.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
+													.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+															(e1, e2) -> e1, LinkedHashMap::new));
+
+											HashMap<Integer, String> d3 = new HashMap<Integer, String>();
+
+											int i = d3.size();
+
+											c.forEach((k3, v3) -> {
+												d3.put(i, v3.toString());
+											});
+
+											today_ranked.put(v, d3);
+
+										}
+										
+										if (ma2.size() >= 0) {
+											Map<Object, Object> c = ma2.entrySet().stream()
+													.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
+													.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+															(e1, e2) -> e1, LinkedHashMap::new));
+
+											HashMap<Integer, String> d3 = new HashMap<Integer, String>();
+
+											int i = d3.size();
+
+											c.forEach((k3, v3) -> {
+												d3.put(i, v3.toString());
+											});
+
+											blocks_ranked.put(v, d3);
+
+										}
+										
+										if (ma3.size() >= 0) {
+											Map<Object, Object> c = ma3.entrySet().stream()
+													.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
+													.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+															(e1, e2) -> e1, LinkedHashMap::new));
+
+											HashMap<Integer, String> d3 = new HashMap<Integer, String>();
+
+											int i = d3.size();
+
+											c.forEach((k3, v3) -> {
+												d3.put(i, v3.toString());
+											});
+
+											level_ranked.put(v, d3);
+
+										}
+
+									});
+ 
+							}
+						}
+					});
+				}
+			}.runTaskTimer(plugin, 0, every);
+
+		}
+	}
+
+	public HashMap<Integer, String> ranked_points = new HashMap<Integer, String>();
+	public HashMap<Job, HashMap<Integer, String>> today_ranked = new HashMap<Job, HashMap<Integer, String>>();
+	public HashMap<Job, HashMap<Integer, String>> blocks_ranked = new HashMap<Job, HashMap<Integer, String>>();
+	public HashMap<Job, HashMap<Integer, String>> level_ranked = new HashMap<Job, HashMap<Integer, String>>();
+	
+	public int getRankOfGlobalPlayer(String UUID) {
+		for (int i = 0; i != ranked_points.size(); i++) {
+
+			String uuid = ranked_points.get(i);
+
+			if (uuid.equalsIgnoreCase(UUID)) {
+				return i + 1;
+			}
+
+		}
+		return 999;
+
+	}
+
+	public <K, V extends Comparable<? super V>> Map<K, V> SortByValue(Map<K, V> crunchifyMap) {
+
+		Map<K, V> crunchifyResult = new LinkedHashMap<>();
+
+		Stream<Map.Entry<K, V>> sequentialStream = crunchifyMap.entrySet().stream();
+
+		sequentialStream.sorted(Map.Entry.comparingByValue())
+				.forEachOrdered(c -> crunchifyResult.put(c.getKey(), c.getValue()));
+
+		return crunchifyResult;
 	}
 
 	public void startSave() {
@@ -72,23 +264,23 @@ public class PlayerAPI {
 
 		});
 	}
- 
+
 	public ArrayList<String> getOnlinePlayersInJob(Job job) {
-		
+
 		ArrayList<String> list = new ArrayList<String>();
-		
-		for(Player p :  Bukkit.getOnlinePlayers()) {
-			if(getRealJobPlayer(p.getUniqueId()) != null) {
-				
-				if(getRealJobPlayer(p.getUniqueId()).getCurrentJobs().contains(job.getConfigID())) {
-					list.add(""+p.getUniqueId());
+
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (getRealJobPlayer(p.getUniqueId()) != null) {
+
+				if (getRealJobPlayer(p.getUniqueId()).getCurrentJobs().contains(job.getConfigID())) {
+					list.add("" + p.getUniqueId());
 				}
-				
+
 			}
 		}
-		
+
 		return list;
-		
+
 	}
 
 	public double getEarnedAtDateFromAllJobs(String uuid, String date) {
@@ -111,62 +303,67 @@ public class PlayerAPI {
 	public boolean existInCacheByUUID(String uuid) {
 		return this.players.contains(uuid);
 	}
-	
+
 	public void executeCustomEvent(String UUID, String job, boolean online) {
 		new BukkitRunnable() {
-			
+
 			@Override
 			public void run() {
-				if(online) { 
-						JobsPlayer f = getRealJobPlayer(UUID);
+				if (online) {
+					JobsPlayer f = getRealJobPlayer(UUID);
 
-						if (Bukkit.getPlayer(f.getUUID()) != null) {
-					
-							Player player = Bukkit.getPlayer(f.getUUID()); 
-							if (player.getOpenInventory() != null) {
+					if (Bukkit.getPlayer(f.getUUID()) != null) {
 
-								InventoryView iv = player.getOpenInventory();
-								
-								if(iv.getTitle() != null) { 
-									String title = iv.getTitle();
-									 
-									GuiOpenManager d = plugin.getGUIOpenManager();
-									
-									if(d.isMainOpend(player, title) != null) {
-										
-										 plugin.getGUI().UpdateMainInventoryItems(player, title);
-										
-									} else if(d.isLanguageOpend(player, title) != null) {
-										 plugin.getGUI().updateLanguageInventory(player, title, f);
-									} else if(d.isEarningsAboutJob(player, title) != null) {
-										plugin.getGUIAddonManager().updateEarningsGUI_Single_Job(player, title, f, plugin.getGUIOpenManager().isEarningsAboutJob(player, title));
-									} else if(d.isEarningsALL(player, title) != null) {
-										plugin.getGUIAddonManager().updateEarningsGUI_All(player, title, f);
-									} else if(d.isWithdrawMenu(player, title) != null) {
-										plugin.getGUIAddonManager().updateWithdrawGUI(player, title, f);
-									} else if(d.isLevelsMenu(player, title) != null) {
-										plugin.getGUIAddonManager().updateLevelsGUI(player, title, f, plugin.getGUIOpenManager().isLevelsMenu(player, title));
-									} else if(d.isRewardsMenu(player, title) != null) {
-										plugin.getGUIAddonManager().updateRewardsGUI(player, title, f, plugin.getGUIOpenManager().isRewardsMenu(player, title));
-									} else if(d.isStatsMenuOpendSelf(player, title) != null) {
-										plugin.getGUIAddonManager().updateSelfUpdateGUI(player, title, f);
-									} else if(d.isStatsMenuOpendAboutPlayer(player, title) != null) {
-										plugin.getGUIAddonManager().updateOtherStatsGUI(player, title, f, plugin.getGUIOpenManager().isStatsMenuOpendAboutPlayer(player, title));
-									} else if(d.isSettingsMenu(player, title) != null) {
-										 plugin.getGUI().UpdateSettingsGUI(player, title, plugin.getGUIOpenManager().isSettingsMenu(player, title));
-									}
-									
+						Player player = Bukkit.getPlayer(f.getUUID());
+						if (player.getOpenInventory() != null) {
+
+							InventoryView iv = player.getOpenInventory();
+
+							if (iv.getTitle() != null) {
+								String title = iv.getTitle();
+
+								GuiOpenManager d = plugin.getGUIOpenManager();
+
+								if (d.isMainOpend(player, title) != null) {
+
+									plugin.getGUI().UpdateMainInventoryItems(player, title);
+
+								} else if (d.isLanguageOpend(player, title) != null) {
+									plugin.getGUI().updateLanguageInventory(player, title, f);
+								} else if (d.isEarningsAboutJob(player, title) != null) {
+									plugin.getGUIAddonManager().updateEarningsGUI_Single_Job(player, title, f,
+											plugin.getGUIOpenManager().isEarningsAboutJob(player, title));
+								} else if (d.isEarningsALL(player, title) != null) {
+									plugin.getGUIAddonManager().updateEarningsGUI_All(player, title, f);
+								} else if (d.isWithdrawMenu(player, title) != null) {
+									plugin.getGUIAddonManager().updateWithdrawGUI(player, title, f);
+								} else if (d.isLevelsMenu(player, title) != null) {
+									plugin.getGUIAddonManager().updateLevelsGUI(player, title, f,
+											plugin.getGUIOpenManager().isLevelsMenu(player, title));
+								} else if (d.isRewardsMenu(player, title) != null) {
+									plugin.getGUIAddonManager().updateRewardsGUI(player, title, f,
+											plugin.getGUIOpenManager().isRewardsMenu(player, title));
+								} else if (d.isStatsMenuOpendSelf(player, title) != null) {
+									plugin.getGUIAddonManager().updateSelfUpdateGUI(player, title, f);
+								} else if (d.isStatsMenuOpendAboutPlayer(player, title) != null) {
+									plugin.getGUIAddonManager().updateOtherStatsGUI(player, title, f,
+											plugin.getGUIOpenManager().isStatsMenuOpendAboutPlayer(player, title));
+								} else if (d.isSettingsMenu(player, title) != null) {
+									plugin.getGUI().UpdateSettingsGUI(player, title,
+											plugin.getGUIOpenManager().isSettingsMenu(player, title));
 								}
+
 							}
-						 
 						}
 
 					}
- 
+
+				}
+
 			}
 		}.runTaskLater(plugin, 2);
 	}
-  
+
 	public void updateSalary(String UUID, double d) {
 		if (existInCacheByUUID(UUID)) {
 			getCacheJobPlayers().get(UUID).updateCacheSalary(d);
@@ -175,7 +372,7 @@ public class PlayerAPI {
 			plugin.getPlayerDataAPI().updateSalary(UUID, d);
 		}
 	}
-	
+
 	public void updateSalaryDate(String UUID, String d) {
 		if (existInCacheByUUID(UUID)) {
 			getCacheJobPlayers().get(UUID).updateCacheSalaryDate(d);
@@ -184,7 +381,6 @@ public class PlayerAPI {
 			plugin.getPlayerDataAPI().updateSalaryDate(UUID, d);
 		}
 	}
-	
 
 	public double getSalary(String uuid) {
 		if (existInCacheByUUID(uuid)) {
@@ -202,7 +398,7 @@ public class PlayerAPI {
 			plugin.getPlayerDataAPI().updateDateJoinedOfJob(UUID, job, date);
 		}
 	}
- 
+
 	public ArrayList<String> getOwnedJobs(String uuid) {
 		if (existInCacheByUUID(uuid)) {
 			return getCacheJobPlayers().get(uuid).getOwnJobs();
@@ -226,7 +422,7 @@ public class PlayerAPI {
 			return plugin.getPlayerDataAPI().getExpOf(uuid, job.getConfigID());
 		}
 	}
- 
+
 	public int getBrokenTimesOfID(String uuid, Job job, String id, String ac) {
 		if (existInCacheByUUID(uuid)) {
 
@@ -291,14 +487,14 @@ public class PlayerAPI {
 
 	public void updateEarningsOfToday(String uuid, Job job, double v) {
 		String date = plugin.getDate();
-		if (existInCacheByUUID(uuid)) { 
+		if (existInCacheByUUID(uuid)) {
 			getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).updateCacheEarnings(date, v);
 			executeCustomEvent(uuid, job.getConfigID(), true);
-		} else { 
+		} else {
 			plugin.getPlayerDataAPI().updateEarnings(uuid, job.getConfigID(), date, v);
 		}
 	}
-	
+
 	public void updateExp(String uuid, Job job, double val) {
 		if (existInCacheByUUID(uuid)) {
 			getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).changeCacheExp(val);
@@ -316,7 +512,7 @@ public class PlayerAPI {
 			plugin.getPlayerDataAPI().updatePoints(uuid, val);
 		}
 	}
-	
+
 	public void updateMax(String uuid, int val) {
 		if (existInCacheByUUID(uuid)) {
 			getCacheJobPlayers().get(uuid).updateCacheMax(val);
@@ -328,7 +524,7 @@ public class PlayerAPI {
 
 	public double getEarnedAt(String uuid, Job job, String date) {
 		if (existInCacheByUUID(uuid)) {
- 
+
 			return getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).getEarningsofDate(date);
 
 		} else {
@@ -351,7 +547,7 @@ public class PlayerAPI {
 			return plugin.getPlayerDataAPI().getLevelOf(uuid, job.getConfigID());
 		}
 	}
-	
+
 	public void updateLevelOf(String uuid, Job job, int lvl) {
 		if (existInCacheByUUID(uuid)) {
 			getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).changeCacheLevel(lvl);
@@ -360,7 +556,6 @@ public class PlayerAPI {
 			plugin.getPlayerDataAPI().updateLevel(uuid, lvl, job.getConfigID());
 		}
 	}
- 
 
 	public double getPoints(String uuid) {
 		if (existInCacheByUUID(uuid)) {
@@ -389,7 +584,7 @@ public class PlayerAPI {
 		double exp = plm.getExpOf("" + UUID, job);
 		String date = plm.getDateOf("" + UUID, job);
 		int broken = plm.getBrokenOf("" + UUID, job);
-		String joined = plm.getJobDateJoined(""+UUID, job); 
+		String joined = plm.getJobDateJoined("" + UUID, job);
 
 		HashMap<String, Double> listedofearned = new HashMap<String, Double>();
 		for (int i = 0; i != plugin.getFileManager().getConfig().getInt("LoadEarningsDataOfDays"); i++) {
@@ -404,15 +599,15 @@ public class PlayerAPI {
 			Date newdate = c1.getTime();
 
 			String d = "" + format.format(newdate);
-			
+
 			double earned = plm.getEarnedAt("" + UUID, job, d);
-			
+
 			listedofearned.put(d, earned);
 
-		} 
-		
-		plugin.getPlayerChunkAPI().loadChunks(""+UUID, j);
-	 
+		}
+
+		plugin.getPlayerChunkAPI().loadChunks("" + UUID, j);
+
 		HashMap<String, Double> money = new HashMap<String, Double>();
 		HashMap<String, Integer> broken2 = new HashMap<String, Integer>();
 
@@ -429,7 +624,8 @@ public class PlayerAPI {
 
 		}
 
-		JobStats sz = new JobStats(j, j.getConfigID(), exp, level, broken, date, money, broken2, listedofearned, joined);
+		JobStats sz = new JobStats(j, j.getConfigID(), exp, level, broken, date, money, broken2, listedofearned,
+				joined);
 
 		plugin.getPlayerAPI().getRealJobPlayer("" + UUID).getStatsList().put(date, sz);
 
@@ -448,30 +644,30 @@ public class PlayerAPI {
 
 			ArrayList<String> owned = plm.getOwnedJobs("" + UUID);
 			ArrayList<String> current = plm.getCurrentJobs("" + UUID);
-			
-			double sal = plm.getSalary(""+UUID);
-			String sat = plm.getSalaryDate(""+UUID);
+
+			double sal = plm.getSalary("" + UUID);
+			String sat = plm.getSalaryDate("" + UUID);
 
 			HashMap<String, JobStats> stats = new HashMap<String, JobStats>();
 
 			for (String loading : owned) {
 
 				Job j = plugin.getJobCache().get(loading);
-				
-				plugin.getPlayerChunkAPI().loadChunks(""+UUID, j);
+
+				plugin.getPlayerChunkAPI().loadChunks("" + UUID, j);
 
 				int level = plm.getLevelOf("" + UUID, loading);
 				double exp = plm.getExpOf("" + UUID, loading);
 				String date = plm.getDateOf("" + UUID, loading);
 				int broken = plm.getBrokenOf("" + UUID, loading);
-				String joined = plm.getJobDateJoined(""+UUID, loading); 
-				
+				String joined = plm.getJobDateJoined("" + UUID, loading);
+
 				HashMap<String, Double> listedofearned = new HashMap<String, Double>();
-				
+
 				for (int i = 0; i != plugin.getFileManager().getConfig().getInt("LoadEarningsDataOfDays"); i++) {
 					DateFormat format = new SimpleDateFormat(plugin.getFileManager().getConfig().getString("Date"));
 					Date data = new Date();
- 
+
 					Calendar c1 = Calendar.getInstance();
 					c1.setTime(data);
 
@@ -480,12 +676,12 @@ public class PlayerAPI {
 					Date newdate = c1.getTime();
 
 					String d = "" + format.format(newdate);
-					
+
 					double earned = plm.getEarnedAt("" + UUID, j.getConfigID(), d);
-				 
+
 					listedofearned.put(d, earned);
 
-				} 
+				}
 
 				HashMap<String, Double> money = new HashMap<String, Double>();
 				HashMap<String, Integer> broken2 = new HashMap<String, Integer>();
@@ -503,18 +699,19 @@ public class PlayerAPI {
 
 				}
 
-				JobStats sz = new JobStats(j, j.getConfigID(), exp, level, broken, date, money, broken2,
-						listedofearned, joined);
+				JobStats sz = new JobStats(j, j.getConfigID(), exp, level, broken, date, money, broken2, listedofearned,
+						joined);
 
 				stats.put(loading, sz);
 			}
 
 			String lused = null;
 
-			if (UltimateJobs.getPlugin().getPlayerDataAPI().getSettingData(""+UUID, "LANG") != null) {
-				lused = UltimateJobs.getPlugin().getPlayerDataAPI().getSettingData(""+UUID, "LANG");
+			if (UltimateJobs.getPlugin().getPlayerDataAPI().getSettingData("" + UUID, "LANG") != null) {
+				lused = UltimateJobs.getPlugin().getPlayerDataAPI().getSettingData("" + UUID, "LANG");
 			} else {
-				lused = UltimateJobs.getPlugin().getFileManager().getLanguageConfig().getString("PlayerDefaultLanguage");
+				lused = UltimateJobs.getPlugin().getFileManager().getLanguageConfig()
+						.getString("PlayerDefaultLanguage");
 			}
 
 			Language langusged = plugin.getLanguageAPI().getLanguages().get(lused);
@@ -537,14 +734,14 @@ public class PlayerAPI {
 				plm.createJobData(UUID, j);
 
 				Job real = plugin.getJobCache().get(j);
-				
-				plugin.getPlayerChunkAPI().loadChunks(""+UUID, real);
+
+				plugin.getPlayerChunkAPI().loadChunks("" + UUID, real);
 
 				int level = plm.getLevelOf("" + UUID, j);
 				double exp = plm.getExpOf("" + UUID, j);
 				String date = plm.getDateOf("" + UUID, j);
 				int broken = plm.getBrokenOf("" + UUID, j);
-				String joined = plm.getJobDateJoined(""+UUID, j); 
+				String joined = plm.getJobDateJoined("" + UUID, j);
 
 				HashMap<String, Double> listedofearned = new HashMap<String, Double>();
 				for (int i = 0; i != plugin.getFileManager().getConfig().getInt("LoadEarningsDataOfDays"); i++) {
@@ -559,12 +756,12 @@ public class PlayerAPI {
 					Date newdate = c1.getTime();
 
 					String d = "" + format.format(newdate);
-					
+
 					double earned = plm.getEarnedAt("" + UUID, real.getConfigID(), d);
-					
+
 					listedofearned.put(d, earned);
 
-				} 
+				}
 
 				HashMap<String, Double> money = new HashMap<String, Double>();
 				HashMap<String, Integer> broken2 = new HashMap<String, Integer>();

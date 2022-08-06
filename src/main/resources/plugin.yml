@@ -3,9 +3,9 @@ version: Iron-0.5.0
 name: UltimateJobs
 author: Warsteiner37
 api-version: 1.17
-softdepend: [WorldGuard, AlonsoLevels, WorldEdit, PlaceHolderAPI, MythicMobs, MoreOres]
+softdepend: [WorldGuard, WorldEdit, PlaceHolderAPI, MythicMobs, ItemsAdder]
 description: Let Players work with this high quality Jobs Plugin!
-website: https://www.spigotmc.org/resources/ultimatejobs-player-jobs.99978/
+website: https://mc-plugins.org
 
 commands:
   jobs:

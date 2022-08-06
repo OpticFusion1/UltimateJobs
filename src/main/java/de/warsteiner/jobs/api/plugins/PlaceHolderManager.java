@@ -40,6 +40,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 		if (jb != null) {
 			String UUID = ""+player.getUniqueId();
 			Collection<String> jobs = jb.getCurrentJobs();
+			Collection<String> jobs_own = jb.getOwnJobs();
 			if (pr.contains("job_current_name")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
@@ -57,7 +58,39 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				} else {
 					return jb.getLanguage().getStringFromLanguage(jb.getUUID(), "placeholder_no_job");
 				}
-			} if (pr.contains("job_current_online")) {
+			} else 	if (pr.contains("job_own_contains")) {
+				String[] split = pr.split("_");
+				String internal = split[3];
+
+				if (jobs_own.size() != 0) {
+
+					if (jobs_own.contains(internal.toUpperCase())) {
+ 
+						return "true";
+
+					} else {
+						return "false";
+					}
+				} else {
+					return jb.getLanguage().getStringFromLanguage(jb.getUUID(), "placeholder_no_job");
+				}
+			}  else 	if (pr.contains("job_current_contains")) {
+				String[] split = pr.split("_");
+				String internal = split[3];
+
+				if (jobs.size() != 0) {
+
+					if (jobs.contains(internal.toUpperCase())) {
+ 
+						return "true";
+
+					} else {
+						return "false";
+					}
+				} else {
+					return jb.getLanguage().getStringFromLanguage(jb.getUUID(), "placeholder_no_job");
+				}
+			} else if (pr.contains("job_current_online")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
 

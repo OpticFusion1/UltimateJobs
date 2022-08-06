@@ -35,10 +35,8 @@ public class WorldGuardManager {
 	public static StateFlag STRIP_ACTION;
 	public static StateFlag TAME_ACTION;
 	public static StateFlag BREED_ACTION;
-	public static StateFlag MMKILL_ACTION;
-	public static StateFlag DRINK_ACTION;
-	public static StateFlag BERRY_ACTION;
-	public static StateFlag MMORES_BREAK;
+	public static StateFlag MMKILL_ACTION; 
+	public static StateFlag BERRY_ACTION; 
 	public static StateFlag KILLBYBOW;
 	public static StateFlag GROWSAP; 
 	public static StateFlag TR;
@@ -46,6 +44,9 @@ public class WorldGuardManager {
 	public static StateFlag SMELT;
 	public static StateFlag EXPLORE; 
 	public static StateFlag ENCHANT; 
+	
+	public static StateFlag IA_BREAK; 
+	public static StateFlag IA_KILL; 
 	
 	public WorldGuardManager getManager() {
 		return this;
@@ -63,6 +64,10 @@ public class WorldGuardManager {
 	public static void load() {
 		WorldGuard worldGuard = WorldGuard.getInstance();
 		FlagRegistry flagRegistry = worldGuard.getFlagRegistry();
+		
+		flagRegistry.register((Flag) (IA_KILL = new StateFlag("ia-kill-action", false)));
+		flagRegistry.register((Flag) (IA_BREAK = new StateFlag("ia-break-action", false)));
+		
 		flagRegistry.register((Flag) (ENCHANT = new StateFlag("enchant-action", false)));
 		flagRegistry.register((Flag) (EXPLORE = new StateFlag("explore-action", false)));
 		flagRegistry.register((Flag) (SMELT = new StateFlag("smelt-action", false)));
@@ -81,10 +86,8 @@ public class WorldGuardManager {
 		flagRegistry.register((Flag) (STRIP_ACTION = new StateFlag("strip-action", false))); 
 		flagRegistry.register((Flag) (TAME_ACTION = new StateFlag("tame-action", false))); 
 		flagRegistry.register((Flag) (BREED_ACTION = new StateFlag("breed-action", false))); 
-		flagRegistry.register((Flag) (MMKILL_ACTION = new StateFlag("mmkill-action", false))); 
-		flagRegistry.register((Flag) (DRINK_ACTION = new StateFlag("drink-action", false))); 
-		flagRegistry.register((Flag) (BERRY_ACTION = new StateFlag("collectberrys-action", false))); 
-		flagRegistry.register((Flag) (MMORES_BREAK = new StateFlag("moreores-break-action", false))); 
+		flagRegistry.register((Flag) (MMKILL_ACTION = new StateFlag("mmkill-action", false)));  
+		flagRegistry.register((Flag) (BERRY_ACTION = new StateFlag("collectberrys-action", false)));  
 		flagRegistry.register((Flag) (KILLBYBOW = new StateFlag("killbybow-action", false))); 
 		flagRegistry.register((Flag) (GROWSAP = new StateFlag("grow-saplings-action", false))); 
 		flagRegistry.register((Flag) (FARM_GROW_ACTION = new StateFlag("farm-grow-action", false))); 
@@ -92,6 +95,10 @@ public class WorldGuardManager {
 	}
 	
 	public static StateFlag getFlagFromName(String b) {
+		
+		if(b.equalsIgnoreCase("ia-kill-action")) { return IA_KILL; }
+		if(b.equalsIgnoreCase("ia-break-action")) { return IA_BREAK; }
+		
 		if(b.equalsIgnoreCase("enchant-action")) { return ENCHANT; }
 		if(b.equalsIgnoreCase("explore-action")) { return EXPLORE; }
 		if(b.equalsIgnoreCase("smelt-action")) { return SMELT; }
@@ -112,10 +119,8 @@ public class WorldGuardManager {
 		if(b.equalsIgnoreCase("tame-action")) { return TAME_ACTION; } 
 		if(b.equalsIgnoreCase("shear-action")) { return SHEAR_ACTION; } 
 		if(b.equalsIgnoreCase("breed-action")) { return BREED_ACTION; } 
-		if(b.equalsIgnoreCase("mmkill-action")) { return MMKILL_ACTION; }
-		if(b.equalsIgnoreCase("drink-action")) { return DRINK_ACTION; } 
-		if(b.equalsIgnoreCase("collectberrys-action")) { return BERRY_ACTION; } 
-		if(b.equalsIgnoreCase("moreores-break-action")) { return MMORES_BREAK; } 
+		if(b.equalsIgnoreCase("mmkill-action")) { return MMKILL_ACTION; } 
+		if(b.equalsIgnoreCase("collectberrys-action")) { return BERRY_ACTION; }  
 		if(b.equalsIgnoreCase("killbybow-action")) { return KILLBYBOW; } 
 		if(b.equalsIgnoreCase("grow-saplings-action")) { return GROWSAP; }  
 		return null;

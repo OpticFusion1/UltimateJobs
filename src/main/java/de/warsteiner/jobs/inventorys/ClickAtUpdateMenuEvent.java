@@ -52,12 +52,12 @@ public class ClickAtUpdateMenuEvent implements Listener {
 			} else if (display.equalsIgnoreCase("§a◇ §7Documentation Site §a◇")) {
 
 				p.sendMessage(AdminCommand.prefix
-						+ "§7You can visit our Documentation Site here: §b§lhttps://war-projects.com");
+						+ "§7You can visit our Documentation Site here: §b§lhttps://dto.mc-plugins.org");
 
 			} else if (display.equalsIgnoreCase("§5☆ §7Our Discord Server §5☆")) {
 
 				p.sendMessage(AdminCommand.prefix
-						+ "§7You can join our Discord with this Invite: §a§lhttps://discord.gg/YpF9qkTN");
+						+ "§7You can join our Discord with this Invite: §a§lhttps://dcto.mc-plugins.org");
 
 			}
 
@@ -76,12 +76,12 @@ public class ClickAtUpdateMenuEvent implements Listener {
 			} else if (display.equalsIgnoreCase("§a◇ §7Documentation Site §a◇")) {
 
 				p.sendMessage(AdminCommand.prefix
-						+ "§7You can visit our Documentation Site here: §b§lhttps://war-projects.com");
+						+ "§7You can visit our Documentation Site here: §b§lhttps://dto.mc-plugins.org");
 
 			} else if (display.equalsIgnoreCase("§5☆ §7Our Discord Server §5☆")) {
 
 				p.sendMessage(AdminCommand.prefix
-						+ "§7You can join our Discord with this Invite: §a§lhttps://discord.gg/YpF9qkTN");
+						+ "§7You can join our Discord with this Invite: §a§lhttps://dcto.mc-plugins.org");
 
 			}
 

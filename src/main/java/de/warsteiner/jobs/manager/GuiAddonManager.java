@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,20 +57,20 @@ public class GuiAddonManager {
 
 				new BookUtil.PageBuilder()
 
-						.add("§aPlugin Help\n§7\n§8You can get help at our Discord Server§8: §bhttps://discord.war-projects.com §8or you can visit the Plugin's Official Docs Site§8: §9https://war-projects.com")
+						.add("§aPlugin Help\n§7\n§8You can get help at our Discord Server§8: §bhttps://dcto.mc-plugins.org §8or you can visit the Plugin's Official Docs Site§8: §9https://dto.mc-plugins.org")
 
 						.newLine().newLine()
 
 						.add(BookUtil.TextBuilder.of("Discord Invite")
 								.onHover(BookUtil.HoverAction.showText("Get the Discord Invite"))
-								.onClick(BookUtil.ClickAction.openUrl("https://discord.gg/qSpvMkRq"))
+								.onClick(BookUtil.ClickAction.openUrl("https://dcto.mc-plugins.org"))
 								.color(ChatColor.GREEN).build())
 						.newLine()
 
 						.add(BookUtil.TextBuilder.of("Docs Website")
 								.onHover(BookUtil.HoverAction.showText("Visit the Docs Website"))
-								.onClick(BookUtil.ClickAction.openUrl("https://war-projects.com")).color(ChatColor.BLUE)
-								.build())
+								.onClick(BookUtil.ClickAction.openUrl("https://dto.mc-plugins.org"))
+								.color(ChatColor.BLUE).build())
 
 						.build(),
 
@@ -216,38 +217,37 @@ public class GuiAddonManager {
 
 				inv.setItem(24, it);
 			}
-			
+
 			if (inv != null) {
 				ItemStack it = plugin.getItemAPI().createItem(player.getName(),
 						"url;http://textures.minecraft.net/texture/afd2400002ad9fbbbd0066941eb5b1a384ab9b0e48a178ee96e4d129a5208654");
 				ItemMeta meta = it.getItemMeta();
 
 				meta.setDisplayName("§c✘ §7Close §c✘");
- 
+
 				it.setItemMeta(meta);
 
 				inv.setItem(40, it);
 			}
-			
+
 			if (inv != null) {
 				ItemStack it = plugin.getItemAPI().createItem(player.getName(),
 						"url;http://textures.minecraft.net/texture/352723aa0637ea5204447be536151f529fe4906826d8c066c4dcc50079a64465");
 				ItemMeta meta = it.getItemMeta();
 
 				meta.setDisplayName("§a◇ §7Documentation Site §a◇");
- 
+
 				it.setItemMeta(meta);
 
 				inv.setItem(39, it);
 			}
-			
+
 			if (inv != null) {
-				ItemStack it = plugin.getItemAPI().createItem(player.getName(),
-						"name;MHf_Discord");
+				ItemStack it = plugin.getItemAPI().createItem(player.getName(), "name;MHf_Discord");
 				ItemMeta meta = it.getItemMeta();
 
 				meta.setDisplayName("§5☆ §7Our Discord Server §5☆");
- 
+
 				it.setItemMeta(meta);
 
 				inv.setItem(41, it);
@@ -315,38 +315,37 @@ public class GuiAddonManager {
 
 				inv.setItem(23, it);
 			}
-			
+
 			if (inv != null) {
 				ItemStack it = plugin.getItemAPI().createItem(player.getName(),
 						"url;http://textures.minecraft.net/texture/afd2400002ad9fbbbd0066941eb5b1a384ab9b0e48a178ee96e4d129a5208654");
 				ItemMeta meta = it.getItemMeta();
 
 				meta.setDisplayName("§c✘ §7Close §c✘");
- 
+
 				it.setItemMeta(meta);
 
 				inv.setItem(40, it);
 			}
-			
+
 			if (inv != null) {
 				ItemStack it = plugin.getItemAPI().createItem(player.getName(),
 						"url;http://textures.minecraft.net/texture/352723aa0637ea5204447be536151f529fe4906826d8c066c4dcc50079a64465");
 				ItemMeta meta = it.getItemMeta();
 
 				meta.setDisplayName("§a◇ §7Documentation Site §a◇");
- 
+
 				it.setItemMeta(meta);
 
 				inv.setItem(39, it);
 			}
-			
+
 			if (inv != null) {
-				ItemStack it = plugin.getItemAPI().createItem(player.getName(),
-						"name;MHf_Discord");
+				ItemStack it = plugin.getItemAPI().createItem(player.getName(), "name;MHf_Discord");
 				ItemMeta meta = it.getItemMeta();
 
 				meta.setDisplayName("§5☆ §7Our Discord Server §5☆");
- 
+
 				it.setItemMeta(meta);
 
 				inv.setItem(41, it);
@@ -354,6 +353,612 @@ public class GuiAddonManager {
 
 		}
 
+	}
+
+	public void createJobRankingGUI(Player player, UpdateTypes t, Job job) {
+		FileConfiguration cfg = plugin.getFileManager().getRankingPerJobConfig();
+		String UUID = "" + player.getUniqueId();
+		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(UUID);
+
+		int size = cfg.getInt("Size");
+
+		String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("PerJobRanking_Name"))
+				.replaceAll("<job>", job.getDisplay(UUID));
+
+		plugin.getGUI().openInventory(player, size, name, GUIType.JOB_RANKING, null, job);
+
+		if (t.equals(UpdateTypes.OPEN)) {
+			api.playSound("OPEN_RANKING_JOB", player);
+		}
+
+		InventoryView inv_view = player.getOpenInventory();
+
+		plugin.getGUI().setPlaceHolders(player, inv_view, cfg.getStringList("PerJobRanking_Place"), name);
+		plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "PerJobRanking_Custom.",
+				cfg.getStringList("PerJobRanking_Custom.List"), name, cfg, null);
+		setJobRankingItems(inv_view, cfg, player, job);
+	}
+
+	public void updateJobRankingGUI(Player player, String name, JobsPlayer jb, Job job) {
+		FileConfiguration cfg = plugin.getFileManager().getRankingPerJobConfig();
+		InventoryView inv = player.getOpenInventory();
+		new BukkitRunnable() {
+			public void run() {
+				plugin.getGUI().setPlaceHolders(player, inv, cfg.getStringList("PerJobRanking_Place"), name);
+				plugin.getGUI().setCustomitems(player, player.getName(), inv, "PerJobRanking_Custom.",
+						cfg.getStringList("PerJobRanking_Custom.List"), name, cfg, null);
+				setJobRankingItems(inv, cfg, player, job);
+			}
+		}.runTaskLater(plugin, 2);
+	}
+
+	public void setJobRankingItems(InventoryView inv, FileConfiguration cf, Player pl, Job job) {
+		plugin.getExecutor().execute(() -> {
+
+			String UUID = "" + pl.getUniqueId();
+			JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(UUID);
+
+			PlayerDataAPI d = plugin.getPlayerDataAPI();
+
+			if (d.getSettingData(UUID, "RANKING") == null) {
+				d.createSettingData(UUID, "RANKING", cf.getString("Categories.PlayerDefaultCat").toUpperCase());
+			}
+
+			String current = d.getSettingData(UUID, "RANKING");
+
+			if (inv != null) {
+
+				String icon = null;
+				String display = null;
+				List<String> lore = null;
+
+				int slot = cf.getInt("Categories.CatSlot");
+
+				inv.setItem(slot, null);
+				
+				if (current.equalsIgnoreCase("TODAY")) {
+
+					icon = cf.getString("Categories.Earnings_Today.Material");
+					display = sp.getLanguage().getStringFromPath(sp.getUUID(),
+							cf.getString("Categories.Earnings_Today.Display"));
+					lore = sp.getLanguage().getListFromPath(sp.getUUID(),
+							cf.getString("Categories.Earnings_Today.Lore"));
+
+				} else if (current.equalsIgnoreCase("BLOCKS")) {
+
+					icon = cf.getString("Categories.Destroyed_Blocks.Material");
+					display = sp.getLanguage().getStringFromPath(sp.getUUID(),
+							cf.getString("Categories.Destroyed_Blocks.Display"));
+					lore = sp.getLanguage().getListFromPath(sp.getUUID(),
+							cf.getString("Categories.Destroyed_Blocks.Lore"));
+
+				} else if (current.equalsIgnoreCase("LEVEL")) {
+
+					icon = cf.getString("Categories.Level.Material");
+					display = sp.getLanguage().getStringFromPath(sp.getUUID(),
+							cf.getString("Categories.Level.Display"));
+					lore = sp.getLanguage().getListFromPath(sp.getUUID(), cf.getString("Categories.Level.Lore"));
+
+				}
+
+				if (icon != null) {
+
+					if (cf.getBoolean("Categories.EnabledCategorieItem")) {
+
+						ItemStack it = plugin.getItemAPI().createItem(pl.getName(), icon);
+						ItemMeta meta = it.getItemMeta();
+
+						if (cf.contains("Categories.CustomModelData")) {
+							meta.setCustomModelData(cf.getInt("Categories.CustomModelData"));
+						}
+
+						ArrayList<String> old = new ArrayList<String>();
+
+						for (String b : lore) {
+							old.add(plugin.getPluginManager().toHex(b));
+						}
+
+						meta.setLore(old);
+
+						meta.setDisplayName(plugin.getPluginManager().toHex(display).replaceAll("&", "§"));
+
+						it.setItemMeta(meta);
+
+						inv.setItem(slot, it);
+					}
+				}
+
+			}
+
+
+			List<String> d3 = plugin.getFileManager().getRankingPerJobConfig().getStringList("Categories.List");
+
+			
+			if (current.equalsIgnoreCase("TODAY")) {
+ 
+				HashMap<Integer, String> F = plugin.getPlayerAPI().today_ranked.get(job);
+
+				for (int i = 0; i != d3.size() + 1; i++) {
+
+					if (d3.size() >= i) {
+
+						int get = i + 1;
+
+						int slot = 999;
+
+						if (cf.contains("PerJobRankingl_Items." + get + ".Slot")) {
+							slot = cf.getInt("PerJobRankingl_Items." + get + ".Slot");
+						}
+
+					 
+
+						if (slot != 999) {
+							
+							if (pl != null) {
+
+								ItemStack it = plugin.getItemAPI().createItem(pl.getName(),
+										cf.getString("PerJobRankingl_Items.NoneFound.Material"));
+								ItemMeta meta = it.getItemMeta();
+
+								if (cf.contains("PerJobRankingl_Items.NoneFound.CustomModelData")) {
+									meta.setCustomModelData(cf.getInt("PerJobRankingl_Items.NoneFound.CustomModelData"));
+								}
+
+								String dis = cf.getString("PerJobRankingl_Items.NoneFound.Display").replaceAll("<rank>",
+										"" + get);
+
+								meta.setDisplayName(plugin.getPluginManager().toHex(dis).replaceAll("&", "§"));
+
+								it.setItemMeta(meta);
+
+								inv.setItem(slot, it);
+							}
+
+							if (F.size() >= i) {
+
+								String rank_uuid = plugin.getPlayerAPI().today_ranked.get(job).get(i);
+
+								if (rank_uuid != null) {
+ 
+									String name = plugin.getPlayerDataAPI().getDisplayByUUID(rank_uuid);
+
+									String icon = null;
+
+									if (cf.getBoolean("PerJobRankingl_Items." + get + ".UseSkullAsMaterial")) {
+										icon = "name;<name>";
+									} else {
+										icon = cf.getString("PerJobRankingl_Items." + get + ".Material");
+									}
+
+									if (icon != null) {
+										ItemStack it = plugin.getItemAPI().createItem(name, icon);
+										ItemMeta meta = it.getItemMeta();
+
+										if (cf.contains("PerJobRankingl_Items." + get + ".CustomModelData")) {
+											meta.setCustomModelData(
+													cf.getInt("PerJobRankingl_Items." + get + ".CustomModelData"));
+										}
+
+										String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
+												cf.getString("PerJobRankingl_Items." + get + ".Display"));
+
+										List<String> lore = sp.getLanguage().getListFromLanguage(sp.getUUID(),
+												"PerJobRanking.LoreForRanks.Today");
+
+										ArrayList<String> old = new ArrayList<String>();
+
+										for (String b : lore) {
+											old.add(plugin.getPluginManager().toHex(b)
+													.replaceAll("<job>", job.getDisplay(UUID))
+													.replaceAll("<earnings>",
+															plugin.getAPI()
+																	.Format(plugin.getPlayerAPI()
+																			.getEarningsOfToday(rank_uuid, job)))
+													.replaceAll("<rank>", "" + get).replaceAll("<name>", name));
+										}
+
+										if (rank_uuid.equalsIgnoreCase("" + pl.getUniqueId())) {
+											if (cf.getBoolean("EnchantOwnSkullInRanking")) {
+												meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, false);
+												meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+											}
+										}
+
+										meta.setLore(old);
+
+										meta.setDisplayName(plugin.getPluginManager().toHex(dis)
+												.replaceAll("<name>", name).replaceAll("&", "§"));
+
+										it.setItemMeta(meta);
+
+										inv.setItem(slot, it);
+									}
+								}
+
+							}
+
+						}
+					}
+				}
+
+			} else 		if (current.equalsIgnoreCase("BLOCKS")) {
+				
+				HashMap<Integer, String> F = plugin.getPlayerAPI().blocks_ranked.get(job);
+
+				for (int i = 0; i != d3.size() + 1; i++) {
+
+					if (d3.size() >= i) {
+
+						int get = i + 1;
+
+						int slot = 999;
+
+						if (cf.contains("PerJobRankingl_Items." + get + ".Slot")) {
+							slot = cf.getInt("PerJobRankingl_Items." + get + ".Slot");
+						}
+
+					 
+
+						if (slot != 999) {
+							
+							if (pl != null) {
+
+								ItemStack it = plugin.getItemAPI().createItem(pl.getName(),
+										cf.getString("PerJobRankingl_Items.NoneFound.Material"));
+								ItemMeta meta = it.getItemMeta();
+
+								if (cf.contains("PerJobRankingl_Items.NoneFound.CustomModelData")) {
+									meta.setCustomModelData(cf.getInt("PerJobRankingl_Items.NoneFound.CustomModelData"));
+								}
+
+								String dis = cf.getString("PerJobRankingl_Items.NoneFound.Display").replaceAll("<rank>",
+										"" + get);
+
+								meta.setDisplayName(plugin.getPluginManager().toHex(dis).replaceAll("&", "§"));
+
+								it.setItemMeta(meta);
+
+								inv.setItem(slot, it);
+							}
+
+							if (F.size() >= i) {
+
+								String rank_uuid = plugin.getPlayerAPI().today_ranked.get(job).get(i);
+
+								if (rank_uuid != null) {
+ 
+									String name = plugin.getPlayerDataAPI().getDisplayByUUID(rank_uuid);
+
+									String icon = null;
+
+									if (cf.getBoolean("PerJobRankingl_Items." + get + ".UseSkullAsMaterial")) {
+										icon = "name;<name>";
+									} else {
+										icon = cf.getString("PerJobRankingl_Items." + get + ".Material");
+									}
+
+									if (icon != null) {
+										ItemStack it = plugin.getItemAPI().createItem(name, icon);
+										ItemMeta meta = it.getItemMeta();
+
+										if (cf.contains("PerJobRankingl_Items." + get + ".CustomModelData")) {
+											meta.setCustomModelData(
+													cf.getInt("PerJobRankingl_Items." + get + ".CustomModelData"));
+										}
+
+										String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
+												cf.getString("PerJobRankingl_Items." + get + ".Display"));
+
+										List<String> lore = sp.getLanguage().getListFromLanguage(sp.getUUID(),
+												"PerJobRanking.LoreForRanks.Blocks");
+
+										ArrayList<String> old = new ArrayList<String>();
+
+										for (String b : lore) {
+											old.add(plugin.getPluginManager().toHex(b)
+													.replaceAll("<job>", job.getDisplay(UUID))
+													.replaceAll("<times>",
+														""+	plugin.getPlayerAPI()
+																			.getBrokenTimes(rank_uuid, job))
+													.replaceAll("<rank>", "" + get).replaceAll("<name>", name));
+										}
+
+										if (rank_uuid.equalsIgnoreCase("" + pl.getUniqueId())) {
+											if (cf.getBoolean("EnchantOwnSkullInRanking")) {
+												meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, false);
+												meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+											}
+										}
+
+										meta.setLore(old);
+
+										meta.setDisplayName(plugin.getPluginManager().toHex(dis)
+												.replaceAll("<name>", name).replaceAll("&", "§"));
+
+										it.setItemMeta(meta);
+
+										inv.setItem(slot, it);
+									}
+								}
+
+							}
+
+						}
+					}
+				}
+				
+			} else 		if (current.equalsIgnoreCase("LEVEL")) {
+				
+				HashMap<Integer, String> F = plugin.getPlayerAPI().level_ranked.get(job);
+
+				for (int i = 0; i != d3.size() + 1; i++) {
+
+					if (d3.size() >= i) {
+
+						int get = i + 1;
+
+						int slot = 999;
+
+						if (cf.contains("PerJobRankingl_Items." + get + ".Slot")) {
+							slot = cf.getInt("PerJobRankingl_Items." + get + ".Slot");
+						}
+
+					 
+
+						if (slot != 999) {
+							
+							if (pl != null) {
+
+								ItemStack it = plugin.getItemAPI().createItem(pl.getName(),
+										cf.getString("PerJobRankingl_Items.NoneFound.Material"));
+								ItemMeta meta = it.getItemMeta();
+
+								if (cf.contains("PerJobRankingl_Items.NoneFound.CustomModelData")) {
+									meta.setCustomModelData(cf.getInt("PerJobRankingl_Items.NoneFound.CustomModelData"));
+								}
+
+								String dis = cf.getString("PerJobRankingl_Items.NoneFound.Display").replaceAll("<rank>",
+										"" + get);
+
+								meta.setDisplayName(plugin.getPluginManager().toHex(dis).replaceAll("&", "§"));
+
+								it.setItemMeta(meta);
+
+								inv.setItem(slot, it);
+							}
+
+							if (F.size() >= i) {
+
+								String rank_uuid = plugin.getPlayerAPI().today_ranked.get(job).get(i);
+
+								if (rank_uuid != null) {
+ 
+									String name = plugin.getPlayerDataAPI().getDisplayByUUID(rank_uuid);
+
+									String icon = null;
+
+									if (cf.getBoolean("PerJobRankingl_Items." + get + ".UseSkullAsMaterial")) {
+										icon = "name;<name>";
+									} else {
+										icon = cf.getString("PerJobRankingl_Items." + get + ".Material");
+									}
+
+									if (icon != null) {
+										ItemStack it = plugin.getItemAPI().createItem(name, icon);
+										ItemMeta meta = it.getItemMeta();
+
+										if (cf.contains("PerJobRankingl_Items." + get + ".CustomModelData")) {
+											meta.setCustomModelData(
+													cf.getInt("PerJobRankingl_Items." + get + ".CustomModelData"));
+										}
+
+										String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
+												cf.getString("PerJobRankingl_Items." + get + ".Display"));
+
+										List<String> lore = sp.getLanguage().getListFromLanguage(sp.getUUID(),
+												"PerJobRanking.LoreForRanks.Level");
+
+										ArrayList<String> old = new ArrayList<String>();
+
+										for (String b : lore) {
+											old.add(plugin.getPluginManager().toHex(b)
+													.replaceAll("<job>", job.getDisplay(UUID))
+													.replaceAll("<level>",
+														""+plugin.getPlayerAPI()
+																			.getLevelOF(rank_uuid, job))
+													.replaceAll("<rank>", "" + get).replaceAll("<name>", name));
+										}
+
+										if (rank_uuid.equalsIgnoreCase("" + pl.getUniqueId())) {
+											if (cf.getBoolean("EnchantOwnSkullInRanking")) {
+												meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, false);
+												meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+											}
+										}
+
+										meta.setLore(old);
+
+										meta.setDisplayName(plugin.getPluginManager().toHex(dis)
+												.replaceAll("<name>", name).replaceAll("&", "§"));
+
+										it.setItemMeta(meta);
+
+										inv.setItem(slot, it);
+									}
+								}
+
+							}
+
+						}
+					}
+				}
+				
+			}
+
+		});
+	}
+
+	public void createGlobalRankingGUI(Player player, UpdateTypes t) {
+		FileConfiguration cfg = plugin.getFileManager().getRankingGlobalConfig();
+		String UUID = "" + player.getUniqueId();
+		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(UUID);
+
+		int size = cfg.getInt("Size");
+
+		String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("GlobalRanking_Name"));
+
+		plugin.getGUI().openInventory(player, size, name, GUIType.GLOBAL_RANKING, null, null);
+
+		if (t.equals(UpdateTypes.OPEN)) {
+			api.playSound("OPEN_RANKING_GLOBAL", player);
+		}
+
+		InventoryView inv_view = player.getOpenInventory();
+
+		plugin.getGUI().setPlaceHolders(player, inv_view, cfg.getStringList("Global_Place"), name);
+		plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Global_Custom.",
+				cfg.getStringList("Global_Custom.List"), name, cfg, null);
+		setGlobalRankingItems(inv_view, cfg, player);
+	}
+
+	public void setGlobalRankingItems(InventoryView inv, FileConfiguration cf, Player pl) {
+		plugin.getExecutor().execute(() -> {
+
+			String UUID = "" + pl.getUniqueId();
+			JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(UUID);
+
+			int d = plugin.getPlayerAPI().ranked_points.size() + 1;
+
+			List<String> a1 = plugin.getFileManager().getRankingGlobalConfig()
+					.getStringList("Global_RankingItems.List");
+
+			if (cf.getBoolean("Global_RankingItems.OwnSkullItem.Enabled")) {
+
+				ItemStack it = plugin.getItemAPI().createItem(pl.getName(), "name;<name>");
+				ItemMeta meta = it.getItemMeta();
+
+				if (cf.contains("Global_RankingItems.OwnSkullItem.CustomModelData")) {
+					meta.setCustomModelData(cf.getInt("Global_RankingItems.OwnSkullItem.CustomModelData"));
+				}
+
+				String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
+						cf.getString("Global_RankingItems.OwnSkullItem.Display"));
+				List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
+						cf.getString("Global_RankingItems.OwnSkullItem.Lore"));
+
+				ArrayList<String> old = new ArrayList<String>();
+
+				String name = pl.getName();
+				double points = plugin.getPlayerAPI().getPoints("" + pl.getUniqueId());
+
+				for (String b : lore) {
+					old.add(plugin.getPluginManager().toHex(b).replaceAll("<points>", plugin.getAPI().Format(points))
+							.replaceAll("<rank>",
+									"" + plugin.getPlayerAPI().getRankOfGlobalPlayer("" + pl.getUniqueId()))
+							.replaceAll("<name>", name));
+				}
+
+				meta.setLore(old);
+
+				meta.setDisplayName(plugin.getPluginManager().toHex(dis).replaceAll("<points>", "" + points)
+						.replaceAll("<rank>", "" + plugin.getPlayerAPI().getRankOfGlobalPlayer("" + pl.getUniqueId()))
+						.replaceAll("<name>", name).replaceAll("&", "§"));
+
+				it.setItemMeta(meta);
+
+				inv.setItem(cf.getInt("Global_RankingItems.OwnSkullItem.Slot"), it);
+
+			}
+
+			for (int i = 0; i != a1.size(); i++) {
+
+				String choosen = null;
+
+				if (d >= i) {
+					choosen = a1.get(i);
+
+					int r = Integer.valueOf(choosen);
+
+					int usedfromlist = r - 1;
+
+					int slot = cf.getInt("Global_RankingItems." + r + ".Slot");
+
+					if (pl != null) {
+
+						ItemStack it = plugin.getItemAPI().createItem(pl.getName(),
+								cf.getString("Global_RankingItems.NoneFound.Material"));
+						ItemMeta meta = it.getItemMeta();
+
+						if (cf.contains("Global_RankingItems.NoneFound.CustomModelData")) {
+							meta.setCustomModelData(cf.getInt("Global_RankingItems.NoneFound.CustomModelData"));
+						}
+
+						String dis = cf.getString("Global_RankingItems.NoneFound.Display").replaceAll("<rank>", "" + r);
+
+						meta.setDisplayName(plugin.getPluginManager().toHex(dis).replaceAll("&", "§"));
+
+						it.setItemMeta(meta);
+
+						inv.setItem(slot, it);
+					}
+
+					if (plugin.getPlayerAPI().ranked_points.size() >= usedfromlist) {
+
+						String rank_uuid = plugin.getPlayerAPI().ranked_points.get(usedfromlist);
+
+						String icon = null;
+
+						if (cf.getBoolean("Global_RankingItems." + r + ".UseSkullAsMaterial")) {
+							icon = "name;<name>";
+						} else {
+							icon = cf.getString("Global_RankingItems." + r + ".Material");
+						}
+
+						double points = plugin.getPlayerAPI().getPoints(rank_uuid);
+						String name = plugin.getPlayerDataAPI().getDisplayByUUID(rank_uuid);
+
+						if (name != null) {
+							ItemStack it = plugin.getItemAPI().createItem(name, icon);
+							ItemMeta meta = it.getItemMeta();
+
+							if (cf.contains("Global_RankingItems." + r + ".CustomModelData")) {
+								meta.setCustomModelData(cf.getInt("Global_RankingItems." + r + ".CustomModelData"));
+							}
+
+							String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
+									cf.getString("Global_RankingItems." + r + ".Display"));
+							List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
+									cf.getString("Global_RankingItems." + r + ".Lore"));
+
+							ArrayList<String> old = new ArrayList<String>();
+
+							for (String b : lore) {
+								old.add(plugin.getPluginManager().toHex(b)
+										.replaceAll("<points>", plugin.getAPI().Format(points))
+										.replaceAll("<name>", name));
+							}
+
+							if (rank_uuid.equalsIgnoreCase("" + pl.getUniqueId())) {
+								if (cf.getBoolean("EnchantOwnSkullInRanking")) {
+									meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, false);
+									meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+								}
+							}
+
+							meta.setLore(old);
+
+							meta.setDisplayName(plugin.getPluginManager().toHex(dis).replaceAll("<points>", "" + points)
+									.replaceAll("<name>", name).replaceAll("&", "§"));
+
+							it.setItemMeta(meta);
+
+							inv.setItem(slot, it);
+						}
+					}
+
+				}
+			}
+		});
 	}
 
 	public void createEarningsGUI_Single_Job(Player player, UpdateTypes t, Job job) {
@@ -377,7 +982,7 @@ public class GuiAddonManager {
 				cfg.getStringList("Job_Earnings_Custom.List"), name, cfg, job);
 		setEarningsItems_Single(inv_view, cfg, player, job);
 	}
-	
+
 	public void updateEarningsGUI_Single_Job(Player player, String name, JobsPlayer jb, Job job) {
 		FileConfiguration cfg = plugin.getFileManager().getEarningsJobConfig();
 		InventoryView inv = player.getOpenInventory();
@@ -637,7 +1242,7 @@ public class GuiAddonManager {
 			}
 		}.runTaskLater(plugin, 2);
 	}
-	
+
 	public void setEarningsItems_ALL(InventoryView inv, FileConfiguration cf, Player pl) {
 		plugin.getExecutor().execute(() -> {
 
@@ -948,14 +1553,14 @@ public class GuiAddonManager {
 		}
 		return itemslist;
 	}
-	
 
 	public void createLeaveConfirmGUI(Player player, UpdateTypes t, Job job) {
 		FileConfiguration cfg = plugin.getFileManager().getLeaveConfirmConfig();
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 
-		String name = sp.getLanguage().getStringFromPath(player.getUniqueId(), cfg.getString("LeaveConfirm_Name").replaceAll("<job>", job.getDisplay(sp.getUUIDAsString())));
+		String name = sp.getLanguage().getStringFromPath(player.getUniqueId(),
+				cfg.getString("LeaveConfirm_Name").replaceAll("<job>", job.getDisplay(sp.getUUIDAsString())));
 		int size = cfg.getInt("LeaveConfirm_Size");
 
 		plugin.getGUI().openInventory(player, size, name, GUIType.CONFIRM_LEAVE, null, job);
@@ -970,7 +1575,7 @@ public class GuiAddonManager {
 				cfg.getStringList("LeaveConfirm_Custom.List"), name, cfg, null);
 		setLeaveConfirmItems(player, name, inv_view, job);
 	}
-	
+
 	public void setLeaveConfirmItems(Player player, String tit, InventoryView inv, Job job) {
 		FileConfiguration cfg = plugin.getFileManager().getLeaveConfirmConfig();
 		plugin.getExecutor().execute(() -> {
@@ -993,7 +1598,8 @@ public class GuiAddonManager {
 					ItemMeta meta = item.getItemMeta();
 
 					for (String line : lore) {
-						l.add(plugin.getPluginManager().toHex(line).replaceAll("<job>", job.getDisplay(sp.getUUIDAsString())).replaceAll("&", "§"));
+						l.add(plugin.getPluginManager().toHex(line)
+								.replaceAll("<job>", job.getDisplay(sp.getUUIDAsString())).replaceAll("&", "§"));
 					}
 
 					if (cfg.contains("LeaveConfirmItems.Button_YES.CustomModelData")) {
@@ -1026,7 +1632,8 @@ public class GuiAddonManager {
 					ItemMeta meta = item.getItemMeta();
 
 					for (String line : lore) {
-						l.add(plugin.getPluginManager().toHex(line).replaceAll("<job>", job.getDisplay(sp.getUUIDAsString())).replaceAll("&", "§"));
+						l.add(plugin.getPluginManager().toHex(line)
+								.replaceAll("<job>", job.getDisplay(sp.getUUIDAsString())).replaceAll("&", "§"));
 					}
 
 					if (cfg.contains("LeaveConfirmItems.Button_NO.CustomModelData")) {
@@ -1066,7 +1673,6 @@ public class GuiAddonManager {
 				cfg.getStringList("ConfirmWithdraw_Custom.List"), name, cfg, null);
 		setWithdrawConfigItems(player, name, inv_view);
 	}
- 
 
 	public void setWithdrawConfigItems(Player player, String tit, InventoryView inv) {
 		FileConfiguration cfg = plugin.getFileManager().getWithdrawConfirmConfig();
@@ -1163,8 +1769,7 @@ public class GuiAddonManager {
 				cfg.getStringList("Withdraw_Custom.List"), name, cfg, null);
 		setWithdrawItems(inv_view, player, sp);
 	}
-	
-	
+
 	public void updateWithdrawGUI(Player player, String name, JobsPlayer jb) {
 		FileConfiguration cfg = plugin.getFileManager().getWithdrawConfig();
 		InventoryView inv = player.getOpenInventory();
@@ -1344,7 +1949,7 @@ public class GuiAddonManager {
 				cfg.getStringList("Levels_Custom.List"), name, cfg, null);
 		setLevelsItems(inv_view, name, cfg, player, job);
 	}
-	
+
 	public void updateLevelsGUI(Player player, String name, JobsPlayer jb, Job job) {
 		FileConfiguration cfg = plugin.getFileManager().getLevelGUIConfig();
 		InventoryView inv = player.getOpenInventory();
@@ -1591,7 +2196,7 @@ public class GuiAddonManager {
 				cfg.getStringList("Rewards_Custom.List"), name, cfg, null);
 		setRewardsItems(inv_view, name, cfg, player, job);
 	}
-	
+
 	public void updateRewardsGUI(Player player, String name, JobsPlayer jb, Job job) {
 		FileConfiguration cfg = plugin.getFileManager().getRewardsConfig();
 		InventoryView inv = player.getOpenInventory();
@@ -1808,7 +2413,7 @@ public class GuiAddonManager {
 				cfg.getStringList("Self_Custom.List"), name, cfg, null);
 		setStatsItems(inv_view, name, cfg, UUID, player.getName(), player, "Self");
 	}
-	
+
 	public void updateSelfUpdateGUI(Player player, String name, JobsPlayer jb) {
 		FileConfiguration cfg = plugin.getFileManager().getStatsConfig();
 		InventoryView inv = player.getOpenInventory();
@@ -1816,7 +2421,7 @@ public class GuiAddonManager {
 			public void run() {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv, "Self_Custom.",
 						cfg.getStringList("Self_Custom.List"), name, cfg, null);
-				setStatsItems(inv, name, cfg, ""+player.getUniqueId(), player.getName(), player, "Self");
+				setStatsItems(inv, name, cfg, "" + player.getUniqueId(), player.getName(), player, "Self");
 			}
 		}.runTaskLater(plugin, 2);
 	}
@@ -1842,7 +2447,7 @@ public class GuiAddonManager {
 				cfg.getStringList("Other_Custom.List"), name, cfg, null);
 		setStatsItems(inv_view, name, cfg, ud, named, player, "Other");
 	}
-	
+
 	public void updateOtherStatsGUI(Player player, String name, JobsPlayer jb, String ud) {
 		FileConfiguration cfg = plugin.getFileManager().getStatsConfig();
 		InventoryView inv = player.getOpenInventory();

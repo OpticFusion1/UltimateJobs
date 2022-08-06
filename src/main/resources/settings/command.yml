@@ -11,12 +11,24 @@
 # '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
 
 #
+# <-------- { INFORMATIONS } -------->
+# 
+# You need more Help? Docs -> https://dto.mc-plugins.org
+# Join our Discord -> https://dcto.mc-plugins.org
+# Visit out Website -> https://mc-plugins.org
+#
+
+#
 # Section to disable Commands
 #
 # Put "false" to disable a sub-command
 #
 
 Commands:
+
+  Ranking:
+  
+    Enabled: true
 
   Withdraw:
   

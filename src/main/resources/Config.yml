@@ -10,6 +10,14 @@
 #| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
 # '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'
 
+#
+# <-------- { INFORMATIONS } -------->
+# 
+# You need more Help? Docs -> https://dto.mc-plugins.org
+# Join our Discord -> https://dcto.mc-plugins.org
+# Visit out Website -> https://mc-plugins.org
+#
+
 #Do you want to get a message when there is a new Update?
 CheckForUpdates: true
 
@@ -80,6 +88,12 @@ Format: "0.00"
  
 #can a player get money from mobs which are spawned by a spawner? 
 CanEarnMoneyFromSpawnerMobs: false
+
+#without the ranking gui will not work
+CalculateRanking: true
+
+#1 second is 20 ticks
+CalculateRankingEvery: 100
 
 #does a player needs to confirm again, to leave a job? 
 LeaveJobNeedsToBeConfirmed: true
@@ -234,6 +248,14 @@ Sounds:
     Volume: 1
 
     Pitch: 4
+
+  FINISHED_WORK:
+
+    Sound: "ENTITY_PLAYER_LEVELUP"
+
+    Volume: 1
+
+    Pitch: 2
     
   LEVEL_UP:
 

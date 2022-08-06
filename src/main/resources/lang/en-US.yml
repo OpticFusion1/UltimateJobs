@@ -10,6 +10,14 @@
 #| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
 # '----------------'  '----------------'  '----------------'  '----------------'  '----------------'
 
+#
+# <-------- { INFORMATIONS } -------->
+# 
+# You need more Help? Docs -> https://dto.mc-plugins.org
+# Join our Discord -> https://dcto.mc-plugins.org
+# Visit out Website -> https://mc-plugins.org
+#
+
 #used on /jobs language 
 LanguageName: "english"
 LanguageIcon: "url;http://textures.minecraft.net/texture/b205771bed2586c4f05fdc5938339a711f4eb3f7778d93771794c1ad4bf0091e"
@@ -127,6 +135,14 @@ MaxEarningsReached:
   
 #confog of commands
 Commands:
+
+  Ranking:
+  
+    Usage: "ranking"
+    
+    UsageMessage: "/Jobs ranking <job>"
+    
+    Description: "View the best Players!"
 
   Withdraw:
   
@@ -714,6 +730,140 @@ Rewards_Custom:
   Close:
     
     Display: "&c✖ &7Close Menu &c✖"
+
+# .----------------.  .----------------.  .-----------------. .----------------.  .----------------.  .-----------------. .----------------. 
+#| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
+#| |  _______     | || |      __      | || | ____  _____  | || |  ___  ____   | || |     _____    | || | ____  _____  | || |    ______    | |
+#| | |_   __ \    | || |     /  \     | || ||_   \|_   _| | || | |_  ||_  _|  | || |    |_   _|   | || ||_   \|_   _| | || |  .' ___  |   | |
+#| |   | |__) |   | || |    / /\ \    | || |  |   \ | |   | || |   | |_/ /    | || |      | |     | || |  |   \ | |   | || | / .'   \_|   | |
+#| |   |  __ /    | || |   / ____ \   | || |  | |\ \| |   | || |   |  __'.    | || |      | |     | || |  | |\ \| |   | || | | |    ____  | |
+#| |  _| |  \ \_  | || | _/ /    \ \_ | || | _| |_\   |_  | || |  _| |  \ \_  | || |     _| |_    | || | _| |_\   |_  | || | \ `.___]  _| | |
+#| | |____| |___| | || ||____|  |____|| || ||_____|\____| | || | |____||____| | || |    |_____|   | || ||_____|\____| | || |  `._____.'   | |
+#| |              | || |              | || |              | || |              | || |              | || |              | || |              | |
+#| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
+# '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
+
+#
+# Global Ranking
+# 
+  
+Global_Name: "&6&l① &7Global Ranking &6&l③"
+
+Global_RankingItems:
+
+  OwnSkull:
+  
+    Display: "&6< &7Your own Stats &6>"
+
+    Lore:
+      - "&7Your current Rank &8: &e#<rank>"
+      - "&7"
+      - "&7Points &8: &b<points> Points"
+
+  3:
+  
+    Display: "&7&l③ &7<name> &7&l③"
+
+    Lore:
+      - "&7Rank &8: &7#3"
+      - "&7Points &8: &e<points> &7Points"
+
+  2:
+  
+    Display: "&6&l② &7<name> &6&l②"
+
+    Lore:
+      - "&7Rank &8: &6#2"
+      - "&7Points &8: &e<points> &7Points"
+
+  1:
+  
+    Display: "&b&l① &7<name> &b&l①"
+
+    Lore:
+      - "&7Rank &8: &b#1"
+      - "&7Points &8: &e<points> &7Points"
+ 
+Global_Custom:
+
+  Close:
+    
+    Display: "&c✖ &7Close Menu &c✖"
+
+#
+# Per Job Ranking
+#
+ 
+PerJobRanking_Name: "&6&l① &7Ranking &8- <job> &6&l③"
+
+RankingCategories: 
+
+  Level:
+    Display: "&6< &7Level &6>"
+    
+    Lore:
+      - "&7Sorting: &bHighest reached Level"
+
+  Blocks:
+    Display: "&6< &7Most work in a Job &6>"
+    
+    Lore:
+      - "&7Sorting: &bHighest working Player"
+
+  Today:
+    Display: "&6< &7Earnings of Today &6>"
+    
+    Lore:
+      - "&7Sorting: &bHighest Earnings of Today"
+ 
+PerJobRanking:
+
+  LoreForRanks:
+
+    Level:
+      - "&7Rank &8: &b#<rank>"
+      - "&7Job &8: <job>"
+      - "&7"
+      - "&7Current Level &8: &6<level> "
+
+    Blocks:
+      - "&7Rank &8: &b#<rank>"
+      - "&7Job &8: <job>"
+      - "&7"
+      - "&7Worked Times &8: &6<times> "
+  
+    Today:
+      - "&7Rank &8: &b#<rank>"
+      - "&7Job &8: <job>"
+      - "&7"
+      - "&7Earnings Today &8: &6<earnings> Dollars"
+
+  OwnSkull:
+  
+    Display: "&6< &7Your own Stats &6>"
+
+    Lore:
+      - "&7Your current Rank &8: &e#<rank>"
+      - "&7"
+      - "&7Points &8: &b<points> Points"
+
+  3:
+  
+    Display: "&7&l③ &7<name> &7&l③"
+ 
+  2:
+  
+    Display: "&6&l② &7<name> &6&l②"
+ 
+  1:
+  
+    Display: "&b&l① &7<name> &b&l①"
+ 
+PerJobRanking_Custom:
+
+  Close:
+    
+    Display: "&c✖ &7Close Menu &c✖" 
     
 # .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
 # .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
@@ -3626,7 +3776,7 @@ Jobs:
     
     Lore:
       - "&7Earn Money when breaking blocks!"
-    
+ 
     Stats:
       - "&7"
       - "&aStats&8:"

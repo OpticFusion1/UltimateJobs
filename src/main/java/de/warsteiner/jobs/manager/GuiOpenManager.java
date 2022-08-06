@@ -135,6 +135,49 @@ public class GuiOpenManager {
 		}
 		return null;
 	}
+	
+	public Job isRankingJobMenu(Player player, String title) {
+		FileConfiguration cfg = plugin.getFileManager().getRankingPerJobConfig();
+		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
+		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
+
+			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.JOB_RANKING)) {
+
+				Job j = plugin.getGUI().getGUIsJobs().get(sp.getUUIDAsString());
+				String dis = j.getDisplay(sp.getUUIDAsString());
+				String named = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("PerJobRanking_Name"));
+				String fin = plugin.getPluginManager().toHex(named.replaceAll("<job>", dis).replaceAll("&", "§"));
+
+				if (fin.equalsIgnoreCase(title)) {
+					return j;
+				}
+
+			}
+
+		}
+		return null;
+	}
+	
+	public Job isGlobalRankingMenu(Player player, String title) {
+		FileConfiguration cfg = plugin.getFileManager().getRankingGlobalConfig();
+		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
+		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
+
+			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.GLOBAL_RANKING)) {
+
+				Job j = plugin.getGUI().getGUIsJobs().get(sp.getUUIDAsString()); 
+				String named = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("GlobalRanking_Name"));
+				String fin = plugin.getPluginManager().toHex(named.replaceAll("&", "§"));
+
+				if (fin.equalsIgnoreCase(title)) {
+					return j;
+				}
+
+			}
+
+		}
+		return null;
+	}
 
 	public String isHelpOpend(Player player, String title) {
 		FileConfiguration cfg = plugin.getFileManager().getHelpSettings();
@@ -425,10 +468,26 @@ public class GuiOpenManager {
 				}
 				b = true;
 				addon.createEarningsGUI_Single_Job(player, UpdateTypes.OPEN, job);
+			} else if (type.equals(GUIType.JOB_RANKING)) {
+
+				if (job == null) {
+					if (sender instanceof Player) {
+						Player player3 = (Player) sender;
+						player3.playSound(player3.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 2);
+					}
+					sender.sendMessage(AdminCommand.prefix + "Missing Element: Job");
+					return;
+				}
+				b = true;
+				addon.createJobRankingGUI(player, UpdateTypes.OPEN, job);
 			} else if (type.equals(GUIType.WITHDRAW)) {
 
 				b = true;
 				addon.createWithdrawMenu(player, UpdateTypes.OPEN);
+			}  else if (type.equals(GUIType.GLOBAL_RANKING)) {
+
+				b = true;
+				addon.createGlobalRankingGUI(player, UpdateTypes.OPEN);
 			}
 			if (b) {
 				if (y) {

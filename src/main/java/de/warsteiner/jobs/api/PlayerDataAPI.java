@@ -28,7 +28,7 @@ public class PlayerDataAPI {
 		SQLStatementAPI s = UltimateJobs.getPlugin().getSQLStatementAPI();
 		UltimateJobs.getPlugin().getExecutor().execute(() -> {
 
-			s.executeUpdate("CREATE TABLE IF NOT EXISTS playerlist (UUID varchar(200), NAME varchar(200))");
+			s.executeUpdate("CREATE TABLE IF NOT EXISTS playerlist (UUID varchar(200), NAME varchar(200), DISPLAY varchar(200))");
 			s.executeUpdate(
 					"CREATE TABLE IF NOT EXISTS playersettings (UUID varchar(200), TYPE varchar(200), MODE varchar(200))");
 
@@ -526,12 +526,13 @@ public class PlayerDataAPI {
 
 		}
 	}
+	
 
-	public void updateUUID(String UUID, String name) {
+	public void updateDisplay(String UUID, String name) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
 
-			final String insertQuery = "UPDATE `playerlist` SET `UUID`='" + UUID + "' WHERE NAME='" + name + "'";
+			final String insertQuery = "UPDATE `playerlist` SET `DISPLAY`='" + name + "' WHERE UUID='" + UUID + "'";
 			mg.executeUpdate(insertQuery);
 
 		} else if (mode.equalsIgnoreCase("YML")) {
@@ -539,7 +540,7 @@ public class PlayerDataAPI {
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
-			cfg.set("Fetcher." + name.toUpperCase() + ".UUID", UUID);
+			cfg.set("Fetcher." + UUID + ".Name", name);
 			try {
 				cfg.save(file);
 			} catch (IOException e) {
@@ -548,7 +549,7 @@ public class PlayerDataAPI {
 
 		}
 	}
-
+ 
 	public int getPageFromID(String UUID, String id) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
@@ -701,20 +702,20 @@ public class PlayerDataAPI {
 		}
 	}
 
-	public void addPlayerToPlayersList(String UUID, String name) {
+	public void addPlayerToPlayersList(String UUID, String name, String dis) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
 
-			final String insertQuery = "INSERT INTO playerlist(UUID,NAME) VALUES(?,?)";
+			final String insertQuery = "INSERT INTO playerlist(UUID,NAME,DISPLAY) VALUES(?,?,?)";
 			mg.executeUpdate(insertQuery, ps -> {
 				ps.setString(1, UUID);
 				ps.setString(2, name);
-
+				ps.setString(3, dis);
 			});
 
 		} else if (mode.equalsIgnoreCase("YML")) {
 
-			List<String> list = getPlayerList();
+			List<String> list = getAllPlayers();
 
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
@@ -724,6 +725,7 @@ public class PlayerDataAPI {
 			cfg.set("Players", list);
 			cfg.set("Fetcher." + name.toUpperCase() + ".UUID", UUID);
 			cfg.set("Fetcher." + UUID + ".Name", name.toUpperCase());
+			cfg.set("Fetcher." + UUID + ".Display", dis);
 			try {
 				cfg.save(file);
 			} catch (IOException e) {
@@ -733,9 +735,30 @@ public class PlayerDataAPI {
 		}
 	}
 
-	public List<String> getPlayerList() {
-		FileConfiguration cfg = plugin.getPlayerDataFile().get();
-		return cfg.getStringList("Players");
+	public List<String> getAllPlayers() {
+		
+		String mode = UltimateJobs.getPlugin().getPluginMode();
+	 
+		if (mode.equalsIgnoreCase("SQL")) {
+			
+			Collection<String> jobs = new ArrayList<String>();
+			mg.executeQuery("SELECT * FROM playerlist", rs -> {
+
+				while (rs.next()) {
+					jobs.add(rs.getString("UUID"));
+				}
+
+				return 1;
+			});
+
+			return (ArrayList<String>) jobs;
+			
+		} else {
+
+			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			return cfg.getStringList("Players");
+			
+		} 
 	}
 
 	public void addOnePageFromID(String UUID, String id) {
@@ -779,6 +802,27 @@ public class PlayerDataAPI {
 		return null;
 	}
 
+	public String getDisplayByUUID(String UUID) {
+		String mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equalsIgnoreCase("SQL")) {
+
+			AtomicReference<String> a = new AtomicReference<String>();
+
+			mg.executeQuery("SELECT * FROM playerlist WHERE UUID= '" + UUID + "'", rs -> {
+				if (rs.next()) {
+					a.set(rs.getString("DISPLAY"));
+				}
+				return 0;
+			});
+			return a.get();
+
+		} else if (mode.equalsIgnoreCase("YML")) {
+			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			return cfg.getString("Fetcher." + UUID + ".Display");
+		}
+		return null;
+	}
+	
 	public String getNameByUUID(String UUID) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {

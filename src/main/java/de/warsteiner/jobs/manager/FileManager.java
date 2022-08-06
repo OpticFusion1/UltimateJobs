@@ -65,6 +65,15 @@ public class FileManager {
 	private  FileConfiguration cleave;
 	private  File cleave_file;
 	
+	private  FileConfiguration utils;
+	private  File utils_file;
+	
+	private  FileConfiguration globalc;
+	private  File globalc_file;
+	
+	private  FileConfiguration jobr;
+	private  File jobr_file;
+	
 	//"es-ES","fr-FR","nl-NL","tr-TR", "de-DE","de-BAR"
 	private List<String> defaultlanguages = Arrays.asList("en-US");
 	private List<String> defaultjobs = Arrays.asList("Miner","Lumberjack","FarmGrow","Digger", "Killer","Fishman","Milkman"
@@ -87,42 +96,22 @@ public class FileManager {
 		createWithFile();
 		createWithConfirmFile();
 		createLeaveConfirmFile();
+		createUtilsFile();
+	 
  
 		//addons
 		createAddonStatsFiles();
 		createAddonRewardsFiles(); 
 		createEarningsAllFile();
-		
+		createGlobalRankingFile();
+		createRankingPerJobFile();
 		if(d) {
 			UltimateJobs.getPlugin().getLanguageAPI().loadLanguages();
 		}
 		
 		return true;
 	}
-	
-	public  void reloadAllFiles() {
-		try {
-			gui = YamlConfiguration.loadConfiguration(gui_file);
-			cfg = YamlConfiguration.loadConfiguration(cfg_file);
-			cmd = YamlConfiguration.loadConfiguration(cmd_file);
-			help = YamlConfiguration.loadConfiguration(help_file);
-			settings = YamlConfiguration.loadConfiguration(settings_file);
-			confirm = YamlConfiguration.loadConfiguration(confirm_file);
-			stats = YamlConfiguration.loadConfiguration(stats_file);
-			rewards = YamlConfiguration.loadConfiguration(rewards_file); 
-			levels = YamlConfiguration.loadConfiguration(levels_file); 
-			earnings_all = YamlConfiguration.loadConfiguration(earnings_all_file); 
-			earnings_job = YamlConfiguration.loadConfiguration(earnings_job_file); 
-			lang = YamlConfiguration.loadConfiguration(lang_file); 
-			data = YamlConfiguration.loadConfiguration(data_file); 
-			langg = YamlConfiguration.loadConfiguration(langg_file); 
-			with = YamlConfiguration.loadConfiguration(with_file); 
-			withc = YamlConfiguration.loadConfiguration(withc_file); 
-		} catch(Exception ex) {
-			ex.printStackTrace(); 
-		}
-	}
-	
+ 
 	public void createDefaultJobs() { 
 		for(String b : defaultjobs) {
 			File f = new File(UltimateJobs.getPlugin().getDataFolder(), "jobs" + File.separatorChar + b+".yml");
@@ -284,6 +273,81 @@ public class FileManager {
 	
 	public  File getLeaveConfirmFile() {
 		return cleave_file;
+	}
+	
+	public  FileConfiguration getUtilsConfig() {
+		return utils;
+	}
+	
+	public  File getUtilsFile() {
+		return utils_file;
+	}
+	
+	public  FileConfiguration getRankingGlobalConfig() {
+		return globalc;
+	}
+	
+	public  File getGlobalRankingFile() {
+		return globalc_file;
+	}
+	
+	public  FileConfiguration getRankingPerJobConfig() {
+		return jobr;
+	}
+	
+	public  File getRankingPerJobFile() {
+		return jobr_file;
+	}
+	
+	public boolean createRankingPerJobFile() {
+		jobr_file = new File(UltimateJobs.getPlugin().getDataFolder(), "addons" + File.separatorChar + "ranking_per_job.yml");
+        if (!jobr_file.exists()) {
+        	jobr_file.getParentFile().mkdirs();
+        	UltimateJobs.getPlugin().saveResource("addons" + File.separatorChar + "ranking_per_job.yml", true);
+        }
+        
+        jobr = new YamlConfiguration();
+        try {
+        	jobr.load(jobr_file);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+	}
+	
+	public boolean createGlobalRankingFile() {
+		globalc_file = new File(UltimateJobs.getPlugin().getDataFolder(), "addons" + File.separatorChar + "ranking_global.yml");
+        if (!globalc_file.exists()) {
+        	globalc_file.getParentFile().mkdirs();
+        	UltimateJobs.getPlugin().saveResource("addons" + File.separatorChar + "ranking_global.yml", true);
+        }
+        
+        globalc = new YamlConfiguration();
+        try {
+        	globalc.load(globalc_file);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+	}
+	
+	public boolean createUtilsFile() {
+		utils_file = new File(UltimateJobs.getPlugin().getDataFolder(), "settings" + File.separatorChar + "utils.yml");
+        if (!utils_file.exists()) {
+        	utils_file.getParentFile().mkdirs();
+        	UltimateJobs.getPlugin().saveResource("settings" + File.separatorChar + "utils.yml", true);
+        }
+        
+        utils = new YamlConfiguration();
+        try {
+        	utils.load(utils_file);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
 	}
 	
 	public boolean createLeaveConfirmFile() {
