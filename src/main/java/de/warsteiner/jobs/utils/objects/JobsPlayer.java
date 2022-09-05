@@ -178,6 +178,11 @@ public class JobsPlayer {
 	}
 
 	public ArrayList<String> getOwnJobs() {
+		
+		if(owned == null) {
+			return new ArrayList<String>();
+		}
+		
 		return owned;
 	}
 

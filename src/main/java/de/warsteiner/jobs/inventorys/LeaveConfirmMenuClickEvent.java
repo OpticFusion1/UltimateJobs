@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.api.Job;
+import de.warsteiner.jobs.utils.cevents.PlayerQuitJobEvent;
 import de.warsteiner.jobs.utils.cevents.PlayerWithdrawMoneyEvent;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
 import de.warsteiner.jobs.utils.objects.UpdateTypes;
@@ -67,15 +68,26 @@ public class LeaveConfirmMenuClickEvent implements Listener {
 
 			if (display.equalsIgnoreCase(dis_1)) {
 
-				plugin.getAPI().playSound("LEAVE_SINGLE", p);
-				plugin.getClickManager().updateSalaryOnLeave(p, jb);
-				jb.remCurrentJob(job.getConfigID());
+				if(job.getConfig().getBoolean("CannotLeaveJob")) {
+					plugin.getAPI().playSound("CANNOT_LEAVE_JOB", p); 
+				} else {
+					plugin.getAPI().playSound("LEAVE_SINGLE", p);
+					plugin.getClickManager().updateSalaryOnLeave(p, jb);
+					
+					PlayerQuitJobEvent event = new PlayerQuitJobEvent(p, jb, job);
+					
+					plugin.getClickManager().OptionalJobQuit(event);
+					
+					jb.remCurrentJob(job.getConfigID());
 
-				plugin.getGUI().createMainGUIOfJobs(p, UpdateTypes.REOPEN);
+					plugin.getGUI().createMainGUIOfJobs(p, UpdateTypes.REOPEN);
 
-				if(plugin.getFileManager().getConfig().getBoolean("SendMessageOnLeave") ) {
-					p.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Left_Job")
-							.replaceAll("<job>", job.getDisplay("" + p.getUniqueId()))); 
+					if(plugin.getFileManager().getConfig().getBoolean("SendMessageOnLeave") ) {
+						p.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Left_Job")
+								.replaceAll("<job>", job.getDisplay("" + p.getUniqueId()))); 
+				}
+				
+			 
 				}
 				 
 			} else if (display.equalsIgnoreCase(dis_2)) {

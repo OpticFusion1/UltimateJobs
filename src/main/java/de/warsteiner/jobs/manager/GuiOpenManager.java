@@ -1,5 +1,7 @@
 package de.warsteiner.jobs.manager;
 
+import java.util.ArrayList;
+
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -8,6 +10,7 @@ import org.bukkit.entity.Player;
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.api.Job;
 import de.warsteiner.jobs.command.AdminCommand;
+import de.warsteiner.jobs.utils.objects.AdminCommandOptions;
 import de.warsteiner.jobs.utils.objects.GUIType;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
 import de.warsteiner.jobs.utils.objects.UpdateTypes;
@@ -331,7 +334,7 @@ public class GuiOpenManager {
 		return null;
 	}
 
-	public void openGuiByGuiID(CommandSender sender, GUIType type, Player player, Job job, String about, boolean y) {
+	public void openGuiByGuiID(CommandSender sender, GUIType type, Player player, Job job, String about, boolean y, ArrayList<AdminCommandOptions> options) {
 		GuiManager gui = plugin.getGUI();
 		GuiAddonManager addon = plugin.getGUIAddonManager();
 
@@ -491,12 +494,15 @@ public class GuiOpenManager {
 			}
 			if (b) {
 				if (y) {
-					if (job == null) {
-						sender.sendMessage(AdminCommand.prefix + "Opend GUI §e" + type + " §7for Player §c"
-								+ player.getName() + "§7!");
-					} else {
-						sender.sendMessage(AdminCommand.prefix + "Opend GUI §e" + type + " §7for Player §c"
-								+ player.getName() + "§7! §8(§7Job: §b" + job.getConfigID() + "§8)");
+					
+					if(!options.contains(AdminCommandOptions.SILENT)) {
+						if (job == null) {
+							sender.sendMessage(AdminCommand.prefix + "Opend GUI §e" + type + " §7for Player §c"
+									+ player.getName() + "§7!");
+						} else {
+							sender.sendMessage(AdminCommand.prefix + "Opend GUI §e" + type + " §7for Player §c"
+									+ player.getName() + "§7! §8(§7Job: §b" + job.getConfigID() + "§8)");
+						}
 					}
 
 					if (sender instanceof Player) {

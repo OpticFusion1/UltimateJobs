@@ -4,6 +4,14 @@ Action:
 ID: "MINER"
 
 Material: "IRON_PICKAXE"
+ 
+Commands:
+
+  Join: 
+    - "say <name> just joined the Job <job>! (Example Command)"
+    
+  Quit:
+    - "say <name> just left the Job <job>! (Example Command)"
 
 ColorOfBossBar: "GREEN"
 

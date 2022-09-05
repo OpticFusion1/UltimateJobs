@@ -2,11 +2,12 @@ package de.warsteiner.jobs.api;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import de.warsteiner.jobs.UltimateJobs;
+import de.warsteiner.jobs.UltimateJobs; 
 import de.warsteiner.jobs.manager.PluginManager;
 import de.warsteiner.jobs.utils.cevents.PlayerLevelJobEvent;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
@@ -50,6 +51,30 @@ public class LevelAPI {
 		}
 		return false;
 	}
+	
+
+	public void levelPlayerUP(PlayerLevelJobEvent event) {
+		Player player = event.getPlayer();
+		FileConfiguration config = UltimateJobs.getPlugin().getFileManager().getConfig();
+
+		JobsPlayer jb = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
+
+		String me = jb.getLanguage().getStringFromLanguage(player.getUniqueId(), "Levels.BoardCastMessage");
+		UltimateJobs.getPlugin().getAPI().playSound("LEVEL_UP", player);
+
+		Job job = event.getJob();
+		String name = player.getName();
+
+		if (config.getBoolean("Levels.FireWork")) {
+			UltimateJobs.getPlugin().getAPI().spawnFireworks(player.getLocation());
+		}
+		if (config.getBoolean("Levels.BroadCastLevelUps")) {
+			Bukkit.broadcastMessage(plugin.getPluginManager().toHex(me).replaceAll("<level>", "" + event.getNewLevel())
+					.replaceAll("<job>", job.getDisplay("" + player.getUniqueId())).replaceAll("<name>", name)
+					.replaceAll("&", "§"));
+		}
+	}
+
 
 	@SuppressWarnings("deprecation")
 	public void check(Player player, Job job, JobsPlayer pl, String block) {
@@ -82,7 +107,9 @@ public class LevelAPI {
 
 							new BukkitRunnable() {
 								public void run() {
-									new PlayerLevelJobEvent(player, pl, job, new_level);
+									PlayerLevelJobEvent e = new PlayerLevelJobEvent(player, pl, job, new_level);
+									
+									levelPlayerUP(e);
 								}
 							}.runTaskLater(plugin, 1);
 

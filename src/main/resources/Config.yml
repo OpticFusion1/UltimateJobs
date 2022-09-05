@@ -26,10 +26,7 @@ CreateBackupsOfFiles: false
 
 #Choose a Folder where the jobs get loaded from
 LoadJobsFrom: "plugins/UltimateJobs/jobs/"
-
-#UltimateJobs does not support any type of reload, thats why people on reload get kicked, to complete save that data
-KickOnReload: true
-
+ 
 #loads the data of the last 90 days
 LoadEarningsDataOfDays: 90
 

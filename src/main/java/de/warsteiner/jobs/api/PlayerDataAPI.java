@@ -28,7 +28,8 @@ public class PlayerDataAPI {
 		SQLStatementAPI s = UltimateJobs.getPlugin().getSQLStatementAPI();
 		UltimateJobs.getPlugin().getExecutor().execute(() -> {
 
-			s.executeUpdate("CREATE TABLE IF NOT EXISTS playerlist (UUID varchar(200), NAME varchar(200), DISPLAY varchar(200))");
+			s.executeUpdate(
+					"CREATE TABLE IF NOT EXISTS playerlist (UUID varchar(200), NAME varchar(200), DISPLAY varchar(200))");
 			s.executeUpdate(
 					"CREATE TABLE IF NOT EXISTS playersettings (UUID varchar(200), TYPE varchar(200), MODE varchar(200))");
 
@@ -54,22 +55,21 @@ public class PlayerDataAPI {
 			s.executeUpdate(
 					"CREATE TABLE IF NOT EXISTS job_dates_joined (UUID varchar(200), JOBID varchar(200), DATE varchar(200))");
 
-			s.executeUpdate(
-					"CREATE TABLE IF NOT EXISTS jobs_earnings_storage (UUID varchar(200),  AMOUNT double)");
-		
+			s.executeUpdate("CREATE TABLE IF NOT EXISTS jobs_earnings_storage (UUID varchar(200),  AMOUNT double)");
+
 			s.executeUpdate(
 					"CREATE TABLE IF NOT EXISTS jobs_earnings_storage_dates (UUID varchar(200), CDATE varchar(200))");
 		});
 	}
-	
+
 	public void updateSalaryDate(String UUID, String date) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
 
 			if (existSalary(UUID)) {
 
-				final String insertQuery = "UPDATE `jobs_earnings_storage_dates` SET `CDATE`='" + date + "' WHERE UUID='" + UUID
-						+ "'";
+				final String insertQuery = "UPDATE `jobs_earnings_storage_dates` SET `CDATE`='" + date
+						+ "' WHERE UUID='" + UUID + "'";
 				mg.executeUpdate(insertQuery);
 
 			} else {
@@ -94,20 +94,19 @@ public class PlayerDataAPI {
 
 		}
 	}
-	
+
 	public String getSalaryDate(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();  
+		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
-			mg.executeQuery("SELECT * FROM jobs_earnings_storage_dates WHERE UUID= '" + UUID + "'",
-					rs -> {
-						if (rs.next()) {
-							a.set(rs.getString("CDATE"));
-						}
-						return 0;
-					});
+			mg.executeQuery("SELECT * FROM jobs_earnings_storage_dates WHERE UUID= '" + UUID + "'", rs -> {
+				if (rs.next()) {
+					a.set(rs.getString("CDATE"));
+				}
+				return 0;
+			});
 			return a.get();
 
 		} else if (mode.equalsIgnoreCase("YML")) {
@@ -119,7 +118,6 @@ public class PlayerDataAPI {
 		}
 		return null;
 	}
-	
 
 	public boolean existSalaryDate(String UUID) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
@@ -127,29 +125,21 @@ public class PlayerDataAPI {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
-			mg.executeQuery("SELECT * FROM jobs_earnings_storage_dates WHERE UUID= '" + UUID + "'",
-					rs -> {
-						if (rs.next()) {
-							a.set(rs.getString("CDATE"));
-						}
-						return 1;
-					});
+			mg.executeQuery("SELECT * FROM jobs_earnings_storage_dates WHERE UUID= '" + UUID + "'", rs -> {
+				if (rs.next()) {
+					a.set(rs.getString("CDATE"));
+				}
+				return 1;
+			});
 			return a.get() != null;
 
-		} else if(mode.equalsIgnoreCase("YML")) {
+		} else if (mode.equalsIgnoreCase("YML")) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.contains("CDATE." + UUID);
 		}
 		return false;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
 	public double getSalary(String UUID) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (!existSalary(UUID)) {
@@ -159,13 +149,12 @@ public class PlayerDataAPI {
 
 			AtomicDouble a = new AtomicDouble();
 
-			mg.executeQuery("SELECT * FROM jobs_earnings_storage WHERE UUID= '" + UUID + "'",
-					rs -> {
-						if (rs.next()) {
-							a.set(rs.getDouble("AMOUNT"));
-						}
-						return 0;
-					});
+			mg.executeQuery("SELECT * FROM jobs_earnings_storage WHERE UUID= '" + UUID + "'", rs -> {
+				if (rs.next()) {
+					a.set(rs.getDouble("AMOUNT"));
+				}
+				return 0;
+			});
 			return a.get();
 
 		} else if (mode.equalsIgnoreCase("YML")) {
@@ -177,15 +166,15 @@ public class PlayerDataAPI {
 		}
 		return 0.0;
 	}
-	
+
 	public void updateSalary(String UUID, double sal) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
 
 			if (existSalary(UUID)) {
 
-				final String insertQuery = "UPDATE `jobs_earnings_storage` SET `AMOUNT`='" + sal + "' WHERE UUID='" + UUID
-						+ "'";
+				final String insertQuery = "UPDATE `jobs_earnings_storage` SET `AMOUNT`='" + sal + "' WHERE UUID='"
+						+ UUID + "'";
 				mg.executeUpdate(insertQuery);
 
 			} else {
@@ -210,30 +199,27 @@ public class PlayerDataAPI {
 
 		}
 	}
-	
+
 	public boolean existSalary(String UUID) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
-			mg.executeQuery("SELECT * FROM jobs_earnings_storage WHERE UUID= '" + UUID + "'",
-					rs -> {
-						if (rs.next()) {
-							a.set(rs.getString("UUID"));
-						}
-						return 1;
-					});
+			mg.executeQuery("SELECT * FROM jobs_earnings_storage WHERE UUID= '" + UUID + "'", rs -> {
+				if (rs.next()) {
+					a.set(rs.getString("UUID"));
+				}
+				return 1;
+			});
 			return a.get() != null;
 
-		} else if(mode.equalsIgnoreCase("YML")) {
+		} else if (mode.equalsIgnoreCase("YML")) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.contains("Salary." + UUID);
 		}
 		return false;
 	}
-	
-	
 
 	public String getJobDateJoined(String UUID, String job) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
@@ -312,7 +298,7 @@ public class PlayerDataAPI {
 					});
 			return a.get() != null;
 
-		} else if(mode.equalsIgnoreCase("YML")) {
+		} else if (mode.equalsIgnoreCase("YML")) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.contains("JobDates." + UUID + ".Job." + job);
 		}
@@ -526,7 +512,6 @@ public class PlayerDataAPI {
 
 		}
 	}
-	
 
 	public void updateDisplay(String UUID, String name) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
@@ -549,7 +534,7 @@ public class PlayerDataAPI {
 
 		}
 	}
- 
+
 	public int getPageFromID(String UUID, String id) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
@@ -736,11 +721,11 @@ public class PlayerDataAPI {
 	}
 
 	public List<String> getAllPlayers() {
-		
+
 		String mode = UltimateJobs.getPlugin().getPluginMode();
-	 
+
 		if (mode.equalsIgnoreCase("SQL")) {
-			
+
 			Collection<String> jobs = new ArrayList<String>();
 			mg.executeQuery("SELECT * FROM playerlist", rs -> {
 
@@ -752,13 +737,13 @@ public class PlayerDataAPI {
 			});
 
 			return (ArrayList<String>) jobs;
-			
+
 		} else {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.getStringList("Players");
-			
-		} 
+
+		}
 	}
 
 	public void addOnePageFromID(String UUID, String id) {
@@ -822,7 +807,7 @@ public class PlayerDataAPI {
 		}
 		return null;
 	}
-	
+
 	public String getNameByUUID(String UUID) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
@@ -1057,11 +1042,12 @@ public class PlayerDataAPI {
 
 		}
 	}
-	
+
 	public void updateExp(String UUID, double d, String job) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
-			final String insertQuery = "UPDATE `job_stats` SET `EXP`='" + d + "' WHERE UUID='" + UUID + "' AND JOB`='"+job+"'";
+			final String insertQuery = "UPDATE `job_stats` SET `EXP`='" + d + "' WHERE UUID='" + UUID + "' AND JOB`='"
+					+ job + "'";
 			mg.executeUpdate(insertQuery);
 		} else if (mode.equalsIgnoreCase("YML")) {
 
@@ -1079,8 +1065,6 @@ public class PlayerDataAPI {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
 
-			mg.executeUpdate("DELETE FROM job_stats WHERE UUID='" + UUID + "';");
-			mg.executeUpdate("DELETE FROM job_players WHERE UUID='" + UUID + "';");
 			mg.executeUpdate("DELETE FROM job_current WHERE UUID='" + UUID + "';");
 
 			Collection<String> current = pl.getCurrentJobs();
@@ -1088,25 +1072,34 @@ public class PlayerDataAPI {
 			int max = pl.getMaxJobs();
 			double points = pl.getPoints();
 
-			final String insertQuery_player = "INSERT INTO job_players(UUID,DATE,POINTS,MAX) VALUES(?,?,?,?)";
-			mg.executeUpdate(insertQuery_player, ps -> {
-				ps.setString(1, UUID);
-				ps.setString(2, UltimateJobs.getPlugin().getDate());
-				ps.setDouble(3, points);
-				ps.setInt(4, max);
+			String dated = UltimateJobs.getPlugin().getDate();
+			
+			//updating player stats
 
-			});
+			if (dated != null) {
+				final String insertQuery = "UPDATE `job_players` SET `DATE`='" + dated + "' WHERE UUID='" + UUID + "'";
+				mg.executeUpdate(insertQuery);
+			}
+
+			final String insertQuery_points = "UPDATE `job_players` SET `POINTS`='" + points + "' WHERE UUID='" + UUID
+					+ "'";
+			mg.executeUpdate(insertQuery_points);
+
+			final String insertQuery_max = "UPDATE `job_players` SET `MAX`='" + max + "' WHERE UUID='" + UUID + "'";
+			mg.executeUpdate(insertQuery_max);
+
+			//updating salary
 			
 			double sal = pl.getSalary();
-			
+
 			String sat = pl.getSalaryDate();
-			
-			updateSalaryDate(""+UUID, sat);
-			
+
+			updateSalaryDate("" + UUID, sat);
+
 			if (existSalary(UUID)) {
 
-				final String insertQuery = "UPDATE `jobs_earnings_storage` SET `AMOUNT`='" + sal + "' WHERE UUID='" + UUID
-						+ "'";
+				final String insertQuery = "UPDATE `jobs_earnings_storage` SET `AMOUNT`='" + sal + "' WHERE UUID='"
+						+ UUID + "'";
 				mg.executeUpdate(insertQuery);
 
 			} else {
@@ -1117,7 +1110,7 @@ public class PlayerDataAPI {
 				});
 			}
 
-			final String insertQuery = "INSERT INTO job_stats(UUID,JOB,DATE,LEVEL,EXP,BROKEN) VALUES(?,?,?,?,?,?)";
+		//	final String insertQuery = "INSERT INTO job_stats(UUID,JOB,DATE,LEVEL,EXP,BROKEN) VALUES(?,?,?,?,?,?)";
 
 			for (String job : owned) {
 
@@ -1129,28 +1122,34 @@ public class PlayerDataAPI {
 
 					updateEarnings(UUID, job, key, value);
 				});
-				
+
 				plugin.getPlayerChunkAPI().savePlayerChunks(UUID, j);
 
 				int level = stats.getLevel();
 				double exp = stats.getExp();
 				int broken = stats.getBrokenTimes();
 				String date = stats.getDate();
-				 
+
 				String jd = stats.getJoinedDate();
 
-				updateDateJoinedOfJob(UUID, job, jd); 
+				updateDateJoinedOfJob(UUID, job, jd);
 				
-				mg.executeUpdate(insertQuery, ps -> {
-					ps.setString(1, UUID);
-					ps.setString(2, job);
-					ps.setString(3, date);
-					ps.setInt(4, level);
-					ps.setDouble(5, exp);
-					ps.setInt(6, broken);
+				final String insertQuery_date = "UPDATE `job_stats` SET `DATE`='" + date + "' WHERE UUID='"
+						+ UUID + "' AND JOB='"+j.getConfigID()+"'";
+				mg.executeUpdate(insertQuery_date);
 
-				});
-
+				final String insertQuery_level = "UPDATE `job_stats` SET `LEVEL`='" + level + "' WHERE UUID='"
+						+ UUID + "' AND JOB='"+j.getConfigID()+"'";
+				mg.executeUpdate(insertQuery_level);
+				
+				final String insertQuery_exp = "UPDATE `job_stats` SET `EXP`='" + exp + "' WHERE UUID='"
+						+ UUID + "' AND JOB='"+j.getConfigID()+"'";
+				mg.executeUpdate(insertQuery_exp);
+				
+				final String insertQuery_br = "UPDATE `job_stats` SET `BROKEN`='" + broken + "' WHERE UUID='"
+						+ UUID + "' AND JOB='"+j.getConfigID()+"'";
+				mg.executeUpdate(insertQuery_br);
+			 
 				for (JobAction action : j.getActionList()) {
 
 					stats.getBrokenList().forEach((key, value) -> {
@@ -1190,11 +1189,11 @@ public class PlayerDataAPI {
 			int max = pl.getMaxJobs();
 			double points = pl.getPoints();
 			double sal = pl.getSalary();
-			
+
 			String sat = pl.getSalaryDate();
-			
-			updateSalaryDate(""+UUID, sat);
-			
+
+			updateSalaryDate("" + UUID, sat);
+
 			cfg.set("Player." + UUID + ".Points", points);
 			cfg.set("Player." + UUID + ".Date", plugin.getDate());
 			cfg.set("Player." + UUID + ".Max", max);
@@ -1223,7 +1222,7 @@ public class PlayerDataAPI {
 				cfg.set("Jobs." + UUID + "." + job + ".Exp", exp);
 
 				newowned.add(job);
-				
+
 				plugin.getPlayerChunkAPI().savePlayerChunks(UUID, j);
 
 				for (JobAction action : j.getActionList()) {

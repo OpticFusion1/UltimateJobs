@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
  
 import de.warsteiner.jobs.UltimateJobs; 
 import de.warsteiner.jobs.utils.admincommand.AdminSubCommand;
+import de.warsteiner.jobs.utils.objects.AdminCommandOptions;
 import de.warsteiner.jobs.utils.objects.GUIType;
 import de.warsteiner.jobs.utils.objects.Language; 
 
@@ -58,7 +59,11 @@ public class AdminTabComplete implements TabCompleter {
 									for(Language lang : plugin.getLanguageAPI().getLoadedLanguagesAsArray()) {
 										l.add(lang.getName()); 
 									};
-								}
+								} else if (type.equalsIgnoreCase("OPTIONS")) {
+									for(AdminCommandOptions k : AdminCommandOptions.values()) {
+										l.add(k.toString().toLowerCase()); 
+									};
+								} 
 
 							}
 						}

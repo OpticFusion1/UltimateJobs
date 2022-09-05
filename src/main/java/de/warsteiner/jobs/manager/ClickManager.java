@@ -6,7 +6,9 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import de.warsteiner.jobs.UltimateJobs;
@@ -14,6 +16,7 @@ import de.warsteiner.jobs.api.Job;
 import de.warsteiner.jobs.api.JobAPI;
 import de.warsteiner.jobs.command.AdminCommand;
 import de.warsteiner.jobs.utils.cevents.PlayerJoinJobEvent;
+import de.warsteiner.jobs.utils.cevents.PlayerQuitJobEvent;
 import de.warsteiner.jobs.utils.objects.GUIType;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
 import de.warsteiner.jobs.utils.objects.Language;
@@ -102,7 +105,7 @@ public class ClickManager {
 							GUIType fin = GUIType.valueOf(gui.toUpperCase());
 
 							UltimateJobs.getPlugin().getGUIOpenManager().openGuiByGuiID(player, fin, player, job,
-									about,false);
+									about,false,null);
 
 						} else if (action.equalsIgnoreCase("LEAVE")) {
 							
@@ -114,23 +117,49 @@ public class ClickManager {
 							if(plugin.getFileManager().getConfig().getBoolean("LeaveJobNeedsToBeConfirmed")) {
 								plugin.getGUIAddonManager().createLeaveConfirmGUI(player, UpdateTypes.OPEN, job);
 							} else {
-								api.playSound("LEAVE_SINGLE", player);
-								updateSalaryOnLeave(player, jb);
-								jb.remCurrentJob(job.getConfigID());
+								
+								if(job.getConfig().getBoolean("CannotLeaveJob")) {
+									api.playSound("CANNOT_LEAVE_JOB", player); 
+									if(job.getConfig().getString("CannotLeaveJobMessage") != null) {
+										player.sendMessage(jb.getLanguage().getStringFromPath(jb.getUUID(), job.getConfig().getString("CannotLeaveJobMessage"))
+												.replaceAll("<job>", job.getDisplay("" + player.getUniqueId()))); 
+									}
+								} else {
+									api.playSound("LEAVE_SINGLE", player);
+									 
+									updateSalaryOnLeave(player, jb);
+									jb.remCurrentJob(job.getConfigID());
+									
+									PlayerQuitJobEvent event = new PlayerQuitJobEvent(player, jb, job);
+									
+									OptionalJobQuit(event);
 
-								plugin.getGUI().createMainGUIOfJobs(player, UpdateTypes.REOPEN);
+									plugin.getGUI().createMainGUIOfJobs(player, UpdateTypes.REOPEN);
 
-								if(plugin.getFileManager().getConfig().getBoolean("SendMessageOnLeave") ) {
-									player.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Left_Job")
-											.replaceAll("<job>", job.getDisplay("" + player.getUniqueId()))); 
+									if(plugin.getFileManager().getConfig().getBoolean("SendMessageOnLeave") ) {
+										player.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Left_Job")
+												.replaceAll("<job>", job.getDisplay("" + player.getUniqueId()))); 
+									}
 								}
+								
+								 
 							}
 							 
 						}  else if (action.equalsIgnoreCase("LEAVEALL")) {
 							if (jb.getCurrentJobs().size() >= 1) {
+								
 								updateSalaryOnLeave(player, jb);
-								api.playSound("LEAVE_ALL", player);
-								jb.updateCurrentJobs(null);
+								
+								if(jb.getCurrentJobs() != null) {
+									for(String jobs : jb.getCurrentJobs()) {
+										Job jobc = plugin.getJobCache().get(jobs);
+										if(!jobc.getConfig().getBoolean("CannotLeaveJob")) {
+											jb.remCurrentJob(jobc.getConfigID());
+										}
+									}
+								}
+								 
+								api.playSound("LEAVE_ALL", player); 
 								gui.UpdateMainInventoryItems(player, jb.getLanguage().getStringFromPath(jb.getUUID(),
 										plugin.getFileManager().getGUI().getString("Main_Name")));
 								player.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Leave_All")
@@ -184,8 +213,11 @@ public class ClickManager {
 		FileConfiguration cfg = plugin.getFileManager().getGUI();
 
 		PlayerJoinJobEvent event = new PlayerJoinJobEvent(player, jb, j);
-
+ 
 		if (!event.isCancelled()) {
+			
+			OptionalJobJoin(event);
+			
 			plugin.getPlayerAPI().updateJobs(job.toUpperCase(), jb, "" + player.getUniqueId());
 			jb.addCurrentJob(job);
 			api.playSound("JOB_JOINED", player);
@@ -206,7 +238,52 @@ public class ClickManager {
 		}
 
 	}
+	
+	public void OptionalJobQuit(PlayerQuitJobEvent event) {
+		if (event.getJob() != null) {
 
+			Job job = event.getJob();
+			YamlConfiguration cfg = job.getConfig();
+
+			if (cfg.contains("Commands.Quit")) {
+
+				Player pl = event.getPlayer();
+
+				ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+
+				List<String> commands = cfg.getStringList("Commands.Quit");
+
+				for (String command : commands) {
+					Bukkit.dispatchCommand(console,
+							command.replaceAll("<job>", job.getConfigID()).replaceAll("<name>", pl.getName()));
+				}
+			}
+		}
+	}
+
+	 
+		public void OptionalJobJoin(PlayerJoinJobEvent event) {
+			if (event.getJob() != null) {
+
+				Job job = event.getJob();
+				YamlConfiguration cfg = job.getConfig();
+
+				if (cfg.contains("Commands.Join")) {
+
+					Player pl = event.getPlayer();
+
+					ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+
+					List<String> commands = cfg.getStringList("Commands.Join");
+
+					for (String command : commands) {
+						Bukkit.dispatchCommand(console,
+								command.replaceAll("<job>", job.getConfigID()).replaceAll("<name>", pl.getName()));
+					}
+				}
+			}
+		}
+	
 	public void executeJobClickEvent(String display, Player player) {
 		FileConfiguration cfg = plugin.getFileManager().getGUI();
 		List<String> jobs = plugin.getLoaded();

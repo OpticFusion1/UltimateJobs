@@ -172,7 +172,7 @@ public class UltimateJobs extends JavaPlugin {
 
 	private PlayerDataFile chunk;
 	private PlayerChunkAPI capi;
-	
+
 	private ItemsAdderManager aim;
 
 	public void onLoad() {
@@ -234,14 +234,8 @@ public class UltimateJobs extends JavaPlugin {
 
 		getLanguageAPI().loadLanguages();
 
-		// basic events
-		loadBasicEvents();
-
 		// loading jobs
 		api.loadJobs(getLogger());
-
-		// job events
-		loadEvents();
 
 		setupEconomy();
 
@@ -249,18 +243,18 @@ public class UltimateJobs extends JavaPlugin {
 			new PlaceHolderManager().register();
 			Bukkit.getConsoleSender().sendMessage("§bLoaded PlaceHolderAPI Support...");
 		}
-		
-		if(getPluginManager().isInstalled("ItemsAdder")) {
+
+		if (getPluginManager().isInstalled("ItemsAdder")) {
 			aim = new ItemsAdderManager();
-			
+
 			if (getFileManager().getConfig().getBoolean("Actions.IABreak")) {
 				Bukkit.getPluginManager().registerEvents(new JobAction_IA_Break(), this);
 			}
-			
+
 			if (getFileManager().getConfig().getBoolean("Actions.IAKill")) {
 				Bukkit.getPluginManager().registerEvents(new JobAction_IA_Kill(), this);
 			}
-			
+
 			Bukkit.getConsoleSender().sendMessage("§bLoaded ItemsAdder Support...");
 		}
 
@@ -279,8 +273,14 @@ public class UltimateJobs extends JavaPlugin {
 		createBackups();
 
 		new Metrics(this, 15424);
-		
+
 		getPlayerAPI().calculateRanking();
+
+		// job events
+		loadEvents();
+
+		// basic events
+		loadBasicEvents();
 
 		Bukkit.getConsoleSender().sendMessage("§7");
 		Bukkit.getConsoleSender().sendMessage("§7");
@@ -303,7 +303,7 @@ public class UltimateJobs extends JavaPlugin {
 		Bukkit.getConsoleSender().sendMessage("§7");
 
 	}
-	 
+
 	public void connect() {
 
 		FileConfiguration cfg = getFileManager().getDataConfig();
@@ -376,13 +376,7 @@ public class UltimateJobs extends JavaPlugin {
 				this.init.close();
 			}
 		}
-
-		if (filemanager.getConfig().getBoolean("KickOnReload")) {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				p.kickPlayer(" ");
-			}
-		}
-
+ 
 		if (getExecutor().isShutdown()) {
 			return;
 		}
@@ -497,15 +491,16 @@ public class UltimateJobs extends JavaPlugin {
 		papi = new PlayerAPI(plugin);
 
 		dataapi = new PlayerDataAPI();
-	 
+
 		i = new ItemAPI();
 		skull = new SkullCreatorAPI();
 		locapi = new LocationAPI();
 		ogui = new GuiOpenManager();
 
 		capi = new PlayerChunkAPI();
+		
 	}
-	
+
 	public ItemsAdderManager getItemsAdderManager() {
 		return aim;
 	}
@@ -624,8 +619,7 @@ public class UltimateJobs extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new MainMenuClickEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new SettingsMenuClickEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new BlockFireWorkDamage(), this);
-		Bukkit.getPluginManager().registerEvents(new AreYouSureMenuClickEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new PlayerLevelEvent(), this);
+		Bukkit.getPluginManager().registerEvents(new AreYouSureMenuClickEvent(), this); 
 		Bukkit.getPluginManager().registerEvents(new PlayerRewardCommandEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new HelpMenuClickEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new StatsMenuClickEvent(), this);
