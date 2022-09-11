@@ -57,6 +57,9 @@ public class PlayerExistEvent implements Listener {
 				for (String job : config.getStringList("DefaultJobs")) {
 					if (!jb.getOwnJobs().contains(job)) {
 						jb.addOwnedJob(job);
+						if(config.getBoolean("AutoJoinDefaultJobs")) {
+							jb.addCurrentJob(job);
+						}
 					}
 				}
 			}

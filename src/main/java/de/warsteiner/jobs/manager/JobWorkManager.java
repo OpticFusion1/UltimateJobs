@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -31,6 +32,7 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.sk89q.worldguard.bukkit.listener.debounce.BlockPistonExtendKey;
@@ -274,6 +276,8 @@ public class JobWorkManager {
 			finalWork("" + type, UUID, JobAction.BREAK, "break-action", 1, event.getBlock(), null, true, true, false,
 					job);
 
+			block.removeMetadata("placed-by-player", UltimateJobs.getPlugin());
+			
 			return;
 		}
 	}
@@ -424,6 +428,11 @@ public class JobWorkManager {
 		}
 	}
 
+	private List<Material> breakingMaterials = List.of(
+			Material.SUGAR_CANE,
+			Material.CACTUS
+		);
+	
 	public void executeFarmWork(BlockBreakEvent event) {
 		final Block block = event.getBlock();
 		final Material type = event.getBlock().getType();
@@ -444,47 +453,33 @@ public class JobWorkManager {
 		if (getJobOnWork("" + UUID, JobAction.FARM_BREAK, "" + type) != null) {
 
 			Job job = getJobOnWork("" + UUID, JobAction.FARM_BREAK, "" + type);
-
-			int amount = 1;
-
+ 
+			List<Block> blockstocheck = new ArrayList<>();
+			
 			if (job.getConfig().getBoolean("CheckIfThereAreOtherCanesAbove")) {
+				  
+				if (breakingMaterials.contains(type)) {
+					var isBlockAboveSame = true;
+					for (int i = 0; isBlockAboveSame && block.getY() + i < block.getWorld().getMaxHeight(); i++) {
+						var blockAbove = block.getRelative(BlockFace.UP, i);
 
-				if (type == Material.SUGAR_CANE) {
-
-					Location loc = block.getLocation();
-
-					double x = loc.getX();
-
-					World w = Bukkit.getWorld(block.getWorld().getName());
-
-					double z = loc.getZ();
-					for (int i = 0; i < 4; i++) {
-
-						double y = loc.getY() + i;
-
-						Location ne = new Location(w, x, y, z);
-
-						if (w.getBlockAt(ne) != null) {
-
-							if (w.getBlockAt(ne).getType() != Material.AIR) {
-
-								if (w.getBlockAt(ne).getType() == Material.SUGAR_CANE) {
-									amount++;
-								}
-
-							}
-
+						if (breakingMaterials.contains(blockAbove.getType()) && blockAbove.hasMetadata("placed-by-player")) {
+							blockstocheck.add(blockAbove);
+						} else if (blockAbove.getType() == Material.AIR) {
+							isBlockAboveSame = false;
 						}
-
 					}
-
-					amount = amount - 1;
-
 				}
 			}
 
-			finalWork("" + type, UUID, JobAction.FARM_BREAK, "farm-break-action", amount, event.getBlock(), null, true,
+			finalWork("" + type, UUID, JobAction.FARM_BREAK, "farm-break-action", blockstocheck.size(), event.getBlock(), null, true,
 					true, false, job);
+			
+			Bukkit.getScheduler().runTask(UltimateJobs.getPlugin(), () -> {
+				blockstocheck.forEach(b -> {
+					b.removeMetadata("placed-by-player", UltimateJobs.getPlugin());
+				});
+			});
 
 			return;
 		}
@@ -608,7 +603,7 @@ public class JobWorkManager {
 		}
 		return null;
 	}
-
+ 
 	public void finalWork(String real, UUID ID, JobAction ac, String flag, int amount, Block block, Entity ent,
 			boolean checkplayer, boolean checkblock, boolean checkentity, Job job) {
 
@@ -658,7 +653,8 @@ public class JobWorkManager {
 						double reward = job.getRewardOf(iD, ac);
 
 						double exp_old = plugin.getPlayerAPI().getExpOf(IDASSTRING, job);
-						double exp = job.getExpOf(iD, ac) * amount;
+						double EPC1 = job.getExpOf(iD, ac) * amount;
+			  
 						Integer broken = plugin.getPlayerAPI().getBrokenTimes(IDASSTRING, job) + amount;
 						double points = job.getPointsOf(iD, ac) * amount;
 						double old_points = plugin.getPlayerAPI().getPoints(IDASSTRING);
@@ -690,15 +686,7 @@ public class JobWorkManager {
 								} else {
 
 									if (Bukkit.getPlayer(ID).isOnline()) {
-										Player p = Bukkit.getPlayer(ID);
-
-										if (UltimateJobs.getPlugin().getFileManager().getConfig()
-												.getInt("MaxDefaultJobs") != 0) {
-											p.sendMessage(AdminCommand.prefix
-													+ "Withdraw System is not possible to be used with multiplie Jobs per Player");
-											return;
-										}
-
+									 
 										double old = plugin.getPlayerAPI().getSalary("" + ID);
 
 										plugin.getPlayerAPI().updateSalary("" + ID, old + calc);
@@ -729,7 +717,7 @@ public class JobWorkManager {
 						if (can == false) {
 
 							if (cfg.getBoolean("Jobs.MaxEarnings.IfReached_Can_Earn_Exp")) {
-								plugin.getPlayerAPI().updateExp(IDASSTRING, job, exp_old + exp);
+								plugin.getPlayerAPI().updateExp(IDASSTRING, job, exp_old + EPC1);
 							}
 							if (cfg.getBoolean("Jobs.MaxEarnings.IfReached_Can_Earn_Points")) {
 								plugin.getPlayerAPI().updatePoints(IDASSTRING, points + old_points);
@@ -742,7 +730,7 @@ public class JobWorkManager {
 							}
 
 						} else {
-							plugin.getPlayerAPI().updateExp(IDASSTRING, job, exp_old + exp);
+							plugin.getPlayerAPI().updateExp(IDASSTRING, job, exp_old + EPC1);
 							plugin.getPlayerAPI().updatePoints(IDASSTRING, points + old_points);
 
 							plugin.getPlayerAPI().updateEarningsOfToday(IDASSTRING, job, earnedcalc);
@@ -768,7 +756,7 @@ public class JobWorkManager {
 							if (cfg.getBoolean("Enable_Levels")) {
 								UltimateJobs.getPlugin().getLevelAPI().check(player, job, d, iD);
 							}
-							UltimateJobs.getPlugin().getAPI().sendReward(d, player, job, exp, calc, iD, can, ac,
+							UltimateJobs.getPlugin().getAPI().sendReward(d, player, job, EPC1, calc, iD, can, ac,
 									amount);
 						}
 

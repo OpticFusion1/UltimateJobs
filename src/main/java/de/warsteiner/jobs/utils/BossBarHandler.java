@@ -43,7 +43,13 @@ public class BossBarHandler {
 	}
 
 	public static void updateProgress(double pr, String ID) {
-		((BossBar) g.get(ID)).setProgress(pr);
+		double real = 0.0;
+		
+		if(pr >= 1.0 || pr <= 0.0) {
+			real = 1.0;
+		} 
+		
+		((BossBar) g.get(ID)).setProgress(real);
 	}
 
 	public static void recolorBossBar(BarColor color, String ID) {

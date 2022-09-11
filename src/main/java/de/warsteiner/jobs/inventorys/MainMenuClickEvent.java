@@ -39,10 +39,12 @@ public class MainMenuClickEvent implements Listener {
 		String display =  plugin.getPluginManager().toHex(e.getCurrentItem().getItemMeta().getDisplayName().replaceAll("&", "§"));
  
 		if (plugin.getGUIOpenManager().isMainOpend(p, e.getView().getTitle()) != null) {
+			
+			plugin.getClickManager().executeCustomItem(null, display, p, "Main_Custom", config, null);
 		 
 			plugin.getClickManager().executeJobClickEvent(display, p);
 			 
-			plugin.getClickManager().executeCustomItem(null, display, p, "Main_Custom", config, null);
+		 
 			e.setCancelled(true);
 		}
 		

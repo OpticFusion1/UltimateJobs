@@ -47,10 +47,13 @@ public class ClickManager {
 
 	}
 
-	public void executeCustomItem(Job job, String display, final Player player, String prefix,
-			FileConfiguration config, String about) {
+	public void executeCustomItem(Job job, String display, final Player player, String prefix, FileConfiguration config,
+			String about) {
 		String item = isCustomItem(display, prefix, config, "" + player.getUniqueId());
 		JobsPlayer jb = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
+
+		ArrayList<String> jobs = jb.getCurrentJobs();
+
 		if (!item.equalsIgnoreCase("NOT_FOUND")) {
 			if (config.contains(prefix + "." + item + ".ActionList")) {
 				List<String> actions = config.getStringList(prefix + "." + item + ".ActionList");
@@ -96,115 +99,131 @@ public class ClickManager {
 							String[] split = action.split(":");
 
 							String gui = split[1].toUpperCase();
-							
-							if(GUIType.valueOf(gui.toUpperCase()) == null) {
+
+							if (GUIType.valueOf(gui.toUpperCase()) == null) {
 								player.sendMessage(AdminCommand.prefix + "Error: GUI Type does not exist");
 								return;
 							}
-							
+
 							GUIType fin = GUIType.valueOf(gui.toUpperCase());
 
-							UltimateJobs.getPlugin().getGUIOpenManager().openGuiByGuiID(player, fin, player, job,
-									about,false,null);
+							UltimateJobs.getPlugin().getGUIOpenManager().openGuiByGuiID(player, fin, player, job, about,
+									false, null);
 
 						} else if (action.equalsIgnoreCase("LEAVE")) {
-							
-							if(job == null ) {
+
+							if (job == null) {
 								player.sendMessage(AdminCommand.prefix + "Missing Element: Job");
 								return;
 							}
-							
-							if(plugin.getFileManager().getConfig().getBoolean("LeaveJobNeedsToBeConfirmed")) {
+
+							if (plugin.getFileManager().getConfig().getBoolean("LeaveJobNeedsToBeConfirmed")) {
 								plugin.getGUIAddonManager().createLeaveConfirmGUI(player, UpdateTypes.OPEN, job);
 							} else {
-								
-								if(job.getConfig().getBoolean("CannotLeaveJob")) {
-									api.playSound("CANNOT_LEAVE_JOB", player); 
-									if(job.getConfig().getString("CannotLeaveJobMessage") != null) {
-										player.sendMessage(jb.getLanguage().getStringFromPath(jb.getUUID(), job.getConfig().getString("CannotLeaveJobMessage"))
-												.replaceAll("<job>", job.getDisplay("" + player.getUniqueId()))); 
+
+								if (job.getConfig().getBoolean("CannotLeaveJob")) {
+									api.playSound("CANNOT_LEAVE_JOB", player);
+									if (job.getConfig().getString("CannotLeaveJobMessage") != null) {
+										player.sendMessage(jb.getLanguage()
+												.getStringFromPath(jb.getUUID(),
+														job.getConfig().getString("CannotLeaveJobMessage"))
+												.replaceAll("<job>", job.getDisplay("" + player.getUniqueId())));
 									}
 								} else {
 									api.playSound("LEAVE_SINGLE", player);
-									 
+
 									updateSalaryOnLeave(player, jb);
 									jb.remCurrentJob(job.getConfigID());
-									
+
 									PlayerQuitJobEvent event = new PlayerQuitJobEvent(player, jb, job);
-									
+
 									OptionalJobQuit(event);
 
 									plugin.getGUI().createMainGUIOfJobs(player, UpdateTypes.REOPEN);
 
-									if(plugin.getFileManager().getConfig().getBoolean("SendMessageOnLeave") ) {
-										player.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Left_Job")
-												.replaceAll("<job>", job.getDisplay("" + player.getUniqueId()))); 
+									if (plugin.getFileManager().getConfig().getBoolean("SendMessageOnLeave")) {
+										player.sendMessage(jb.getLanguage()
+												.getStringFromLanguage(jb.getUUID(), "Other.Left_Job")
+												.replaceAll("<job>", job.getDisplay("" + player.getUniqueId())));
 									}
 								}
-								
-								 
+
 							}
-							 
-						}  else if (action.equalsIgnoreCase("LEAVEALL")) {
-							if (jb.getCurrentJobs().size() >= 1) {
-								
-								updateSalaryOnLeave(player, jb);
-								
-								if(jb.getCurrentJobs() != null) {
-									for(String jobs : jb.getCurrentJobs()) {
-										Job jobc = plugin.getJobCache().get(jobs);
-										if(!jobc.getConfig().getBoolean("CannotLeaveJob")) {
-											jb.remCurrentJob(jobc.getConfigID());
+
+						} else if (action.equalsIgnoreCase("LEAVEALL")) {
+
+							if (jobs.size() != 0) {
+
+								if (jobs != null) {
+
+									for (Job mine : jb.getCurrentJobsAsObject()) {
+
+										if (!mine.getConfig().getBoolean("CannotLeaveJob")) {
+
+											PlayerQuitJobEvent event = new PlayerQuitJobEvent(player, jb, mine);
+
+											plugin.getClickManager().OptionalJobQuit(event);
+
+											jb.remCurrentJob(mine.getConfigID());
+
 										}
 									}
+
 								}
-								 
-								api.playSound("LEAVE_ALL", player); 
+
+								updateSalaryOnLeave(player, jb);
+
+								api.playSound("LEAVE_ALL", player);
+
+								player.sendMessage(
+										jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Leave_All"));
+
 								gui.UpdateMainInventoryItems(player, jb.getLanguage().getStringFromPath(jb.getUUID(),
 										plugin.getFileManager().getGUI().getString("Main_Name")));
-								player.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Leave_All")
-										.replaceAll("<job>", display));
+
 							} else {
-								player.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Already_Left_All")
-										.replaceAll("<job>", display));
+								player.sendMessage(
+										jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Already_Left_All")
+												.replaceAll("<job>", display));
 							}
-						} 
+						}
 					}
 				}
- 
+
 			}
 		}
+		return;
 	}
-	
+
 	public void updateSalaryOnLeave(Player player, JobsPlayer jb) {
-		if (plugin.getFileManager().getConfig().getString("PayMentMode").toUpperCase()
-				.equalsIgnoreCase("STORED")) {
+		if (plugin.getFileManager().getConfig().getString("PayMentMode").toUpperCase().equalsIgnoreCase("STORED")) {
 			if (plugin.getFileManager().getConfig().getBoolean("ResetAmountOnJobLeave")) {
-				
-		 
+
 				plugin.getPlayerAPI().updateSalary(jb.getUUIDAsString(), 0);
-				
-				if(plugin.getFileManager().getConfig().getBoolean("SendResetMessage")) {
-					player.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Withdraw_Reset_Salary_Message"));
+
+				if (plugin.getFileManager().getConfig().getBoolean("SendResetMessage")) {
+					player.sendMessage(
+							jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Withdraw_Reset_Salary_Message"));
 				}
-				
+
 			} else if (plugin.getFileManager().getConfig().getBoolean("RemovePercentOnJobLeave")) {
-			
+
 				double amount = plugin.getFileManager().getConfig().getDouble("PercentAmount");
-				
+
 				double sal = jb.getSalary();
-				
+
 				double oneper = sal / 100;
-				
+
 				double removed = oneper * amount;
-				
-				if(plugin.getFileManager().getConfig().getBoolean("SendRemovePercentMessage")) {
-					player.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Withdraw_Remove_Percent_Of_Salary_Message")
+
+				if (plugin.getFileManager().getConfig().getBoolean("SendRemovePercentMessage")) {
+					player.sendMessage(jb.getLanguage()
+							.getStringFromLanguage(jb.getUUID(), "Withdraw_Remove_Percent_Of_Salary_Message")
 							.replaceAll("<amount>", plugin.getAPI().Format(removed)));
-				
+
 				}
-				
-				plugin.getPlayerAPI().updateSalary(jb.getUUIDAsString(), sal-removed); 
+
+				plugin.getPlayerAPI().updateSalary(jb.getUUIDAsString(), sal - removed);
 			}
 		}
 	}
@@ -213,11 +232,11 @@ public class ClickManager {
 		FileConfiguration cfg = plugin.getFileManager().getGUI();
 
 		PlayerJoinJobEvent event = new PlayerJoinJobEvent(player, jb, j);
- 
+
 		if (!event.isCancelled()) {
-			
+
 			OptionalJobJoin(event);
-			
+
 			plugin.getPlayerAPI().updateJobs(job.toUpperCase(), jb, "" + player.getUniqueId());
 			jb.addCurrentJob(job);
 			api.playSound("JOB_JOINED", player);
@@ -229,16 +248,17 @@ public class ClickManager {
 					gui.setMainInventoryJobItems(player.getOpenInventory(), player, name);
 				}
 			}.runTaskLater(plugin, 1);
- 
-			plugin.getPlayerAPI().updateDateJoinedOfJob(jb.getUUIDAsString(), job, plugin.getPluginManager().getDateTodayFromCal());
-			
+
+			plugin.getPlayerAPI().updateDateJoinedOfJob(jb.getUUIDAsString(), job,
+					plugin.getPluginManager().getDateTodayFromCal());
+
 			player.sendMessage(plugin.getPluginManager()
 					.toHex(jb.getLanguage().getStringFromLanguage(player.getUniqueId(), "Other.Joined")
 							.replaceAll("<job>", j.getDisplay("" + player.getUniqueId()))));
 		}
 
 	}
-	
+
 	public void OptionalJobQuit(PlayerQuitJobEvent event) {
 		if (event.getJob() != null) {
 
@@ -261,29 +281,28 @@ public class ClickManager {
 		}
 	}
 
-	 
-		public void OptionalJobJoin(PlayerJoinJobEvent event) {
-			if (event.getJob() != null) {
+	public void OptionalJobJoin(PlayerJoinJobEvent event) {
+		if (event.getJob() != null) {
 
-				Job job = event.getJob();
-				YamlConfiguration cfg = job.getConfig();
+			Job job = event.getJob();
+			YamlConfiguration cfg = job.getConfig();
 
-				if (cfg.contains("Commands.Join")) {
+			if (cfg.contains("Commands.Join")) {
 
-					Player pl = event.getPlayer();
+				Player pl = event.getPlayer();
 
-					ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+				ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 
-					List<String> commands = cfg.getStringList("Commands.Join");
+				List<String> commands = cfg.getStringList("Commands.Join");
 
-					for (String command : commands) {
-						Bukkit.dispatchCommand(console,
-								command.replaceAll("<job>", job.getConfigID()).replaceAll("<name>", pl.getName()));
-					}
+				for (String command : commands) {
+					Bukkit.dispatchCommand(console,
+							command.replaceAll("<job>", job.getConfigID()).replaceAll("<name>", pl.getName()));
 				}
 			}
 		}
-	
+	}
+
 	public void executeJobClickEvent(String display, Player player) {
 		FileConfiguration cfg = plugin.getFileManager().getGUI();
 		List<String> jobs = plugin.getLoaded();
@@ -392,5 +411,5 @@ public class ClickManager {
 		}
 		return "NOT_FOUND";
 	}
- 
+
 }

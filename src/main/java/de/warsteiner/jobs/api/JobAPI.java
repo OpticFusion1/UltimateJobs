@@ -210,7 +210,7 @@ public class JobAPI {
 		return "SQL";
 	}
 
-	public void sendReward(JobsPlayer pl, Player p, Job job, double exp, double reward, String block, boolean can,
+	public void sendReward(JobsPlayer pl, Player p, Job job, double ep, double reward, String block, boolean can,
 			JobAction ac, int amount) {
 		plugin.getExecutor().execute(() -> {
 			UUID UUID = p.getUniqueId();
@@ -234,7 +234,7 @@ public class JobAPI {
 						entry("<prefix>", prt),
 						entry("<job>", job.getDisplay("" + UUID)),
 						entry("<exp>", Format(all_exp)),
-						entry("<exp_gained>", Format(job.getExpOf(block, ac) * amount)),
+						entry("<exp_gained>", Format(ep)),
 						entry("<exp_required>", Format(plugin.getLevelAPI().getJobNeedExp(job, pl))),
 						entry("<level_name>", job.getLevelDisplay(level, "" + UUID)),
 						entry("<level_int>", ""+level),

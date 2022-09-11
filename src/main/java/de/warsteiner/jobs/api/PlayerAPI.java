@@ -3,16 +3,14 @@ package de.warsteiner.jobs.api;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
+import java.util.Calendar; 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Map; 
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,13 +44,15 @@ public class PlayerAPI {
 	}
 
 	public JobsPlayer getRealJobPlayer(String ID) {
+	 
 		return getCacheJobPlayers().get(ID);
 	}
 
 	public JobsPlayer getRealJobPlayer(UUID ID) {
+	 
 		return getCacheJobPlayers().get("" + ID);
 	}
-
+ 
 	public void calculateRanking() {
 		FileConfiguration cfg = plugin.getFileManager().getConfig();
 		if (cfg.getBoolean("CalculateRanking")) {

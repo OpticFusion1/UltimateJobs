@@ -1110,8 +1110,7 @@ public class PlayerDataAPI {
 				});
 			}
 
-		//	final String insertQuery = "INSERT INTO job_stats(UUID,JOB,DATE,LEVEL,EXP,BROKEN) VALUES(?,?,?,?,?,?)";
-
+		 
 			for (String job : owned) {
 
 				Job j = plugin.getJobCache().get(job);

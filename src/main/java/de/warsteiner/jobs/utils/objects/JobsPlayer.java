@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.bukkit.configuration.file.YamlConfiguration;
  
 import de.warsteiner.jobs.UltimateJobs;
+import de.warsteiner.jobs.api.Job;
  
 
 public class JobsPlayer {
@@ -167,10 +168,19 @@ public class JobsPlayer {
 	}
 
 	public ArrayList<String> getCurrentJobs() {
-		if(current == null) {
-			return new ArrayList<String>();
-		}
+	 
 		return current;
+	}
+	
+	public ArrayList<Job> getCurrentJobsAsObject() {
+		
+		ArrayList<Job> n = new ArrayList<Job>();
+		
+		for(String job : current) {
+			n.add(UltimateJobs.getPlugin().getJobCache().get(job));
+		}
+		 
+		return n;
 	}
 
 	public void updateCurrentJobs(ArrayList<String> l) {
