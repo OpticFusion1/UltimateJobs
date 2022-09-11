@@ -48,16 +48,14 @@ public class RankingMenuClickEvent implements Listener {
 		String title = plugin.getPluginManager().toHex(e.getView().getTitle().replaceAll("&", "§"));
 		
 		JobsPlayer jb = plugin.getPlayerAPI().getRealJobPlayer(p.getUniqueId());
-
+	 
 		if (plugin.getGUIOpenManager().isGlobalRankingMenu(p, title) != null) {
-
-			Job j = plugin.getGUIOpenManager().isGlobalRankingMenu(p, title);
-
-			plugin.getClickManager().executeCustomItem(j, display, p, "Levels_Custom", cfg, null);
+		 
+			plugin.getClickManager().executeCustomItem(null, display, p, "Global_RankingItems", cfg, null);
 			
-			e.setCancelled(true);
+			 e.setCancelled(true);
 			
-		} else if(plugin.getGUIOpenManager().isRankingJobMenu(p, title) != null) {
+		}  else if(plugin.getGUIOpenManager().isRankingJobMenu(p, title) != null) {
 			
 			Job j = plugin.getGUIOpenManager().isRankingJobMenu(p, title);
 

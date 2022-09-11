@@ -2,6 +2,7 @@ package de.warsteiner.jobs.manager;
 
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -161,19 +162,18 @@ public class GuiOpenManager {
 		return null;
 	}
 	
-	public Job isGlobalRankingMenu(Player player, String title) {
+	public String isGlobalRankingMenu(Player player, String title) {
 		FileConfiguration cfg = plugin.getFileManager().getRankingGlobalConfig();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
-
+		 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.GLOBAL_RANKING)) {
-
-				Job j = plugin.getGUI().getGUIsJobs().get(sp.getUUIDAsString()); 
+			  
 				String named = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("GlobalRanking_Name"));
 				String fin = plugin.getPluginManager().toHex(named.replaceAll("&", "§"));
-
-				if (fin.equalsIgnoreCase(title)) {
-					return j;
+ 
+				if (fin.equalsIgnoreCase(title)) { 
+					return "FOUND";
 				}
 
 			}
