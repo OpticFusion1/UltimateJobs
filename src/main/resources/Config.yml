@@ -159,10 +159,6 @@ Jobs:
 # "STORED" means, the money gets added into something like a bank, where they then can withdraw it (more options to it in the withdraw_gui)
 # "INSTANT" means, the player gets the money instantly added to their money accout
 # 
-#  -------------- WARNING --------------
-# 
-# The Withdraw System is only possible to use with MAX. 1 Job per Player!!
-#
  
 PayMentMode: "INSTANT" 
 

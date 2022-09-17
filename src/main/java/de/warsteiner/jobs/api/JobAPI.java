@@ -162,6 +162,7 @@ public class JobAPI {
 	}
 
 	public boolean checkIfJobIsReal(String arg, Player player) {
+		 
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		String id = arg.toUpperCase();
 		if (isJobFromConfigID(id) != null) {

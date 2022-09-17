@@ -128,7 +128,7 @@ public class RemoveMaxSub extends AdminSubCommand {
 	
 	@Override
 	public String getPermission() { 
-		return "ultimatejobs.admin.addmax";
+		return "ultimatejobs.admin.remmax";
 	}
 	
 	@Override
