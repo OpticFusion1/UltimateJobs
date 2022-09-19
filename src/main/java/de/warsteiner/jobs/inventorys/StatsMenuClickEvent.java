@@ -34,6 +34,11 @@ public class StatsMenuClickEvent implements Listener {
 			return;
 		}
 
+		if(!plugin.getPlayerAPI().existInCacheByUUID(""+e.getWhoClicked().getUniqueId())) {
+			e.getWhoClicked().sendMessage("§cError while executing the Jobs ClickEvent. (Player not found)");
+			return;
+		}
+		
 		FileConfiguration config = plugin.getFileManager().getStatsConfig();
 
 		Player p = (Player) e.getWhoClicked();

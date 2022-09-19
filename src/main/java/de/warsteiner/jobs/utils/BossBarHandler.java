@@ -44,11 +44,13 @@ public class BossBarHandler {
 
 	public static void updateProgress(double pr, String ID) {
 		double real = 0.0;
-		
-		if(pr >= 1.0 || pr <= 0.0) {
+
+		if (pr >= 1.0 || pr <= 0.0) {
 			real = 1.0;
-		} 
-		
+		} else {
+			real = pr;
+		}
+
 		((BossBar) g.get(ID)).setProgress(real);
 	}
 
@@ -71,35 +73,39 @@ public class BossBarHandler {
 		new BukkitRunnable() {
 
 			public void run() {
-				
-				plugin.getExecutor().execute(() -> {
 
-					for (Player p : Bukkit.getOnlinePlayers()) {
-	
-						Date lastworked = UltimateJobs.getPlugin().getAPI().lastworked_list.get(p.getName());
-	
-						if (lastworked == null) {
-							continue;
-						}
-	
-						boolean check = lastworked.after(new Date());
-	
-						if (check == false) {
-							if (UltimateJobs.getPlugin().getAPI().lastworked_list.containsKey(p.getName())) {
-								BossBarHandler.removeBossBar(p.getName());
-								UltimateJobs.getPlugin().getAPI().lastworked_list.remove(p.getName());
+				new BukkitRunnable() {
+
+					@Override
+					public void run() {
+
+						for (Player p : Bukkit.getOnlinePlayers()) {
+
+							Date lastworked = UltimateJobs.getPlugin().getAPI().lastworked_list.get(p.getName());
+
+							if (lastworked == null) {
+								continue;
 							}
+
+							boolean check = lastworked.after(new Date());
+
+							if (check == false) {
+								if (UltimateJobs.getPlugin().getAPI().lastworked_list.containsKey(p.getName())) {
+									BossBarHandler.removeBossBar(p.getName());
+									UltimateJobs.getPlugin().getAPI().lastworked_list.remove(p.getName());
+								}
+							}
+
 						}
-	
 					}
-				});
+				}.runTaskAsynchronously(plugin);
 
 			}
 		}.runTaskTimer(plugin, 0, 25);
 	}
 
 	public static double calc(double exp, boolean ismaxlevel, double need) {
-		double use;
+		double use = 1.0;
 		if (!ismaxlevel) {
 			double jobneed = need / 100;
 
@@ -110,15 +116,15 @@ public class BossBarHandler {
 			double one = max * p;
 
 			if (one >= 1.0) {
-				use = 1.0;
-			} else if(one <= 0.0) { 
-				use = 0.1;
-			}else {
-				use = one;
+				one = 1.0;
 			}
+			use = one;
+
 		} else {
-			use = 0.9;
+			use = 1.0;
+
 		}
+
 		return use;
 	}
 }

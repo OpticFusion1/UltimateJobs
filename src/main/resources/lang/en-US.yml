@@ -3101,6 +3101,25 @@ Jobs:
       
     IDS:
 
+      SALMON:
+      
+        Display: "&6Salmon"
+        
+        Rewards:
+        
+          Display: "&8< &6Salmon &8>"
+          
+          Lore:
+            - "&8-----------"
+            - "&7Reward &8: &c$<money>"
+            - "&7Chance &8: &9<chance>%"
+            - "&7Exp &8: &a<exp>"
+            - "&7Points &8: &6<points>"
+            - "&7Action &8: &4<action>"
+            - "&7"
+            - "&7Times caught &8: &6<times> "
+            - "&7Earned Money &8: &a<earned> Dollars"
+
       COD:
       
         Display: "&fCod"

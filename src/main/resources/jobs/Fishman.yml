@@ -22,11 +22,24 @@ IDS:
       - "COD" 
       - "PUFFERFISH" 
       - "TROPICAL_FISH"
+      - "SALMON"
+
+    SALMON:
+
+      Chance: 85
+      ID: "RAW_SALMON"
+      Money: 2
+      Exp: 5
+      Points: 0.05
+      RewardsGUI:
+    
+        See: true
+        Icon: "SALMON"
 
     COD:
 
       Chance: 85
-      ID: "COD"
+      ID: "RAW_COD"
       Money: 2
       Exp: 5
       Points: 0.05

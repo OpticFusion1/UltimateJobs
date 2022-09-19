@@ -32,6 +32,11 @@ public class MainMenuClickEvent implements Listener {
 		if (e.getCurrentItem().getItemMeta().getDisplayName() == null) {
 			return;
 		}
+		
+		if(!plugin.getPlayerAPI().existInCacheByUUID(""+e.getWhoClicked().getUniqueId())) {
+			e.getWhoClicked().sendMessage("§cError while executing the Jobs ClickEvent. (Player not found)");
+			return;
+		}
 
 		FileConfiguration config = plugin.getFileManager().getGUI();
 		Player p = (Player) e.getWhoClicked(); 

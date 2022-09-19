@@ -331,8 +331,8 @@ public class JobWorkManager {
 			return;
 		}
 
-		EntityType id = event.getCaught().getType();
-
+		String id = event.getCaught().getName().toUpperCase();
+ 
 		UUID UUID = event.getPlayer().getUniqueId();
 
 		if (getJobOnWork("" + UUID, JobAction.FISH, "" + id) != null) {

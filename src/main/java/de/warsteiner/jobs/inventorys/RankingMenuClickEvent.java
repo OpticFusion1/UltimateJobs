@@ -37,6 +37,11 @@ public class RankingMenuClickEvent implements Listener {
 		if (e.getCurrentItem().getItemMeta().getDisplayName() == null) {
 			return;
 		}
+		
+		if(!plugin.getPlayerAPI().existInCacheByUUID(""+e.getWhoClicked().getUniqueId())) {
+			e.getWhoClicked().sendMessage("§cError while executing the Jobs ClickEvent. (Player not found)");
+			return;
+		}
 
 		FileConfiguration cfg = plugin.getFileManager().getRankingGlobalConfig();
 		FileConfiguration cfg2 = plugin.getFileManager().getRankingPerJobConfig();
@@ -51,7 +56,7 @@ public class RankingMenuClickEvent implements Listener {
 	 
 		if (plugin.getGUIOpenManager().isGlobalRankingMenu(p, title) != null) {
 		 
-			plugin.getClickManager().executeCustomItem(null, display, p, "Global_RankingItems", cfg, null);
+			plugin.getClickManager().executeCustomItem(null, display, p, "Global_Custom", cfg, null);
 			
 			 e.setCancelled(true);
 			

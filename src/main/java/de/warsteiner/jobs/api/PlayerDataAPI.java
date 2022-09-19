@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.util.concurrent.AtomicDouble;
 
@@ -26,40 +27,44 @@ public class PlayerDataAPI {
 
 	public void createtables() {
 		SQLStatementAPI s = UltimateJobs.getPlugin().getSQLStatementAPI();
-		UltimateJobs.getPlugin().getExecutor().execute(() -> {
+		new BukkitRunnable() {
 
-			s.executeUpdate(
-					"CREATE TABLE IF NOT EXISTS playerlist (UUID varchar(200), NAME varchar(200), DISPLAY varchar(200))");
-			s.executeUpdate(
-					"CREATE TABLE IF NOT EXISTS playersettings (UUID varchar(200), TYPE varchar(200), MODE varchar(200))");
+			@Override
+			public void run() {
 
-			s.executeUpdate("CREATE TABLE IF NOT EXISTS pagedata (UUID varchar(200), ID varchar(200), PAGE int)");
-			s.executeUpdate(
-					"CREATE TABLE IF NOT EXISTS pagecat (UUID varchar(200), ID varchar(200), TYPE varchar(200))");
+				s.executeUpdate(
+						"CREATE TABLE IF NOT EXISTS playerlist (UUID varchar(200), NAME varchar(200), DISPLAY varchar(200))");
+				s.executeUpdate(
+						"CREATE TABLE IF NOT EXISTS playersettings (UUID varchar(200), TYPE varchar(200), MODE varchar(200))");
 
-			s.executeUpdate(
-					"CREATE TABLE IF NOT EXISTS job_stats (UUID varchar(200), JOB varchar(200), DATE varchar(200), LEVEL int, EXP double, BROKEN int)");
+				s.executeUpdate("CREATE TABLE IF NOT EXISTS pagedata (UUID varchar(200), ID varchar(200), PAGE int)");
+				s.executeUpdate(
+						"CREATE TABLE IF NOT EXISTS pagecat (UUID varchar(200), ID varchar(200), TYPE varchar(200))");
 
-			s.executeUpdate("CREATE TABLE IF NOT EXISTS job_current (UUID varchar(200), JOB varchar(200))");
-			s.executeUpdate(
-					"CREATE TABLE IF NOT EXISTS job_players (UUID varchar(200), DATE varchar(200), POINTS int, MAX int)");
+				s.executeUpdate(
+						"CREATE TABLE IF NOT EXISTS job_stats (UUID varchar(200), JOB varchar(200), DATE varchar(200), LEVEL int, EXP double, BROKEN int)");
 
-			s.executeUpdate(
-					"CREATE TABLE IF NOT EXISTS earnings_all (UUID varchar(200), JOB varchar(200), DATE varchar(200), MONEY double)");
+				s.executeUpdate("CREATE TABLE IF NOT EXISTS job_current (UUID varchar(200), JOB varchar(200))");
+				s.executeUpdate(
+						"CREATE TABLE IF NOT EXISTS job_players (UUID varchar(200), DATE varchar(200), POINTS int, MAX int)");
 
-			s.executeUpdate(
-					"CREATE TABLE IF NOT EXISTS earnings_stats_per_action (UUID varchar(200),IDACTION varchar(200), JOB varchar(200), ID varchar(200), TIMES int, MONEY double)");
+				s.executeUpdate(
+						"CREATE TABLE IF NOT EXISTS earnings_all (UUID varchar(200), JOB varchar(200), DATE varchar(200), MONEY double)");
 
-			s.executeUpdate("CREATE TABLE IF NOT EXISTS jobs_plugin (DATE varchar(200), PLY varchar(200))");
+				s.executeUpdate(
+						"CREATE TABLE IF NOT EXISTS earnings_stats_per_action (UUID varchar(200),IDACTION varchar(200), JOB varchar(200), ID varchar(200), TIMES int, MONEY double)");
 
-			s.executeUpdate(
-					"CREATE TABLE IF NOT EXISTS job_dates_joined (UUID varchar(200), JOBID varchar(200), DATE varchar(200))");
+				s.executeUpdate("CREATE TABLE IF NOT EXISTS jobs_plugin (DATE varchar(200), PLY varchar(200))");
 
-			s.executeUpdate("CREATE TABLE IF NOT EXISTS jobs_earnings_storage (UUID varchar(200),  AMOUNT double)");
+				s.executeUpdate(
+						"CREATE TABLE IF NOT EXISTS job_dates_joined (UUID varchar(200), JOBID varchar(200), DATE varchar(200))");
 
-			s.executeUpdate(
-					"CREATE TABLE IF NOT EXISTS jobs_earnings_storage_dates (UUID varchar(200), CDATE varchar(200))");
-		});
+				s.executeUpdate("CREATE TABLE IF NOT EXISTS jobs_earnings_storage (UUID varchar(200),  AMOUNT double)");
+
+				s.executeUpdate(
+						"CREATE TABLE IF NOT EXISTS jobs_earnings_storage_dates (UUID varchar(200), CDATE varchar(200))");
+			}
+		}.runTaskAsynchronously(plugin);
 	}
 
 	public void updateSalaryDate(String UUID, String date) {
@@ -1073,8 +1078,8 @@ public class PlayerDataAPI {
 			double points = pl.getPoints();
 
 			String dated = UltimateJobs.getPlugin().getDate();
-			
-			//updating player stats
+
+			// updating player stats
 
 			if (dated != null) {
 				final String insertQuery = "UPDATE `job_players` SET `DATE`='" + dated + "' WHERE UUID='" + UUID + "'";
@@ -1088,8 +1093,8 @@ public class PlayerDataAPI {
 			final String insertQuery_max = "UPDATE `job_players` SET `MAX`='" + max + "' WHERE UUID='" + UUID + "'";
 			mg.executeUpdate(insertQuery_max);
 
-			//updating salary
-			
+			// updating salary
+
 			double sal = pl.getSalary();
 
 			String sat = pl.getSalaryDate();
@@ -1110,7 +1115,6 @@ public class PlayerDataAPI {
 				});
 			}
 
-		 
 			for (String job : owned) {
 
 				Job j = plugin.getJobCache().get(job);
@@ -1132,23 +1136,23 @@ public class PlayerDataAPI {
 				String jd = stats.getJoinedDate();
 
 				updateDateJoinedOfJob(UUID, job, jd);
-				
-				final String insertQuery_date = "UPDATE `job_stats` SET `DATE`='" + date + "' WHERE UUID='"
-						+ UUID + "' AND JOB='"+j.getConfigID()+"'";
+
+				final String insertQuery_date = "UPDATE `job_stats` SET `DATE`='" + date + "' WHERE UUID='" + UUID
+						+ "' AND JOB='" + j.getConfigID() + "'";
 				mg.executeUpdate(insertQuery_date);
 
-				final String insertQuery_level = "UPDATE `job_stats` SET `LEVEL`='" + level + "' WHERE UUID='"
-						+ UUID + "' AND JOB='"+j.getConfigID()+"'";
+				final String insertQuery_level = "UPDATE `job_stats` SET `LEVEL`='" + level + "' WHERE UUID='" + UUID
+						+ "' AND JOB='" + j.getConfigID() + "'";
 				mg.executeUpdate(insertQuery_level);
-				
-				final String insertQuery_exp = "UPDATE `job_stats` SET `EXP`='" + exp + "' WHERE UUID='"
-						+ UUID + "' AND JOB='"+j.getConfigID()+"'";
+
+				final String insertQuery_exp = "UPDATE `job_stats` SET `EXP`='" + exp + "' WHERE UUID='" + UUID
+						+ "' AND JOB='" + j.getConfigID() + "'";
 				mg.executeUpdate(insertQuery_exp);
-				
-				final String insertQuery_br = "UPDATE `job_stats` SET `BROKEN`='" + broken + "' WHERE UUID='"
-						+ UUID + "' AND JOB='"+j.getConfigID()+"'";
+
+				final String insertQuery_br = "UPDATE `job_stats` SET `BROKEN`='" + broken + "' WHERE UUID='" + UUID
+						+ "' AND JOB='" + j.getConfigID() + "'";
 				mg.executeUpdate(insertQuery_br);
-			 
+
 				for (JobAction action : j.getActionList()) {
 
 					stats.getBrokenList().forEach((key, value) -> {

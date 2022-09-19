@@ -146,7 +146,6 @@ public class UltimateJobs extends JavaPlugin {
 	private de.warsteiner.jobs.manager.GuiManager gui;
 	private JobAPI api;
 	private ClickManager click;
-	private ExecutorService executor;
 	private SubCommandRegistry cmdmanager;
 	private AdminSubCommandRegistry admincmdmanager;
 	private PlayerDataFile datafile;
@@ -193,8 +192,6 @@ public class UltimateJobs extends JavaPlugin {
 			Bukkit.getConsoleSender().sendMessage("§cMissing Option of ExecutorServices in Config.yml");
 		}
 
-		executor = Executors.newFixedThreadPool(this.filemanager.getConfig().getInt("ExecutorServiceThreads"));
-
 		loadClasses();
 
 		if (getPluginManager().isInstalled("WorldGuard")) {
@@ -207,11 +204,16 @@ public class UltimateJobs extends JavaPlugin {
 	@Override
 	public void onEnable() {
 
-		getExecutor().execute(() -> {
-			if (filemanager.getConfig().getBoolean("CheckForUpdates")) {
-				web.checkVersion();
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+
+				if (filemanager.getConfig().getBoolean("CheckForUpdates")) {
+					web.checkVersion();
+				}
 			}
-		});
+		}.runTaskAsynchronously(plugin);
 
 		if (mode.equalsIgnoreCase("SQL")) {
 
@@ -377,13 +379,6 @@ public class UltimateJobs extends JavaPlugin {
 			}
 		}
  
-		if (getExecutor().isShutdown()) {
-			return;
-		}
-		if (getExecutor() != null) {
-			getExecutor().shutdown();
-		}
-
 		Bukkit.getConsoleSender().sendMessage("§7");
 		Bukkit.getConsoleSender().sendMessage("     §cPlugin has been disabled!");
 		Bukkit.getConsoleSender().sendMessage("     §cThank you for using my plugin!");
@@ -498,7 +493,7 @@ public class UltimateJobs extends JavaPlugin {
 		ogui = new GuiOpenManager();
 
 		capi = new PlayerChunkAPI();
-		
+
 	}
 
 	public ItemsAdderManager getItemsAdderManager() {
@@ -551,10 +546,6 @@ public class UltimateJobs extends JavaPlugin {
 
 	public SubCommandRegistry getSubCommandManager() {
 		return cmdmanager;
-	}
-
-	public ExecutorService getExecutor() {
-		return executor;
 	}
 
 	public static UltimateJobs getPlugin() {
@@ -619,7 +610,7 @@ public class UltimateJobs extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new MainMenuClickEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new SettingsMenuClickEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new BlockFireWorkDamage(), this);
-		Bukkit.getPluginManager().registerEvents(new AreYouSureMenuClickEvent(), this); 
+		Bukkit.getPluginManager().registerEvents(new AreYouSureMenuClickEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new PlayerRewardCommandEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new HelpMenuClickEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new StatsMenuClickEvent(), this);

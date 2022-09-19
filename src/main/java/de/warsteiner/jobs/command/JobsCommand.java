@@ -25,6 +25,12 @@ public class JobsCommand implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			String UUID = ""+player.getUniqueId();
+			
+			if(!plugin.getPlayerAPI().existInCacheByUUID(UUID)) {
+				player.sendMessage("§cError while executing the Jobs Command. (Player not found)");
+				return true;
+			}
+			
 			JobsPlayer jb =plugin.getPlayerAPI().getRealJobPlayer(UUID);
 			GuiManager gui = plugin.getGUI();
 

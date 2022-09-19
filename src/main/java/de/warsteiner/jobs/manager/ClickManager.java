@@ -237,8 +237,16 @@ public class ClickManager {
 
 			OptionalJobJoin(event);
 
-			plugin.getPlayerAPI().updateJobs(job.toUpperCase(), jb, "" + player.getUniqueId());
-			jb.addCurrentJob(job);
+			new BukkitRunnable() {
+
+				@Override
+				public void run() {
+					plugin.getPlayerAPI().updateDataOfJob(job.toUpperCase(), jb, "" + player.getUniqueId());
+
+					jb.addCurrentJob(job);
+				}
+			}.runTaskAsynchronously(plugin);
+
 			api.playSound("JOB_JOINED", player);
 
 			new BukkitRunnable() {
@@ -381,9 +389,18 @@ public class ClickManager {
 	public void buy(double money, Player player, JobsPlayer jb, Job job) {
 		FileConfiguration cfg = plugin.getFileManager().getGUI();
 		plugin.getEco().withdrawPlayer(player, money);
-		jb.addOwnedJob(job.getConfigID());
 
-		plugin.getPlayerAPI().updateJobs(job.getConfigID().toUpperCase(), jb, "" + player.getUniqueId());
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+
+				jb.addOwnedJob(job.getConfigID());
+
+				plugin.getPlayerAPI().updateDataOfJob(job.getConfigID().toUpperCase(), jb, "" + player.getUniqueId());
+
+			}
+		}.runTaskAsynchronously(plugin);
 
 		api.playSound("JOB_BOUGHT", player);
 
