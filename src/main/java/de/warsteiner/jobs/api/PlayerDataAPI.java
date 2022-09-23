@@ -18,7 +18,10 @@ import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.utils.JobAction;
 import de.warsteiner.jobs.utils.database.statements.SQLStatementAPI;
 import de.warsteiner.jobs.utils.objects.JobStats;
+import de.warsteiner.jobs.utils.objects.JobsMultiplier;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
+import de.warsteiner.jobs.utils.objects.MultiplierType;
+import de.warsteiner.jobs.utils.objects.MultiplierWeight;
 
 public class PlayerDataAPI {
 
@@ -63,8 +66,160 @@ public class PlayerDataAPI {
 
 				s.executeUpdate(
 						"CREATE TABLE IF NOT EXISTS jobs_earnings_storage_dates (UUID varchar(200), CDATE varchar(200))");
+
+				s.executeUpdate(
+						"CREATE TABLE IF NOT EXISTS job_player_multipliers (UUID varchar(200), NAME varchar(200), PLUGIN varchar(200), TYPE varchar(200), UNTIL varchar(200), WEIGHT varchar(200), VAL double, JOB varchar(200))");
 			}
 		}.runTaskAsynchronously(plugin);
+	}
+
+	public boolean existMultiplier(String UUID, String name) {
+		String mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equalsIgnoreCase("SQL")) {
+
+			AtomicReference<String> a = new AtomicReference<String>();
+
+			mg.executeQuery("SELECT * FROM job_player_multipliers WHERE UUID= '" + UUID + "' AND NAME='" + name + "'",
+					rs -> {
+						if (rs.next()) {
+							a.set(rs.getString("PLUGIN"));
+						}
+						return 1;
+					});
+			return a.get() != null;
+
+		} else if (mode.equalsIgnoreCase("YML")) {
+
+			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+
+			return cfg.getString("Multipliers." + UUID + "." + name + ".Plugin") != null;
+
+		}
+		return false;
+	}
+
+	public void updateMultiplier(String uuid, String name, String by_plugin, MultiplierType type_of, String until,
+			MultiplierWeight weight, double value, Job job) {
+		String mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equalsIgnoreCase("SQL")) {
+
+			final String insertQuery = "UPDATE `job_player_multipliers` SET PLUGIN='" + by_plugin + "' AND SET TYPE='"
+					+ type_of.toString() + "' AND SET JOB='" + job.getConfigID() + "' AND SET VAL='" + value
+					+ "' AND SET WEIGHT='" + weight.toString() + "' AND SET UNTIL='" + until + "' WHERE UUID='" + uuid
+					+ "' AND NAME='" + name + "'";
+			mg.executeUpdate(insertQuery);
+
+		} else if (mode.equalsIgnoreCase("YML")) {
+
+			File file = plugin.getPlayerDataFile().getfile();
+			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+
+			cfg.set("Multipliers." + uuid + "." + name + ".Plugin", by_plugin);
+			cfg.set("Multipliers." + uuid + "." + name + ".Type", type_of.toString());
+			cfg.set("Multipliers." + uuid + "." + name + ".Until", until);
+			cfg.set("Multipliers." + uuid + "." + name + ".Weight", weight.toString());
+			cfg.set("Multipliers." + uuid + "." + name + ".Value", value);
+			cfg.set("Multipliers." + uuid + "." + name + ".Job", job.getConfigID());
+			try {
+				cfg.save(file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	public ArrayList<JobsMultiplier> getMultipliers(String UUID) {
+		String mode = UltimateJobs.getPlugin().getPluginMode();
+		Collection<JobsMultiplier> ms = new ArrayList<JobsMultiplier>();
+		if (mode.equalsIgnoreCase("SQL")) {
+
+			mg.executeQuery("SELECT * FROM job_player_multipliers WHERE UUID= '" + UUID + "'", rs -> {
+
+				while (rs.next()) {
+
+					String name = rs.getString("NAME");
+					String by = rs.getString("PLUGIN");
+					String type = rs.getString("TYPE");
+					String until = rs.getString("UNTIL");
+					String weight = rs.getString("WEIGHT");
+					double value = rs.getDouble("VAL");
+					String job = rs.getString("JOB");
+
+					JobsMultiplier nw = new JobsMultiplier(name, by, MultiplierType.valueOf(type), until,
+							MultiplierWeight.valueOf(weight), value, plugin.getJobCache().get(job));
+
+					ms.add(nw);
+				}
+
+				return 1;
+			});
+
+			return (ArrayList<JobsMultiplier>) ms;
+		} else if (mode.equalsIgnoreCase("YML")) {
+			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+
+			List<String> listed = cfg.getStringList("MultipliersList." + UUID);
+
+			for (String v : listed) {
+				String name = v;
+				String by = cfg.getString("Multipliers." + UUID + "." + name + ".Plugin");
+				String type = cfg.getString("Multipliers." + UUID + "." + name + ".Type");
+				String until = cfg.getString("Multipliers." + UUID + "." + name + ".Until");
+				String weight = cfg.getString("Multipliers." + UUID + "." + name + ".Weight");
+				double value = cfg.getDouble("Multipliers." + UUID + "." + name + ".Value");
+				String job = cfg.getString("Multipliers." + UUID + "." + name + ".Job");
+
+				JobsMultiplier nw = new JobsMultiplier(name, by, MultiplierType.valueOf(type), until,
+						MultiplierWeight.valueOf(weight), value, plugin.getJobCache().get(job));
+
+				ms.add(nw);
+			}
+
+			return (ArrayList<JobsMultiplier>) ms;
+		}
+		return null;
+	}
+
+	public void createMultiplier(String uuid, String name, String by_plugin, MultiplierType type_of, String until,
+			MultiplierWeight weight, double value, Job job) {
+		String mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equalsIgnoreCase("SQL")) {
+
+			final String insertQuery = "INSERT INTO job_player_multipliers(UUID,NAME,PLUGIN,TYPE,UNTIL,WEIGHT,VAL, JOB) VALUES(?,?,?,?,?,?,?,?)";
+			mg.executeUpdate(insertQuery, ps -> {
+				ps.setString(1, uuid);
+				ps.setString(2, name);
+				ps.setString(3, by_plugin);
+				ps.setString(4, type_of.toString());
+				ps.setString(5, until);
+				ps.setString(6, weight.toString());
+				ps.setDouble(7, value);
+				if (job != null) {
+					ps.setString(8, job.getConfigID());
+				} else {
+					ps.setString(8, "NONE");
+				}
+			});
+
+		} else if (mode.equalsIgnoreCase("YML")) {
+
+			File file = plugin.getPlayerDataFile().getfile();
+			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+
+			cfg.set("Multipliers." + uuid + "." + name + ".Plugin", by_plugin);
+			cfg.set("Multipliers." + uuid + "." + name + ".Type", type_of.toString());
+			cfg.set("Multipliers." + uuid + "." + name + ".Until", until);
+			cfg.set("Multipliers." + uuid + "." + name + ".Weight", weight.toString());
+			cfg.set("Multipliers." + uuid + "." + name + ".Value", value);
+			cfg.set("Multipliers." + uuid + "." + name + ".Job", job.getConfigID());
+			try {
+				cfg.save(file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
 	}
 
 	public void updateSalaryDate(String UUID, String date) {
@@ -1115,6 +1270,24 @@ public class PlayerDataAPI {
 				});
 			}
 
+			for (JobsMultiplier s : pl.getMultipliers()) {
+				String name = s.getName();
+				String by = s.getByPlugin();
+				MultiplierType type = s.getType();
+				String until = s.getUntil();
+				MultiplierWeight weight = s.getWeight();
+				double value = s.getValue();
+				Job job = s.getJob();
+
+				if (existMultiplier(UUID, name)) {
+					updateMultiplier(UUID, name, by, type, until, weight, value, job);
+				} else {
+					createMultiplier(UUID, name, by, type, until, weight, value, job);
+					;
+				}
+
+			}
+
 			for (String job : owned) {
 
 				Job j = plugin.getJobCache().get(job);
@@ -1203,6 +1376,24 @@ public class PlayerDataAPI {
 			cfg.set("Salary." + UUID, sal);
 
 			ArrayList<String> newowned = new ArrayList<String>();
+
+			for (JobsMultiplier s : pl.getMultipliers()) {
+				String name = s.getName();
+				String by = s.getByPlugin();
+				MultiplierType type = s.getType();
+				String until = s.getUntil();
+				MultiplierWeight weight = s.getWeight();
+				double value = s.getValue();
+				Job job = s.getJob();
+
+				if (existMultiplier(UUID, name)) {
+					updateMultiplier(UUID, name, by, type, until, weight, value, job);
+				} else {
+					createMultiplier(UUID, name, by, type, until, weight, value, job);
+					;
+				}
+
+			}
 
 			for (String job : owned) {
 
@@ -1554,7 +1745,7 @@ public class PlayerDataAPI {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
 
-			int max = UltimateJobs.getPlugin().getFileManager().getConfig().getInt("MaxDefaultJobs");
+			int max = UltimateJobs.getPlugin().getFileManager().getConfig().getInt("MaxDefaultJobs") - 1;
 			final String insertQuery = "INSERT INTO job_players(UUID,DATE,POINTS,MAX) VALUES(?,?,?,?)";
 			mg.executeUpdate(insertQuery, ps -> {
 				ps.setString(1, UUID);
@@ -1567,7 +1758,7 @@ public class PlayerDataAPI {
 		} else if (mode.equalsIgnoreCase("YML")) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
-			int max = UltimateJobs.getPlugin().getFileManager().getConfig().getInt("MaxDefaultJobs");
+			int max = UltimateJobs.getPlugin().getFileManager().getConfig().getInt("MaxDefaultJobs") - 1;
 			ArrayList<String> list = new ArrayList<String>();
 			cfg.set("Player." + UUID + ".Points", 0);
 			cfg.set("Player." + UUID + ".Max", max);

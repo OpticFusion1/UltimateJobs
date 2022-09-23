@@ -62,15 +62,14 @@ Format: "0.00"
 # '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
 
 #
-#how many jobs can a player have by default? 
-# 0 equals 1 Job!
+#how many jobs can a player have by default?  
 #
-MaxDefaultJobs: 0
+MaxDefaultJobs: 1
 
 #if enabled, players can own default jobs
 EnabledDefaultJobs: false
 
-AutoJoinDefaultJobs: false
+AutoJoinDefaultJobs: true
 
 #when a player gets created, he will own this job
 DefaultJobs:
@@ -109,6 +108,15 @@ Enable_Levels: true
  
 #can a player get money from mobs which are spawned by a spawner? 
 CanEarnMoneyFromSpawnerMobs: false
+
+#enable to set max jobs per permission?
+EnableMaxJobPermissions: true
+
+#update the max jobs from the Option "EnableMaxJobPermissions" on server join?
+UpdateOnServerJoin: true
+
+#update the max jobs from the Option "EnableMaxJobPermissions" when a player uses "/jobs"?
+UpdateOnGuiOpen: true
 
 #without the ranking gui will not work
 CalculateRanking: true

@@ -23,9 +23,10 @@ public class JobsPlayer {
 	private HashMap<String, JobStats> stats;
 	private double sal;
 	private String saldate; 
+	private ArrayList<JobsMultiplier> multi;
 	
 	public JobsPlayer(String name, ArrayList<String> current2, ArrayList<String> owned2,  double points,
-			int max, String UUID, UUID rUUID, Language lang, HashMap<String, JobStats> stats, double s, String saldate) {
+			int max, String UUID, UUID rUUID, Language lang, HashMap<String, JobStats> stats, double s, String saldate, ArrayList<JobsMultiplier> multis) {
 		this.name = name;
 		this.UUID = UUID; 
 		this.points = points;
@@ -37,6 +38,11 @@ public class JobsPlayer {
 		this.stats = stats;
 		this.sal = s;
 		this.saldate = saldate; 
+		this.multi = multis;
+	}
+	
+	public ArrayList<JobsMultiplier> getMultipliers() {
+		return multi;
 	}
  
 	public void updateCacheSalaryDate(String date) {

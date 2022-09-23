@@ -1,9 +1,11 @@
 package de.warsteiner.jobs.api.plugins;
 
-import java.util.Collection; 
-import org.bukkit.OfflinePlayer; 
+import java.util.Collection;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
- 
+
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.api.Job;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
@@ -11,7 +13,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public class PlaceHolderManager extends PlaceholderExpansion {
 
-	private UltimateJobs plugin = UltimateJobs.getPlugin(); 
+	private UltimateJobs plugin = UltimateJobs.getPlugin();
 
 	@Override
 	public @NotNull String getIdentifier() {
@@ -35,13 +37,86 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 
 	@Override
 	public String onRequest(OfflinePlayer player, String pr) {
-		JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+player.getUniqueId());
- 
+		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
+
 		if (jb != null) {
-			String UUID = ""+player.getUniqueId();
+			String UUID = "" + player.getUniqueId();
 			Collection<String> jobs = jb.getCurrentJobs();
 			Collection<String> jobs_own = jb.getOwnJobs();
-			if (pr.contains("job_current_name")) {
+			if (pr.contains("job_topranking_global")) {
+				String[] split = pr.split("_");
+				 
+				int rank = Integer.valueOf(split[3]);
+ 
+				return plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfGlobalPlayer(rank));
+
+			}  else if (pr.contains("job_topranking_level")) {
+				String[] split = pr.split("_");
+				String internal = split[3];
+				
+				int rank = Integer.valueOf(split[4]);
+
+				Job job = plugin.getJobCache().get(internal.toUpperCase());
+				 
+				return plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfLevelsJob(job, rank));
+
+			}  else	if (pr.contains("job_topranking_blocks")) {
+				String[] split = pr.split("_");
+				String internal = split[3];
+				
+				int rank = Integer.valueOf(split[4]);
+
+				Job job = plugin.getJobCache().get(internal.toUpperCase());
+				 
+				return plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfBlocksJob(job, rank));
+
+			}  else if (pr.contains("job_topranking_earnings")) {
+				String[] split = pr.split("_");
+				String internal = split[3];
+				
+				int rank = Integer.valueOf(split[4]);
+
+				Job job = plugin.getJobCache().get(internal.toUpperCase());
+				 
+				return plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfEarningsJob(job, rank));
+
+			} else if (pr.contains("job_ranking_blocks")) {
+				String[] split = pr.split("_");
+				String internal = split[3];
+
+				Job job = plugin.getJobCache().get(internal.toUpperCase());
+				 
+				return plugin.getPlayerAPI().getRankOfBlocksJob(job, UUID);
+
+			}  else if (pr.contains("job_ranking_global")) {
+				
+				return plugin.getPlayerAPI().getRankOfGlobalPlayer(""+UUID);
+
+			} else if (pr.contains("job_ranking_level")) {
+				String[] split = pr.split("_");
+				String internal = split[3];
+
+				Job job = plugin.getJobCache().get(internal.toUpperCase());
+				 
+				return plugin.getPlayerAPI().getRankOfLevelsJob(job, UUID);
+
+			} else if (pr.contains("job_ranking_blocks")) {
+				String[] split = pr.split("_");
+				String internal = split[3];
+
+				Job job = plugin.getJobCache().get(internal.toUpperCase());
+				 
+				return plugin.getPlayerAPI().getRankOfBlocksJob(job, UUID);
+
+			} else if (pr.contains("job_ranking_earnings")) {
+				String[] split = pr.split("_");
+				String internal = split[3];
+
+				Job job = plugin.getJobCache().get(internal.toUpperCase());
+				 
+				return plugin.getPlayerAPI().getRankOfEarningsJob(job, UUID);
+
+			} else if (pr.contains("job_current_name")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
 
@@ -58,14 +133,14 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				} else {
 					return jb.getLanguage().getStringFromLanguage(jb.getUUID(), "placeholder_no_job");
 				}
-			} else 	if (pr.contains("job_own_contains")) {
+			} else if (pr.contains("job_own_contains")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
 
 				if (jobs_own.size() != 0) {
 
 					if (jobs_own.contains(internal.toUpperCase())) {
- 
+
 						return "true";
 
 					} else {
@@ -74,14 +149,14 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				} else {
 					return jb.getLanguage().getStringFromLanguage(jb.getUUID(), "placeholder_no_job");
 				}
-			}  else 	if (pr.contains("job_current_contains")) {
+			} else if (pr.contains("job_current_contains")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
 
 				if (jobs.size() != 0) {
 
 					if (jobs.contains(internal.toUpperCase())) {
- 
+
 						return "true";
 
 					} else {
@@ -99,7 +174,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 					if (jobs.contains(internal.toUpperCase())) {
 
 						Job job = plugin.getJobCache().get(internal.toUpperCase());
-						return ""+plugin.getPlayerAPI().getOnlinePlayersInJob(job).size();
+						return "" + plugin.getPlayerAPI().getOnlinePlayersInJob(job).size();
 
 					} else {
 						return "0";
@@ -107,15 +182,15 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				} else {
 					return "0";
 				}
-			}  else if (pr.contains("job_current_level")) {
+			} else if (pr.contains("job_current_level")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
 
 				if (jobs.size() != 0) {
 
 					if (jobs.contains(internal.toUpperCase())) {
- 
-						return ""+jb.getStatsOf(internal.toUpperCase()).getLevel();
+
+						return "" + jb.getStatsOf(internal.toUpperCase()).getLevel();
 					} else {
 						return jb.getLanguage().getStringFromLanguage(jb.getUUID(), "placeholder_no_level");
 					}
@@ -127,15 +202,15 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				String internal = split[3];
 				if (jobs.size() != 0) {
 					if (jobs.contains(internal.toUpperCase())) {
- 
-						return ""+jb.getStatsOf(internal.toUpperCase()).getExp();
+
+						return "" + jb.getStatsOf(internal.toUpperCase()).getExp();
 					} else {
 						return jb.getLanguage().getStringFromLanguage(jb.getUUID(), "placeholder_no_exp");
 					}
 				} else {
 					return jb.getLanguage().getStringFromLanguage(jb.getUUID(), "placeholder_no_exp");
 				}
-			}  else if (pr.contains("job_current_levelname")) {
+			} else if (pr.contains("job_current_levelname")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
 

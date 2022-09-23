@@ -244,6 +244,9 @@ public class ClickManager {
 					plugin.getPlayerAPI().updateDataOfJob(job.toUpperCase(), jb, "" + player.getUniqueId());
 
 					jb.addCurrentJob(job);
+					
+					plugin.getPlayerAPI().updateDateJoinedOfJob(jb.getUUIDAsString(), job,
+							plugin.getPluginManager().getDateTodayFromCal());
 				}
 			}.runTaskAsynchronously(plugin);
 
@@ -256,10 +259,7 @@ public class ClickManager {
 					gui.setMainInventoryJobItems(player.getOpenInventory(), player, name);
 				}
 			}.runTaskLater(plugin, 1);
-
-			plugin.getPlayerAPI().updateDateJoinedOfJob(jb.getUUIDAsString(), job,
-					plugin.getPluginManager().getDateTodayFromCal());
-
+ 
 			player.sendMessage(plugin.getPluginManager()
 					.toHex(jb.getLanguage().getStringFromLanguage(player.getUniqueId(), "Other.Joined")
 							.replaceAll("<job>", j.getDisplay("" + player.getUniqueId()))));

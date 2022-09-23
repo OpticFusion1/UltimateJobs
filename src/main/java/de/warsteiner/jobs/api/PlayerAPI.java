@@ -224,17 +224,171 @@ public class PlayerAPI {
 	public HashMap<Job, HashMap<Integer, String>> blocks_ranked = new HashMap<Job, HashMap<Integer, String>>();
 	public HashMap<Job, HashMap<Integer, String>> level_ranked = new HashMap<Job, HashMap<Integer, String>>();
 
-	public int getRankOfGlobalPlayer(String UUID) {
-		for (int i = 0; i != ranked_points.size(); i++) {
+	public String getRankOfLevelsJob(Job job, String UUID) {
 
-			String uuid = ranked_points.get(i);
+		if (level_ranked != null) {
 
-			if (uuid.equalsIgnoreCase(UUID)) {
-				return i + 1;
+			if (level_ranked.containsKey(job)) {
+
+				HashMap<Integer, String> list = level_ranked.get(job);
+
+				if (list.size() != 0) {
+					for (int i = 0; i != list.size(); i++) {
+
+						if (list.get(i).equalsIgnoreCase(UUID)) {
+							int calc = (i + 1);
+							return "" + calc;
+						}
+
+					}
+				}
 			}
-
 		}
-		return 999;
+		return "Unknown";
+
+	}
+
+	public String getPlaceOfLevelsJob(Job job, int place) {
+
+		if (level_ranked != null) {
+			if (level_ranked.containsKey(job)) {
+				HashMap<Integer, String> list = level_ranked.get(job);
+
+				if (list.size() != 0) {
+					for (int i = 0; i != list.size(); i++) {
+						int calc = (i + 1);
+						if (calc == place) {
+
+							return list.get(i);
+						}
+
+					}
+				}
+			}
+		}
+		return "Unknown";
+
+	}
+
+	public String getRankOfBlocksJob(Job job, String UUID) {
+
+		if (blocks_ranked != null) {
+			if (blocks_ranked.containsKey(job)) {
+				HashMap<Integer, String> list = blocks_ranked.get(job);
+
+				if (list.size() != 0) {
+					for (int i = 0; i != list.size(); i++) {
+
+						if (list.get(i).equalsIgnoreCase(UUID)) {
+							int calc = (i + 1);
+							return "" + calc;
+						}
+
+					}
+				}
+			}
+		}
+		return "Unknown";
+
+	}
+
+	public String getPlaceOfBlocksJob(Job job, int place) {
+
+		if (blocks_ranked != null) {
+			if (blocks_ranked.containsKey(job)) {
+				HashMap<Integer, String> list = blocks_ranked.get(job);
+
+				if (list.size() != 0) {
+					for (int i = 0; i != list.size(); i++) {
+						int calc = (i + 1);
+						if (calc == place) {
+
+							return list.get(i);
+						}
+
+					}
+				}
+			}
+		}
+		return "Unknown";
+
+	}
+
+	public String getRankOfEarningsJob(Job job, String UUID) {
+
+		if (today_ranked != null) {
+			if (today_ranked.containsKey(job)) {
+				HashMap<Integer, String> list = today_ranked.get(job);
+
+				if (list.size() != 0) {
+					for (int i = 0; i != list.size(); i++) {
+
+						if (list.get(i).equalsIgnoreCase(UUID)) {
+							int calc = (i + 1);
+							return "" + calc;
+						}
+
+					}
+				}
+			}
+		}
+		return "Unknown";
+
+	}
+
+	public String getPlaceOfEarningsJob(Job job, int place) {
+
+		if (today_ranked != null) {
+			if (today_ranked.containsKey(job)) {
+				HashMap<Integer, String> list = today_ranked.get(job);
+
+				if (list.size() != 0) {
+					for (int i = 0; i != list.size(); i++) {
+						int calc = (i + 1);
+						if (calc == place) {
+
+							return list.get(i);
+						}
+
+					}
+				}
+			}
+		}
+		return "Unknown";
+
+	}
+
+	public String getRankOfGlobalPlayer(String UUID) {
+		if (ranked_points != null) {
+			for (int i = 0; i != ranked_points.size(); i++) {
+
+				String uuid = ranked_points.get(i);
+
+				if (uuid.equalsIgnoreCase(UUID)) {
+					int calc = (i + 1);
+					return "" + calc;
+				}
+
+			}
+		}
+		return "Unknown";
+
+	}
+
+	public String getPlaceOfGlobalPlayer(int place) {
+		if (ranked_points != null) {
+			for (int i = 0; i != ranked_points.size(); i++) {
+
+				int calc = (i + 1);
+
+				if (calc == place) {
+					String uuid = ranked_points.get(i);
+					return uuid;
+				}
+
+			}
+		}
+		return "Unknown";
 
 	}
 
@@ -733,7 +887,8 @@ public class PlayerAPI {
 
 		JobsPlayer jp = new JobsPlayer(name, current, owned, plm.getPoints("" + UUID),
 
-				plm.getMaxJobs("" + UUID), "" + UUID, UUID, langusged, stats, sal, sat);
+				plm.getMaxJobs("" + UUID), "" + UUID, UUID, langusged, stats, sal, sat,
+				plugin.getPlayerDataAPI().getMultipliers("" + UUID));
 
 		pllist.put("" + UUID, jp);
 		players.add("" + UUID);

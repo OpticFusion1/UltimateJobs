@@ -331,7 +331,7 @@ public class JobWorkManager {
 			return;
 		}
 
-		String id = event.getCaught().getName().toUpperCase();
+		String id = event.getCaught().getName().toUpperCase().replaceAll(" ", "_");
  
 		UUID UUID = event.getPlayer().getUniqueId();
 
@@ -430,7 +430,8 @@ public class JobWorkManager {
 
 	private List<Material> breakingMaterials = List.of(
 			Material.SUGAR_CANE,
-			Material.CACTUS
+			Material.CACTUS,
+			Material.BAMBOO
 		);
 	
 	public void executeFarmWork(BlockBreakEvent event) {
@@ -454,25 +455,30 @@ public class JobWorkManager {
 
 			Job job = getJobOnWork("" + UUID, JobAction.FARM_BREAK, "" + type);
  
+			List<Block> blocks = new ArrayList<>();
+			
 			List<Block> blockstocheck = new ArrayList<>();
 			
 			if (job.getConfig().getBoolean("CheckIfThereAreOtherCanesAbove")) {
-				  
+				
 				if (breakingMaterials.contains(type)) {
-					var isBlockAboveSame = true;
-					for (int i = 0; isBlockAboveSame && block.getY() + i < block.getWorld().getMaxHeight(); i++) {
-						var blockAbove = block.getRelative(BlockFace.UP, i);
-
-						if (breakingMaterials.contains(blockAbove.getType()) && blockAbove.hasMetadata("placed-by-player")) {
-							blockstocheck.add(blockAbove);
-						} else if (blockAbove.getType() == Material.AIR) {
-							isBlockAboveSame = false;
-						}
-					}
-				}
+					 
+				 for (int i = 0; i <= block.getWorld().getMaxHeight(); i++) {
+					 Block bl = block.getLocation().add(0, i, 0).getBlock();
+					 Material d = bl.getType();
+	                    if (breakingMaterials.contains(d)) {
+	                 
+	                    	if(!bl.hasMetadata("placed-by-player")) {
+	                    		blocks.add(bl);
+	                    	}
+	                    	blockstocheck.add(bl);
+	                    }
+				  
+				 }
+				 
 			}
-
-			finalWork("" + type, UUID, JobAction.FARM_BREAK, "farm-break-action", blockstocheck.size(), event.getBlock(), null, true,
+			}
+			finalWork("" + type, UUID, JobAction.FARM_BREAK, "farm-break-action", blocks.size(), event.getBlock(), null, true,
 					true, false, job);
 			
 			Bukkit.getScheduler().runTask(UltimateJobs.getPlugin(), () -> {

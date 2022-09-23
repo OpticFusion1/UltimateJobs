@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import de.warsteiner.jobs.UltimateJobs;
@@ -24,7 +25,7 @@ import de.warsteiner.jobs.utils.objects.JobsPlayer;
 public class PlayerExistEvent implements Listener {
 
 	private UltimateJobs plugin = UltimateJobs.getPlugin();
- 
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(PlayerJoinEvent event) {
 		new BukkitRunnable() {
@@ -94,31 +95,35 @@ public class PlayerExistEvent implements Listener {
 									for (String job : config.getStringList("DefaultJobs")) {
 
 										if (plugin.getJobCache().get(job) != null) {
-											if (jp.getOwnJobs() == null) {
 
-												ArrayList<String> l = new ArrayList<String>();
-												ArrayList<String> l2 = new ArrayList<String>();
-
-												l.add(job);
-
-												if (config.getBoolean("AutoJoinDefaultJobs")) {
-													l2.add(job);
-												}
-
-												jp.updateCurrentJobs(l2);
-												jp.updateOwnJobs(l);
+											if (!jp.getOwnJobs().contains(job)) {
+												jp.addOwnedJob(job);
 
 												cache.updateDataOfJob(job, jp, "" + player.getUniqueId());
 
-											} else {
-												if (!jp.getOwnJobs().contains(job)) {
-													jp.addOwnedJob(job);
-													if (config.getBoolean("AutoJoinDefaultJobs")) {
-														jp.addCurrentJob(job);
-													}
-													cache.updateDataOfJob(job, jp, "" + player.getUniqueId());
+												if (config.getBoolean("AutoJoinDefaultJobs")) {
+													jp.addCurrentJob(job);
 												}
+
 											}
+										}
+
+									}
+								}
+							}
+
+							if (config.getBoolean("EnableMaxJobPermissions")) {
+
+								if (config.getBoolean("UpdateOnServerJoin")) {
+
+									for (PermissionAttachmentInfo perms : player.getEffectivePermissions()) {
+
+										if (perms.getPermission().startsWith("ultimatejobs.max.")) {
+
+											int real = Integer
+													.valueOf(perms.getPermission().split("ultimatejobs.max.")[1]) - 1;
+
+											jp.updateCacheMax(real);
 										}
 
 									}
@@ -136,7 +141,7 @@ public class PlayerExistEvent implements Listener {
 		}.runTaskAsynchronously(plugin);
 
 	}
- 
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onQuit(PlayerQuitEvent event) {
 
@@ -150,14 +155,14 @@ public class PlayerExistEvent implements Listener {
 				PlayerDataAPI data = plugin.getPlayerDataAPI();
 				UUID UUID = player.getUniqueId();
 
-				if(cache.existInCacheByUUID(""+UUID)) {
+				if (cache.existInCacheByUUID("" + UUID)) {
 					plugin.getLocationAPI().setLocation(player.getLocation(), "LastLoc." + UUID);
 
 					data.savePlayer(cache.getRealJobPlayer("" + UUID), "" + UUID);
 					cache.removePlayerFromCache("" + UUID);
 				} else {
 					Bukkit.getConsoleSender()
-					.sendMessage("§cFailed to save player : " + player.getName() + " for Ultimatejobs!");
+							.sendMessage("§cFailed to save player : " + player.getName() + " for Ultimatejobs!");
 				}
 			}
 

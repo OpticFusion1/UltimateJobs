@@ -37,6 +37,7 @@ import de.warsteiner.jobs.api.LocationAPI;
 import de.warsteiner.jobs.api.PlayerAPI;
 import de.warsteiner.jobs.api.PlayerChunkAPI;
 import de.warsteiner.jobs.api.PlayerDataAPI;
+import de.warsteiner.jobs.api.PlayerMultiplierAPI;
 import de.warsteiner.jobs.api.SkullCreatorAPI;
 import de.warsteiner.jobs.api.plugins.ItemsAdderManager;
 import de.warsteiner.jobs.api.plugins.MythicMobsManager;
@@ -49,6 +50,7 @@ import de.warsteiner.jobs.command.JobsCommand;
 import de.warsteiner.jobs.command.admincommand.AddExpSub;
 import de.warsteiner.jobs.command.admincommand.AddMaxSub;
 import de.warsteiner.jobs.command.admincommand.AddPointsSub;
+import de.warsteiner.jobs.command.admincommand.BoostSub;
 import de.warsteiner.jobs.command.admincommand.FirstSub;
 import de.warsteiner.jobs.command.admincommand.HelpSub;
 import de.warsteiner.jobs.command.admincommand.IDSub;
@@ -173,6 +175,8 @@ public class UltimateJobs extends JavaPlugin {
 	private PlayerChunkAPI capi;
 
 	private ItemsAdderManager aim;
+	
+	private PlayerMultiplierAPI mapi;
 
 	public void onLoad() {
 
@@ -187,11 +191,7 @@ public class UltimateJobs extends JavaPlugin {
 		filemanager.generateFiles(false);
 
 		mode = getFileManager().getDataConfig().getString("Mode").toUpperCase();
-
-		if (this.filemanager.getConfig().getInt("ExecutorServiceThreads") == 0) {
-			Bukkit.getConsoleSender().sendMessage("§cMissing Option of ExecutorServices in Config.yml");
-		}
-
+ 
 		loadClasses();
 
 		if (getPluginManager().isInstalled("WorldGuard")) {
@@ -467,6 +467,8 @@ public class UltimateJobs extends JavaPlugin {
 
 		getAdminSubCommandManager().getSubCommandList().add(new FirstSub());
 		getAdminSubCommandManager().getSubCommandList().add(new UpdateSub());
+		
+		getAdminSubCommandManager().getSubCommandList().add(new BoostSub());
 	}
 
 	public void loadClasses() {
@@ -493,7 +495,13 @@ public class UltimateJobs extends JavaPlugin {
 		ogui = new GuiOpenManager();
 
 		capi = new PlayerChunkAPI();
+		
+		mapi = new PlayerMultiplierAPI();
 
+	}
+	
+	public PlayerMultiplierAPI getPlayerMultiplierAPI() {
+		return mapi;
 	}
 
 	public ItemsAdderManager getItemsAdderManager() {

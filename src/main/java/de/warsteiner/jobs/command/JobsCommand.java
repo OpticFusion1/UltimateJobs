@@ -6,8 +6,10 @@ import java.util.UUID;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
- 
+import org.bukkit.permissions.PermissionAttachmentInfo;
+
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.manager.GuiManager;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
@@ -19,6 +21,8 @@ public class JobsCommand implements CommandExecutor {
 	private static UltimateJobs plugin = UltimateJobs.getPlugin();
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		
+		FileConfiguration config = plugin.getFileManager().getConfig();
 
 		int length = args.length;
 		 
@@ -36,6 +40,26 @@ public class JobsCommand implements CommandExecutor {
 
 			if (length == 0) {
 				gui.createMainGUIOfJobs(player, UpdateTypes.OPEN);
+				
+				//updating max permission
+				
+				if (config.getBoolean("EnableMaxJobPermissions")) {
+
+					if (config.getBoolean("UpdateOnGuiOpen")) {
+
+						for (PermissionAttachmentInfo perms : player.getEffectivePermissions()) {
+
+							if (perms.getPermission().startsWith("ultimatejobs.max.")) {
+
+								int real = Integer
+										.valueOf(perms.getPermission().split("ultimatejobs.max.")[1]) - 1;
+
+								jb.updateCacheMax(real);
+							}
+
+						}
+					}
+				}
 
 			} else {
 				String ar = args[0].toLowerCase();

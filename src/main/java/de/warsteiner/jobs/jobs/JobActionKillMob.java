@@ -20,7 +20,7 @@ public class JobActionKillMob implements Listener {
 			return;
 		}
 
-		if (plugin.getFileManager().getConfig().getBoolean("CanEarnMoneyFromSpawnerMobs")) {
+		if (!plugin.getFileManager().getConfig().getBoolean("CanEarnMoneyFromSpawnerMobs")) {
 			if (event.getEntity().hasMetadata("spawned-by-spawner")) {
 				return;
 			}
