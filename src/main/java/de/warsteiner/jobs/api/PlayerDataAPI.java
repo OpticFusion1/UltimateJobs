@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -99,14 +101,14 @@ public class PlayerDataAPI {
 	}
 
 	public void updateMultiplier(String uuid, String name, String by_plugin, MultiplierType type_of, String until,
-			MultiplierWeight weight, double value, Job job) {
+			MultiplierWeight weight, double value, String job) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
 
 			final String insertQuery = "UPDATE `job_player_multipliers` SET PLUGIN='" + by_plugin + "' AND SET TYPE='"
-					+ type_of.toString() + "' AND SET JOB='" + job.getConfigID() + "' AND SET VAL='" + value
-					+ "' AND SET WEIGHT='" + weight.toString() + "' AND SET UNTIL='" + until + "' WHERE UUID='" + uuid
-					+ "' AND NAME='" + name + "'";
+					+ type_of.toString() + "' AND SET JOB='" + job + "' AND SET VAL='" + value + "' AND SET WEIGHT='"
+					+ weight.toString() + "' AND SET UNTIL='" + until + "' WHERE UUID='" + uuid + "' AND NAME='" + name
+					+ "'";
 			mg.executeUpdate(insertQuery);
 
 		} else if (mode.equalsIgnoreCase("YML")) {
@@ -119,7 +121,8 @@ public class PlayerDataAPI {
 			cfg.set("Multipliers." + uuid + "." + name + ".Until", until);
 			cfg.set("Multipliers." + uuid + "." + name + ".Weight", weight.toString());
 			cfg.set("Multipliers." + uuid + "." + name + ".Value", value);
-			cfg.set("Multipliers." + uuid + "." + name + ".Job", job.getConfigID());
+			cfg.set("Multipliers." + uuid + "." + name + ".Job", job);
+
 			try {
 				cfg.save(file);
 			} catch (IOException e) {
@@ -147,9 +150,10 @@ public class PlayerDataAPI {
 					String job = rs.getString("JOB");
 
 					JobsMultiplier nw = new JobsMultiplier(name, by, MultiplierType.valueOf(type), until,
-							MultiplierWeight.valueOf(weight), value, plugin.getJobCache().get(job));
+							MultiplierWeight.valueOf(weight), value, job);
 
 					ms.add(nw);
+
 				}
 
 				return 1;
@@ -171,9 +175,10 @@ public class PlayerDataAPI {
 				String job = cfg.getString("Multipliers." + UUID + "." + name + ".Job");
 
 				JobsMultiplier nw = new JobsMultiplier(name, by, MultiplierType.valueOf(type), until,
-						MultiplierWeight.valueOf(weight), value, plugin.getJobCache().get(job));
+						MultiplierWeight.valueOf(weight), value, job);
 
 				ms.add(nw);
+
 			}
 
 			return (ArrayList<JobsMultiplier>) ms;
@@ -181,8 +186,29 @@ public class PlayerDataAPI {
 		return null;
 	}
 
+	public void removeMultiplier(String UUID, String name) {
+		String mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equalsIgnoreCase("SQL")) {
+			mg.executeUpdate("DELETE FROM job_player_multipliers WHERE UUID='" + UUID + "' AND NAME='" + name + "';");
+		} else {
+			File file = plugin.getPlayerDataFile().getfile();
+			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+
+			List<String> listed = cfg.getStringList("MultipliersList." + UUID);
+
+			cfg.set("Multipliers." + UUID + "." + name, null);
+			listed.remove(name);
+			cfg.set("MultipliersList." + UUID, listed);
+			try {
+				cfg.save(file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public void createMultiplier(String uuid, String name, String by_plugin, MultiplierType type_of, String until,
-			MultiplierWeight weight, double value, Job job) {
+			MultiplierWeight weight, double value, String job) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
 
@@ -196,7 +222,7 @@ public class PlayerDataAPI {
 				ps.setString(6, weight.toString());
 				ps.setDouble(7, value);
 				if (job != null) {
-					ps.setString(8, job.getConfigID());
+					ps.setString(8, job);
 				} else {
 					ps.setString(8, "NONE");
 				}
@@ -207,12 +233,16 @@ public class PlayerDataAPI {
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
+			List<String> listed = cfg.getStringList("MultipliersList." + uuid);
+
 			cfg.set("Multipliers." + uuid + "." + name + ".Plugin", by_plugin);
 			cfg.set("Multipliers." + uuid + "." + name + ".Type", type_of.toString());
 			cfg.set("Multipliers." + uuid + "." + name + ".Until", until);
 			cfg.set("Multipliers." + uuid + "." + name + ".Weight", weight.toString());
 			cfg.set("Multipliers." + uuid + "." + name + ".Value", value);
-			cfg.set("Multipliers." + uuid + "." + name + ".Job", job.getConfigID());
+			cfg.set("Multipliers." + uuid + "." + name + ".Job", job);
+			listed.add(name);
+			cfg.set("MultipliersList." + uuid, listed);
 			try {
 				cfg.save(file);
 			} catch (IOException e) {
@@ -847,7 +877,7 @@ public class PlayerDataAPI {
 		}
 	}
 
-	public void addPlayerToPlayersList(String UUID, String name, String dis) {
+	public void addAPlayerToList(String UUID, String name, String dis) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
 
@@ -860,7 +890,7 @@ public class PlayerDataAPI {
 
 		} else if (mode.equalsIgnoreCase("YML")) {
 
-			List<String> list = getAllPlayers();
+			List<String> list = getUltimatePlayers();
 
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
@@ -880,7 +910,11 @@ public class PlayerDataAPI {
 		}
 	}
 
-	public List<String> getAllPlayers() {
+	public boolean existInPlayersList(String uuid) {
+		return getUltimatePlayers().contains(uuid);
+	}
+
+	public List<String> getUltimatePlayers() {
 
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 
@@ -896,7 +930,7 @@ public class PlayerDataAPI {
 				return 1;
 			});
 
-			return (ArrayList<String>) jobs;
+			return (List<String>) jobs;
 
 		} else {
 
@@ -1277,7 +1311,7 @@ public class PlayerDataAPI {
 				String until = s.getUntil();
 				MultiplierWeight weight = s.getWeight();
 				double value = s.getValue();
-				Job job = s.getJob();
+				String job = s.getJob();
 
 				if (existMultiplier(UUID, name)) {
 					updateMultiplier(UUID, name, by, type, until, weight, value, job);
@@ -1379,12 +1413,13 @@ public class PlayerDataAPI {
 
 			for (JobsMultiplier s : pl.getMultipliers()) {
 				String name = s.getName();
+
 				String by = s.getByPlugin();
 				MultiplierType type = s.getType();
 				String until = s.getUntil();
 				MultiplierWeight weight = s.getWeight();
 				double value = s.getValue();
-				Job job = s.getJob();
+				String job = s.getJob();
 
 				if (existMultiplier(UUID, name)) {
 					updateMultiplier(UUID, name, by, type, until, weight, value, job);
@@ -1686,24 +1721,24 @@ public class PlayerDataAPI {
 		return null;
 	}
 
-	public int getPoints(String UUID) {
+	public double getPoints(String UUID) {
 		String mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equalsIgnoreCase("SQL")) {
-			AtomicInteger a = new AtomicInteger(0);
+			AtomicDouble a = new AtomicDouble();
 
 			mg.executeQuery("SELECT * FROM job_players WHERE UUID= '" + UUID + "'", rs -> {
 				if (rs.next()) {
-					a.set(rs.getInt("POINTS"));
+					a.set(rs.getDouble("POINTS"));
 				}
-				return 0;
+				return 0.0;
 			});
 			return a.get();
 		} else if (mode.equalsIgnoreCase("YML")) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
-			return cfg.getInt("Player." + UUID + ".Points");
+			return cfg.getDouble("Player." + UUID + ".Points");
 		}
-		return 0;
+		return 0.0;
 	}
 
 	public int getMaxJobs(String UUID) {
@@ -1759,12 +1794,14 @@ public class PlayerDataAPI {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
 			int max = UltimateJobs.getPlugin().getFileManager().getConfig().getInt("MaxDefaultJobs") - 1;
+
 			ArrayList<String> list = new ArrayList<String>();
 			cfg.set("Player." + UUID + ".Points", 0);
 			cfg.set("Player." + UUID + ".Max", max);
 			cfg.set("Player." + UUID + ".Date", date);
 			cfg.set("Player." + UUID + ".Owned", list);
 			cfg.set("Player." + UUID + ".Current", list);
+
 			save(cfg, file);
 		}
 	}

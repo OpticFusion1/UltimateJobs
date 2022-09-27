@@ -3,6 +3,7 @@ package de.warsteiner.jobs.manager;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +40,13 @@ public class PluginManager {
 		Date data = new Date();
 		return format.format(data);
 	}
-
+	
+	public String getDateTodayFromCalWith() {
+		DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		Date data = new Date();
+		return format.format(data);
+	}
+ 
 	public String formatText(String text, Map<String, String> replacer, OfflinePlayer player) {
 		text = toHex(text).replaceAll("&", "§");
 		for (String key : replacer.keySet()) {
@@ -98,17 +105,28 @@ public class PluginManager {
 
 	}
 
+	private List<Material> breakingMaterials = List.of(Material.SUGAR_CANE, Material.CACTUS, Material.BAMBOO,
+			  Material.CRIMSON_FUNGUS, Material.WARPED_FUNGUS, Material.BROWN_MUSHROOM, Material.RED_MUSHROOM, Material.MELON, Material.PUMPKIN);
+	
+	
+	private List<Material> bypassmeta = List.of(
+			  Material.CRIMSON_FUNGUS, Material.WARPED_FUNGUS, Material.BROWN_MUSHROOM, Material.RED_MUSHROOM, Material.CARROTS,
+			  Material.WHEAT, Material.POTATOES, Material.SWEET_BERRY_BUSH, Material.BEETROOTS, Material.BAMBOO, Material.COCOA);
+	
 	public boolean isFullyGrownOld(Block block) {
-
-		if (block.getBlockData() == null) {
+	 
+		if (breakingMaterials.contains(block.getType())) {
+			return true;
+		}
+		
+		if(block.hasMetadata("placed-by-player") && !bypassmeta.contains(block.getType())) {
 			return false;
 		}
-
-		if (block.getType() == Material.MELON || block.getType() == Material.PUMPKIN
-				|| block.getType() == Material.SUGAR_CANE) {
-			return !block.hasMetadata("placed-by-player");
+ 
+		if(block.getBlockData() == null) {
+			return false;
 		}
-
+		
 		BlockData bdata = block.getBlockData();
 		if (bdata instanceof Ageable) {
 			Ageable age = (Ageable) bdata;

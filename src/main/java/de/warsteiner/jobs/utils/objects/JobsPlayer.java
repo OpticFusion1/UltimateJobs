@@ -44,6 +44,10 @@ public class JobsPlayer {
 	public ArrayList<JobsMultiplier> getMultipliers() {
 		return multi;
 	}
+	
+	public void updateMultiList(ArrayList<JobsMultiplier> list) {
+		this.multi = list;
+	}
  
 	public void updateCacheSalaryDate(String date) {
 		saldate = date;

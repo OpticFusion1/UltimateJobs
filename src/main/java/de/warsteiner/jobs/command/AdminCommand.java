@@ -96,7 +96,7 @@ public class AdminCommand implements CommandExecutor {
 						Player player = (Player) sender;
 						 new JsonMessage() 
 						 .append("§8-> §6" + which.getUsage() + " §8| §7" + which.getDescription()).setHoverAsTooltip("§7"+which.getDescription())
-						 .setClickAsSuggestCmd(us).save().send(player);
+						 .setClickAsSuggestCmd(us.toLowerCase()).save().send(player);
 					} else {
 						sender.sendMessage("§8-> §6" + which.getUsage() + " §8| §7" + which.getDescription());
 					}

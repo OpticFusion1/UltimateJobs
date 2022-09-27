@@ -47,8 +47,16 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				String[] split = pr.split("_");
 				 
 				int rank = Integer.valueOf(split[3]);
- 
-				return plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfGlobalPlayer(rank));
+  
+				String dis = null;
+				
+				if(plugin.getPlayerAPI().getPlaceOfGlobalPlayer(rank).equalsIgnoreCase("Unknown")) {
+					dis = "Unknown";
+				} else {
+					dis = plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfGlobalPlayer(rank));
+				}
+				
+				return dis;
 
 			}  else if (pr.contains("job_topranking_level")) {
 				String[] split = pr.split("_");
@@ -58,8 +66,16 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 
 				Job job = plugin.getJobCache().get(internal.toUpperCase());
 				 
-				return plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfLevelsJob(job, rank));
-
+				String dis = null;
+				
+				if(plugin.getPlayerAPI().getPlaceOfLevelsJob(job, rank).equalsIgnoreCase("Unknown")) {
+					dis = "Unknown";
+				} else {
+					dis = plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfLevelsJob(job, rank));
+				}
+				
+				return dis;
+				
 			}  else	if (pr.contains("job_topranking_blocks")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
@@ -68,7 +84,15 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 
 				Job job = plugin.getJobCache().get(internal.toUpperCase());
 				 
-				return plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfBlocksJob(job, rank));
+				String dis = null;
+				
+				if(plugin.getPlayerAPI().getPlaceOfBlocksJob(job, rank).equalsIgnoreCase("Unknown")) {
+					dis = "Unknown";
+				} else {
+					dis = plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfBlocksJob(job, rank));
+				}
+				
+				return dis;
 
 			}  else if (pr.contains("job_topranking_earnings")) {
 				String[] split = pr.split("_");
@@ -77,16 +101,16 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				int rank = Integer.valueOf(split[4]);
 
 				Job job = plugin.getJobCache().get(internal.toUpperCase());
-				 
-				return plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfEarningsJob(job, rank));
-
-			} else if (pr.contains("job_ranking_blocks")) {
-				String[] split = pr.split("_");
-				String internal = split[3];
-
-				Job job = plugin.getJobCache().get(internal.toUpperCase());
-				 
-				return plugin.getPlayerAPI().getRankOfBlocksJob(job, UUID);
+			 
+				String dis = null;
+				
+				if(plugin.getPlayerAPI().getPlaceOfEarningsJob(job, rank).equalsIgnoreCase("Unknown")) {
+					dis = "Unknown";
+				} else {
+					dis = plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfEarningsJob(job, rank));
+				}
+				
+				return dis;
 
 			}  else if (pr.contains("job_ranking_global")) {
 				
@@ -113,7 +137,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				String internal = split[3];
 
 				Job job = plugin.getJobCache().get(internal.toUpperCase());
-				 
+			 
 				return plugin.getPlayerAPI().getRankOfEarningsJob(job, UUID);
 
 			} else if (pr.contains("job_current_name")) {

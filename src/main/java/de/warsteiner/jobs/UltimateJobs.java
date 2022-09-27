@@ -36,8 +36,7 @@ import de.warsteiner.jobs.api.LevelAPI;
 import de.warsteiner.jobs.api.LocationAPI;
 import de.warsteiner.jobs.api.PlayerAPI;
 import de.warsteiner.jobs.api.PlayerChunkAPI;
-import de.warsteiner.jobs.api.PlayerDataAPI;
-import de.warsteiner.jobs.api.PlayerMultiplierAPI;
+import de.warsteiner.jobs.api.PlayerDataAPI; 
 import de.warsteiner.jobs.api.SkullCreatorAPI;
 import de.warsteiner.jobs.api.plugins.ItemsAdderManager;
 import de.warsteiner.jobs.api.plugins.MythicMobsManager;
@@ -175,8 +174,7 @@ public class UltimateJobs extends JavaPlugin {
 	private PlayerChunkAPI capi;
 
 	private ItemsAdderManager aim;
-	
-	private PlayerMultiplierAPI mapi;
+	 
 
 	public void onLoad() {
 
@@ -269,14 +267,13 @@ public class UltimateJobs extends JavaPlugin {
 		registerSubCommands();
 
 		BossBarHandler.startSystemCheck();
-
-		getPlayerAPI().startSave();
-
+ 
 		createBackups();
 
 		new Metrics(this, 15424);
 
 		getPlayerAPI().calculateRanking();
+		getPlayerAPI().startUtil();
 
 		// job events
 		loadEvents();
@@ -495,15 +492,9 @@ public class UltimateJobs extends JavaPlugin {
 		ogui = new GuiOpenManager();
 
 		capi = new PlayerChunkAPI();
-		
-		mapi = new PlayerMultiplierAPI();
-
+		 
 	}
-	
-	public PlayerMultiplierAPI getPlayerMultiplierAPI() {
-		return mapi;
-	}
-
+ 
 	public ItemsAdderManager getItemsAdderManager() {
 		return aim;
 	}

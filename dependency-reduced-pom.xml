@@ -20,7 +20,7 @@
               <relocations>
                 <relocation>
                   <pattern>com.zaxxer.hikari</pattern>
-                  <shadedPattern>de.warsteiner.jobs.libs</shadedPattern>
+                  <shadedPattern>de.warsteiner.jobs.mylib</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>

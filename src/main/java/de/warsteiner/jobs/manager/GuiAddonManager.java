@@ -8,10 +8,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -407,16 +409,16 @@ public class GuiAddonManager {
 
 	public void setJobRankingItems(InventoryView inv, FileConfiguration cf, Player pl, Job job) {
 
-		String UUID = "" + pl.getUniqueId();
-		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(UUID);
+		String MyUUID = "" + pl.getUniqueId();
+		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(MyUUID);
 
 		PlayerDataAPI d = plugin.getPlayerDataAPI();
 
-		if (d.getSettingData(UUID, "RANKING") == null) {
-			d.createSettingData(UUID, "RANKING", cf.getString("Categories.PlayerDefaultCat").toUpperCase());
+		if (d.getSettingData(MyUUID, "RANKING") == null) {
+			d.createSettingData(MyUUID, "RANKING", cf.getString("Categories.PlayerDefaultCat").toUpperCase());
 		}
 
-		String current = d.getSettingData(UUID, "RANKING");
+		String current = d.getSettingData(MyUUID, "RANKING");
 
 		if (inv != null) {
 
@@ -479,73 +481,79 @@ public class GuiAddonManager {
 
 		}
 
-		List<String> d3 = plugin.getFileManager().getRankingPerJobConfig().getStringList("Categories.List");
+		List<String> howmany = plugin.getFileManager().getRankingPerJobConfig()
+				.getStringList("PerJobRankingl_Items.List");
+
+		for (int i = 0; i != howmany.size(); i++) {
+
+			int rank = i + 1;
+
+			int slot = 999;
+
+			if (cf.contains("PerJobRankingl_Items." + rank + ".Slot")) {
+				slot = cf.getInt("PerJobRankingl_Items." + rank + ".Slot");
+			}
+
+			if (slot != 999) {
+
+				ItemStack it = plugin.getItemAPI().createItem(pl.getName(),
+						cf.getString("PerJobRankingl_Items.NoneFound.Material"));
+				ItemMeta meta = it.getItemMeta();
+
+				if (cf.contains("PerJobRankingl_Items.NoneFound.CustomModelData")) {
+					meta.setCustomModelData(cf.getInt("PerJobRankingl_Items.NoneFound.CustomModelData"));
+				}
+
+				String dis = cf.getString("PerJobRankingl_Items.NoneFound.Display").replaceAll("<rank>", "" + rank);
+
+				meta.setDisplayName(plugin.getPluginManager().toHex(dis).replaceAll("&", "§"));
+
+				it.setItemMeta(meta);
+
+				inv.setItem(slot, it);
+			}
+		}
+		;
 
 		if (current.equalsIgnoreCase("TODAY")) {
 
-			HashMap<Integer, String> F = plugin.getPlayerAPI().today_ranked.get(job);
+			if (!plugin.getPlayerAPI().today_ranked.isEmpty() && plugin.getPlayerAPI().today_ranked.containsKey(job.getConfigID())) {
+				if (!plugin.getPlayerAPI().today_ranked.get(job.getConfigID()).isEmpty()) {
+					plugin.getPlayerAPI().today_ranked.get(job.getConfigID()).forEach((rank, id) -> {
 
-			for (int i = 0; i != d3.size() + 1; i++) {
+						int slot = 999;
 
-				if (d3.size() >= i) {
-
-					int get = i + 1;
-
-					int slot = 999;
-
-					if (cf.contains("PerJobRankingl_Items." + get + ".Slot")) {
-						slot = cf.getInt("PerJobRankingl_Items." + get + ".Slot");
-					}
-
-					if (slot != 999) {
-
-						if (pl != null) {
-
-							ItemStack it = plugin.getItemAPI().createItem(pl.getName(),
-									cf.getString("PerJobRankingl_Items.NoneFound.Material"));
-							ItemMeta meta = it.getItemMeta();
-
-							if (cf.contains("PerJobRankingl_Items.NoneFound.CustomModelData")) {
-								meta.setCustomModelData(cf.getInt("PerJobRankingl_Items.NoneFound.CustomModelData"));
-							}
-
-							String dis = cf.getString("PerJobRankingl_Items.NoneFound.Display").replaceAll("<rank>",
-									"" + get);
-
-							meta.setDisplayName(plugin.getPluginManager().toHex(dis).replaceAll("&", "§"));
-
-							it.setItemMeta(meta);
-
-							inv.setItem(slot, it);
+						if (cf.contains("PerJobRankingl_Items." + rank + ".Slot")) {
+							slot = cf.getInt("PerJobRankingl_Items." + rank + ".Slot");
 						}
 
-						if (F.size() >= i) {
+						if (slot != 999) {
 
-							String rank_uuid = plugin.getPlayerAPI().today_ranked.get(job).get(i);
+							if (id != null) {
 
-							if (rank_uuid != null) {
+								UUID ID = UUID.fromString(id.toString());
 
-								String name = plugin.getPlayerDataAPI().getDisplayByUUID(rank_uuid);
+								String name = plugin.getPlayerDataAPI().getDisplayByUUID("" + ID);
 
 								String icon = null;
 
-								if (cf.getBoolean("PerJobRankingl_Items." + get + ".UseSkullAsMaterial")) {
+								if (cf.getBoolean("PerJobRankingl_Items." + rank + ".UseSkullAsMaterial")) {
 									icon = "name;<name>";
 								} else {
-									icon = cf.getString("PerJobRankingl_Items." + get + ".Material");
+									icon = cf.getString("PerJobRankingl_Items." + rank + ".Material");
 								}
 
 								if (icon != null) {
 									ItemStack it = plugin.getItemAPI().createItem(name, icon);
 									ItemMeta meta = it.getItemMeta();
 
-									if (cf.contains("PerJobRankingl_Items." + get + ".CustomModelData")) {
+									if (cf.contains("PerJobRankingl_Items." + rank + ".CustomModelData")) {
 										meta.setCustomModelData(
-												cf.getInt("PerJobRankingl_Items." + get + ".CustomModelData"));
+												cf.getInt("PerJobRankingl_Items." + rank + ".CustomModelData"));
 									}
 
 									String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-											cf.getString("PerJobRankingl_Items." + get + ".Display"));
+											cf.getString("PerJobRankingl_Items." + rank + ".Display"));
 
 									List<String> lore = sp.getLanguage().getListFromLanguage(sp.getUUID(),
 											"PerJobRanking.LoreForRanks.Today");
@@ -554,15 +562,14 @@ public class GuiAddonManager {
 
 									for (String b : lore) {
 										old.add(plugin.getPluginManager().toHex(b)
-												.replaceAll("<job>", job.getDisplay(UUID))
+												.replaceAll("<job>", job.getDisplay(MyUUID))
 												.replaceAll("<earnings>",
-														plugin.getAPI()
-																.Format(plugin.getPlayerAPI()
-																		.getEarningsOfToday(rank_uuid, job)))
-												.replaceAll("<rank>", "" + get).replaceAll("<name>", name));
+														plugin.getAPI().Format(
+																plugin.getPlayerAPI().getEarningsOfToday("" + ID, job)))
+												.replaceAll("<rank>", "" + rank).replaceAll("<name>", name));
 									}
 
-									if (rank_uuid.equalsIgnoreCase("" + pl.getUniqueId())) {
+									if (ID.equals(pl.getUniqueId())) {
 										if (cf.getBoolean("EnchantOwnSkullInRanking")) {
 											meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, false);
 											meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -581,76 +588,49 @@ public class GuiAddonManager {
 							}
 
 						}
-
-					}
+					});
 				}
 			}
 
 		} else if (current.equalsIgnoreCase("BLOCKS")) {
 
-			HashMap<Integer, String> F = plugin.getPlayerAPI().blocks_ranked.get(job);
+			if (!plugin.getPlayerAPI().blocks_ranked.isEmpty() && plugin.getPlayerAPI().blocks_ranked.containsKey(job.getConfigID())) {
+				if (!plugin.getPlayerAPI().blocks_ranked.get(job.getConfigID()).isEmpty()) {
+					plugin.getPlayerAPI().blocks_ranked.get(job.getConfigID()).forEach((rank, id) -> {
 
-			for (int i = 0; i != d3.size() + 1; i++) {
+						int slot = 999;
 
-				if (d3.size() >= i) {
-
-					int get = i + 1;
-
-					int slot = 999;
-
-					if (cf.contains("PerJobRankingl_Items." + get + ".Slot")) {
-						slot = cf.getInt("PerJobRankingl_Items." + get + ".Slot");
-					}
-
-					if (slot != 999) {
-
-						if (pl != null) {
-
-							ItemStack it = plugin.getItemAPI().createItem(pl.getName(),
-									cf.getString("PerJobRankingl_Items.NoneFound.Material"));
-							ItemMeta meta = it.getItemMeta();
-
-							if (cf.contains("PerJobRankingl_Items.NoneFound.CustomModelData")) {
-								meta.setCustomModelData(cf.getInt("PerJobRankingl_Items.NoneFound.CustomModelData"));
-							}
-
-							String dis = cf.getString("PerJobRankingl_Items.NoneFound.Display").replaceAll("<rank>",
-									"" + get);
-
-							meta.setDisplayName(plugin.getPluginManager().toHex(dis).replaceAll("&", "§"));
-
-							it.setItemMeta(meta);
-
-							inv.setItem(slot, it);
+						if (cf.contains("PerJobRankingl_Items." + rank + ".Slot")) {
+							slot = cf.getInt("PerJobRankingl_Items." + rank + ".Slot");
 						}
 
-						if (F.size() >= i) {
+						if (slot != 999) {
 
-							String rank_uuid = plugin.getPlayerAPI().today_ranked.get(job).get(i);
+							if (id != null) {
 
-							if (rank_uuid != null) {
+								UUID ID = UUID.fromString(id.toString());
 
-								String name = plugin.getPlayerDataAPI().getDisplayByUUID(rank_uuid);
+								String name = plugin.getPlayerDataAPI().getDisplayByUUID("" + ID);
 
 								String icon = null;
 
-								if (cf.getBoolean("PerJobRankingl_Items." + get + ".UseSkullAsMaterial")) {
+								if (cf.getBoolean("PerJobRankingl_Items." + rank + ".UseSkullAsMaterial")) {
 									icon = "name;<name>";
 								} else {
-									icon = cf.getString("PerJobRankingl_Items." + get + ".Material");
+									icon = cf.getString("PerJobRankingl_Items." + rank + ".Material");
 								}
 
 								if (icon != null) {
 									ItemStack it = plugin.getItemAPI().createItem(name, icon);
 									ItemMeta meta = it.getItemMeta();
 
-									if (cf.contains("PerJobRankingl_Items." + get + ".CustomModelData")) {
+									if (cf.contains("PerJobRankingl_Items." + rank + ".CustomModelData")) {
 										meta.setCustomModelData(
-												cf.getInt("PerJobRankingl_Items." + get + ".CustomModelData"));
+												cf.getInt("PerJobRankingl_Items." + rank + ".CustomModelData"));
 									}
 
 									String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-											cf.getString("PerJobRankingl_Items." + get + ".Display"));
+											cf.getString("PerJobRankingl_Items." + rank + ".Display"));
 
 									List<String> lore = sp.getLanguage().getListFromLanguage(sp.getUUID(),
 											"PerJobRanking.LoreForRanks.Blocks");
@@ -659,13 +639,14 @@ public class GuiAddonManager {
 
 									for (String b : lore) {
 										old.add(plugin.getPluginManager().toHex(b)
-												.replaceAll("<job>", job.getDisplay(UUID))
+												.replaceAll("<job>", job.getDisplay(MyUUID))
 												.replaceAll("<times>",
-														"" + plugin.getPlayerAPI().getBrokenTimes(rank_uuid, job))
-												.replaceAll("<rank>", "" + get).replaceAll("<name>", name));
+														plugin.getAPI().Format(
+																plugin.getPlayerAPI().getBrokenTimes("" + ID, job)))
+												.replaceAll("<rank>", "" + rank).replaceAll("<name>", name));
 									}
 
-									if (rank_uuid.equalsIgnoreCase("" + pl.getUniqueId())) {
+									if (ID.equals(pl.getUniqueId())) {
 										if (cf.getBoolean("EnchantOwnSkullInRanking")) {
 											meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, false);
 											meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -684,76 +665,49 @@ public class GuiAddonManager {
 							}
 
 						}
-
-					}
+					});
 				}
 			}
 
 		} else if (current.equalsIgnoreCase("LEVEL")) {
 
-			HashMap<Integer, String> F = plugin.getPlayerAPI().level_ranked.get(job);
+			if (!plugin.getPlayerAPI().level_ranked.isEmpty() && plugin.getPlayerAPI().level_ranked.containsKey(job.getConfigID())) {
+				if (!plugin.getPlayerAPI().level_ranked.get(job.getConfigID()).isEmpty()) {
+					plugin.getPlayerAPI().level_ranked.get(job.getConfigID()).forEach((rank, id) -> {
 
-			for (int i = 0; i != d3.size() + 1; i++) {
+						int slot = 999;
 
-				if (d3.size() >= i) {
-
-					int get = i + 1;
-
-					int slot = 999;
-
-					if (cf.contains("PerJobRankingl_Items." + get + ".Slot")) {
-						slot = cf.getInt("PerJobRankingl_Items." + get + ".Slot");
-					}
-
-					if (slot != 999) {
-
-						if (pl != null) {
-
-							ItemStack it = plugin.getItemAPI().createItem(pl.getName(),
-									cf.getString("PerJobRankingl_Items.NoneFound.Material"));
-							ItemMeta meta = it.getItemMeta();
-
-							if (cf.contains("PerJobRankingl_Items.NoneFound.CustomModelData")) {
-								meta.setCustomModelData(cf.getInt("PerJobRankingl_Items.NoneFound.CustomModelData"));
-							}
-
-							String dis = cf.getString("PerJobRankingl_Items.NoneFound.Display").replaceAll("<rank>",
-									"" + get);
-
-							meta.setDisplayName(plugin.getPluginManager().toHex(dis).replaceAll("&", "§"));
-
-							it.setItemMeta(meta);
-
-							inv.setItem(slot, it);
+						if (cf.contains("PerJobRankingl_Items." + rank + ".Slot")) {
+							slot = cf.getInt("PerJobRankingl_Items." + rank + ".Slot");
 						}
 
-						if (F.size() >= i) {
+						if (slot != 999) {
 
-							String rank_uuid = plugin.getPlayerAPI().today_ranked.get(job).get(i);
+							if (id != null) {
 
-							if (rank_uuid != null) {
+								UUID ID = UUID.fromString(id.toString());
 
-								String name = plugin.getPlayerDataAPI().getDisplayByUUID(rank_uuid);
+								String name = plugin.getPlayerDataAPI().getDisplayByUUID("" + ID);
 
 								String icon = null;
 
-								if (cf.getBoolean("PerJobRankingl_Items." + get + ".UseSkullAsMaterial")) {
+								if (cf.getBoolean("PerJobRankingl_Items." + rank + ".UseSkullAsMaterial")) {
 									icon = "name;<name>";
 								} else {
-									icon = cf.getString("PerJobRankingl_Items." + get + ".Material");
+									icon = cf.getString("PerJobRankingl_Items." + rank + ".Material");
 								}
 
 								if (icon != null) {
 									ItemStack it = plugin.getItemAPI().createItem(name, icon);
 									ItemMeta meta = it.getItemMeta();
 
-									if (cf.contains("PerJobRankingl_Items." + get + ".CustomModelData")) {
+									if (cf.contains("PerJobRankingl_Items." + rank + ".CustomModelData")) {
 										meta.setCustomModelData(
-												cf.getInt("PerJobRankingl_Items." + get + ".CustomModelData"));
+												cf.getInt("PerJobRankingl_Items." + rank + ".CustomModelData"));
 									}
-
+							 
 									String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-											cf.getString("PerJobRankingl_Items." + get + ".Display"));
+											cf.getString("PerJobRankingl_Items." + rank + ".Display"));
 
 									List<String> lore = sp.getLanguage().getListFromLanguage(sp.getUUID(),
 											"PerJobRanking.LoreForRanks.Level");
@@ -762,13 +716,11 @@ public class GuiAddonManager {
 
 									for (String b : lore) {
 										old.add(plugin.getPluginManager().toHex(b)
-												.replaceAll("<job>", job.getDisplay(UUID))
-												.replaceAll("<level>",
-														"" + plugin.getPlayerAPI().getLevelOF(rank_uuid, job))
-												.replaceAll("<rank>", "" + get).replaceAll("<name>", name));
+												.replaceAll("<job>", job.getDisplay(MyUUID)).replaceAll("<level>",	"" + plugin.getPlayerAPI().getLevelOF("" + ID, job))
+												.replaceAll("<rank>", "" + rank).replaceAll("<name>", name));
 									}
 
-									if (rank_uuid.equalsIgnoreCase("" + pl.getUniqueId())) {
+									if (ID.equals(pl.getUniqueId())) {
 										if (cf.getBoolean("EnchantOwnSkullInRanking")) {
 											meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, false);
 											meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -787,8 +739,7 @@ public class GuiAddonManager {
 							}
 
 						}
-
-					}
+					});
 				}
 			}
 
@@ -2437,10 +2388,12 @@ public class GuiAddonManager {
 
 				m.setDisplayName(plugin.getPluginManager().toHex(used).replaceAll("&", "§"));
 
-				double reward = job.getRewardOf(type, real);
+				double fromfile = job.getRewardOf(type, real);
+				double reward = plugin.getPlayerAPI().getRealCalculatedAmountOfMoney(""+pl.getUniqueId(), job, fromfile);
 				int chance = job.getChanceOf(type, real);
 				double points = job.getPointsOf(type, real);
 				double exp = job.getExpOf(type, real);
+				double ep = plugin.getPlayerAPI().getRealCalculatedAmountOfExp(""+pl.getUniqueId(), job, exp);
 
 				int brokentimes = plugin.getPlayerAPI().getBrokenTimesOfID("" + pl.getUniqueId(), job, type,
 						real.toString());
@@ -2448,10 +2401,10 @@ public class GuiAddonManager {
 
 				for (String line : sp.getLanguage().getListFromLanguage(sp.getUUID(),
 						"Jobs." + job.getConfigID() + ".IDS." + type + ".Rewards.Lore")) {
-					l.add(plugin.getPluginManager().toHex(line).replaceAll("<exp>", "" + exp)
+					l.add(plugin.getPluginManager().toHex(line).replaceAll("<exp>", plugin.getAPI().Format(ep))
 							.replaceAll("<points>", "" + points).replaceAll("<earned>", plugin.getAPI().Format(ear))
 							.replaceAll("<action>", real.toString().toLowerCase()).replaceAll("<chance>", "" + chance)
-							.replaceAll("<times>", "" + brokentimes).replaceAll("<money>", "" + reward)
+							.replaceAll("<times>", "" + brokentimes).replaceAll("<money>", plugin.getAPI().Format(reward))
 							.replaceAll("&", "§"));
 				}
 

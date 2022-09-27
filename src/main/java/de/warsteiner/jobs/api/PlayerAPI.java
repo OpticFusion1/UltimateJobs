@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -12,6 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,8 +28,11 @@ import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.manager.GuiOpenManager;
 import de.warsteiner.jobs.utils.JobAction;
 import de.warsteiner.jobs.utils.objects.JobStats;
+import de.warsteiner.jobs.utils.objects.JobsMultiplier;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
 import de.warsteiner.jobs.utils.objects.Language;
+import de.warsteiner.jobs.utils.objects.MultiplierType;
+import de.warsteiner.jobs.utils.objects.MultiplierWeight;
 
 public class PlayerAPI {
 
@@ -65,6 +71,44 @@ public class PlayerAPI {
 		return pllist.get("" + ID);
 	}
 
+	public void startUtil() {
+
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				new BukkitRunnable() {
+
+					@Override
+					public void run() {
+
+						Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+
+						for (Player player : players) {
+							String UUID = "" + player.getUniqueId();
+							if (existInCacheByUUID(UUID)) {
+
+								for (JobsMultiplier multi : getMultipliers(UUID)) {
+
+									if(!multi.getUntil().equalsIgnoreCase("X")) {
+										Date today = new Date(plugin.getPluginManager().getDateTodayFromCalWith());
+
+										Date un = new Date(multi.getUntil());
+
+										if (today.after(un)) { 
+											removeMultiplier(UUID, multi.getName());
+										}
+									}
+								}
+							}
+						}
+
+					}
+				}.runTaskAsynchronously(plugin);
+			}
+		}.runTaskTimer(plugin, 0, 20);
+	}
+
 	public void calculateRanking() {
 		FileConfiguration cfg = plugin.getFileManager().getConfig();
 		if (cfg.getBoolean("CalculateRanking")) {
@@ -80,138 +124,143 @@ public class PlayerAPI {
 						@Override
 						public void run() {
 
-							if (plugin.getFileManager().getRankingGlobalConfig().getBoolean("EnabledGlobalRanking")) {
+							if (plugin.getPlayerDataAPI().getUltimatePlayers() != null) {
 
-								List<String> players = plugin.getPlayerDataAPI().getAllPlayers();
+								today_ranked.clear();
+								blocks_ranked.clear();
+								level_ranked.clear();
+								ranked_points.clear();
 
-								Map<String, Double> map = new HashMap<String, Double>();
+								List<String> players = plugin.getPlayerDataAPI().getUltimatePlayers();
 
-								for (String member : players) {
+								if (plugin.getFileManager().getRankingGlobalConfig()
+										.getBoolean("EnabledGlobalRanking")) {
 
-									if (plugin.getPlayerAPI().getPoints(member) >= 0) {
-										map.put(member, plugin.getPlayerAPI().getPoints(member));
-									}
+									Map<String, Double> map = new HashMap<String, Double>();
 
-								}
+									for (String member : players) {
 
-								if (map.size() >= 1) {
-									Map<String, Double> sort = SortByValue(map);
-
-									ArrayList<String> f = new ArrayList<String>();
-
-									sort.forEach((k, v) -> {
-										f.add(k);
-									});
-
-									Collections.reverse(f);
-
-									ranked_points.clear();
-
-									for (int i = 0; i != f.size(); i++) {
-
-										ranked_points.put(i, f.get(i));
+										map.put(member, getPoints(member));
 
 									}
+
+									if (map.size() >= 1) {
+										Map<String, Double> sort = SortByValue(map);
+
+										ArrayList<String> f = new ArrayList<String>();
+
+										sort.forEach((k, v) -> {
+											f.add(k);
+										});
+
+										Collections.reverse(f);
+
+										ranked_points.clear();
+
+										for (int i = 0; i != f.size(); i++) {
+
+											ranked_points.put(i, f.get(i));
+
+										}
+									}
 								}
-							}
-							if (plugin.getFileManager().getRankingPerJobConfig().getBoolean("EnabledRankingPerJob")) {
-								List<String> d = plugin.getFileManager().getRankingPerJobConfig()
-										.getStringList("Categories.List");
 
-								if (d.size() != 0) {
+								if (plugin.getFileManager().getRankingPerJobConfig()
+										.getBoolean("EnabledRankingPerJob")) {
 
-									List<String> players = plugin.getPlayerDataAPI().getAllPlayers();
+									ArrayList<String> alljobs = plugin.getLoaded();
 
-									today_ranked.clear();
-									blocks_ranked.clear();
-									level_ranked.clear();
+									for (String job : alljobs) {
 
-									plugin.getJobCache().forEach((k, v) -> {
+										Job real = plugin.getJobCache().get(job);
+
+										HashMap<Integer, String> today = new HashMap<Integer, String>();
+
 										HashMap<Double, String> ma = new HashMap<Double, String>();
 
+										HashMap<Integer, String> times = new HashMap<Integer, String>();
+
 										HashMap<Double, String> ma2 = new HashMap<Double, String>();
+
+										HashMap<Integer, String> level = new HashMap<Integer, String>();
 
 										HashMap<Double, String> ma3 = new HashMap<Double, String>();
 
 										for (String member : players) {
-
-											if (plugin.getPlayerAPI().getOwnedJobs(member).contains(v.getConfigID())) {
-
+											if (plugin.getPlayerAPI().getOwnedJobs(member)
+													.contains(real.getConfigID())) {
 												double earnings_all = plugin.getPlayerAPI().getEarningsOfToday(member,
-														v);
+														real);
 
 												ma.put(earnings_all, member);
 
-												double d3 = plugin.getPlayerAPI().getBrokenTimes(member, v);
+												double d3 = plugin.getPlayerAPI().getBrokenTimes(member, real);
 
 												ma2.put(d3, member);
 
-												double d4 = plugin.getPlayerAPI().getLevelOF(member, v);
+												double d4 = plugin.getPlayerAPI().getLevelOF(member, real);
 
 												ma3.put(d4, member);
 											}
-
 										}
 
-										if (ma.size() >= 0) {
-											Map<Object, Object> c = ma.entrySet().stream()
+										if (ma.size() != 0) {
+											Map<Double, String> c = ma.entrySet().stream()
 													.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
 													.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
 															(e1, e2) -> e1, LinkedHashMap::new));
 
-											HashMap<Integer, String> d3 = new HashMap<Integer, String>();
-
-											int i = d3.size();
-
-											c.forEach((k3, v3) -> {
-												d3.put(i, v3.toString());
+											c.forEach((points, player) -> {
+												int rank = today.size() + 1;
+												today.put(rank, player);
 											});
-
-											today_ranked.put(v, d3);
 
 										}
 
-										if (ma2.size() >= 0) {
-											Map<Object, Object> c = ma2.entrySet().stream()
+										if (ma2.size() != 0) {
+											Map<Double, String> time = ma2.entrySet().stream()
 													.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
 													.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
 															(e1, e2) -> e1, LinkedHashMap::new));
 
-											HashMap<Integer, String> d3 = new HashMap<Integer, String>();
-
-											int i = d3.size();
-
-											c.forEach((k3, v3) -> {
-												d3.put(i, v3.toString());
+											time.forEach((points, player) -> {
+												int rank = times.size() + 1;
+												times.put(rank, player);
 											});
-
-											blocks_ranked.put(v, d3);
 
 										}
 
-										if (ma3.size() >= 0) {
-											Map<Object, Object> c = ma3.entrySet().stream()
+										if (ma3.size() != 0) {
+											Map<Double, String> lvl = ma3.entrySet().stream()
 													.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
 													.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
 															(e1, e2) -> e1, LinkedHashMap::new));
 
-											HashMap<Integer, String> d3 = new HashMap<Integer, String>();
-
-											int i = d3.size();
-
-											c.forEach((k3, v3) -> {
-												d3.put(i, v3.toString());
+											lvl.forEach((points, player) -> {
+												int rank = level.size() + 1;
+												level.put(rank, player);
 											});
-
-											level_ranked.put(v, d3);
 
 										}
 
-									});
+										if (!today.isEmpty()) {
+											today_ranked.put(real.getConfigID(), today);
+										}
+
+										if (!times.isEmpty()) {
+											blocks_ranked.put(real.getConfigID(), times);
+										}
+
+										if (!level.isEmpty()) {
+											level_ranked.put(real.getConfigID(), level);
+										}
+
+									}
 
 								}
 							}
 						}
+
 					}.runTaskAsynchronously(plugin);
 				}
 			}.runTaskTimer(plugin, 0, every);
@@ -220,28 +269,27 @@ public class PlayerAPI {
 	}
 
 	public HashMap<Integer, String> ranked_points = new HashMap<Integer, String>();
-	public HashMap<Job, HashMap<Integer, String>> today_ranked = new HashMap<Job, HashMap<Integer, String>>();
-	public HashMap<Job, HashMap<Integer, String>> blocks_ranked = new HashMap<Job, HashMap<Integer, String>>();
-	public HashMap<Job, HashMap<Integer, String>> level_ranked = new HashMap<Job, HashMap<Integer, String>>();
+	public HashMap<String, HashMap<Integer, String>> today_ranked = new HashMap<String, HashMap<Integer, String>>();
+	public HashMap<String, HashMap<Integer, String>> blocks_ranked = new HashMap<String, HashMap<Integer, String>>();
+	public HashMap<String, HashMap<Integer, String>> level_ranked = new HashMap<String, HashMap<Integer, String>>();
 
 	public String getRankOfLevelsJob(Job job, String UUID) {
 
-		if (level_ranked != null) {
+		if (!level_ranked.isEmpty() && level_ranked.containsKey(job.getConfigID())) {
+			if (!level_ranked.get(job.getConfigID()).isEmpty()) {
+				HashMap<Integer, String> list = level_ranked.get(job.getConfigID());
 
-			if (level_ranked.containsKey(job)) {
+				AtomicInteger s = new AtomicInteger();
 
-				HashMap<Integer, String> list = level_ranked.get(job);
+				list.forEach((rank, player) -> {
 
-				if (list.size() != 0) {
-					for (int i = 0; i != list.size(); i++) {
-
-						if (list.get(i).equalsIgnoreCase(UUID)) {
-							int calc = (i + 1);
-							return "" + calc;
-						}
-
+					if (player.equalsIgnoreCase(UUID)) {
+						s.set(rank);
 					}
-				}
+
+				});
+
+				return "" + s.get();
 			}
 		}
 		return "Unknown";
@@ -249,21 +297,21 @@ public class PlayerAPI {
 	}
 
 	public String getPlaceOfLevelsJob(Job job, int place) {
+		if (!level_ranked.isEmpty() && level_ranked.containsKey(job.getConfigID())) {
+			if (!level_ranked.get(job.getConfigID()).isEmpty()) {
+				HashMap<Integer, String> list = level_ranked.get(job.getConfigID());
 
-		if (level_ranked != null) {
-			if (level_ranked.containsKey(job)) {
-				HashMap<Integer, String> list = level_ranked.get(job);
+				AtomicReference<String> s = new AtomicReference<String>();
 
-				if (list.size() != 0) {
-					for (int i = 0; i != list.size(); i++) {
-						int calc = (i + 1);
-						if (calc == place) {
+				list.forEach((rank, player) -> {
 
-							return list.get(i);
-						}
-
+					if (rank == place) {
+						s.set(player);
 					}
-				}
+
+				});
+
+				return s.get();
 			}
 		}
 		return "Unknown";
@@ -272,20 +320,21 @@ public class PlayerAPI {
 
 	public String getRankOfBlocksJob(Job job, String UUID) {
 
-		if (blocks_ranked != null) {
-			if (blocks_ranked.containsKey(job)) {
-				HashMap<Integer, String> list = blocks_ranked.get(job);
+		if (!blocks_ranked.isEmpty() && blocks_ranked.containsKey(job.getConfigID())) {
+			if (!blocks_ranked.get(job.getConfigID()).isEmpty()) {
+				HashMap<Integer, String> list = blocks_ranked.get(job.getConfigID());
 
-				if (list.size() != 0) {
-					for (int i = 0; i != list.size(); i++) {
+				AtomicInteger s = new AtomicInteger();
 
-						if (list.get(i).equalsIgnoreCase(UUID)) {
-							int calc = (i + 1);
-							return "" + calc;
-						}
+				list.forEach((rank, player) -> {
 
+					if (player.equalsIgnoreCase(UUID)) {
+						s.set(rank);
 					}
-				}
+
+				});
+
+				return "" + s.get();
 			}
 		}
 		return "Unknown";
@@ -294,20 +343,21 @@ public class PlayerAPI {
 
 	public String getPlaceOfBlocksJob(Job job, int place) {
 
-		if (blocks_ranked != null) {
-			if (blocks_ranked.containsKey(job)) {
-				HashMap<Integer, String> list = blocks_ranked.get(job);
+		if (!blocks_ranked.isEmpty() && blocks_ranked.containsKey(job.getConfigID())) {
+			if (!blocks_ranked.get(job.getConfigID()).isEmpty()) {
+				HashMap<Integer, String> list = blocks_ranked.get(job.getConfigID());
 
-				if (list.size() != 0) {
-					for (int i = 0; i != list.size(); i++) {
-						int calc = (i + 1);
-						if (calc == place) {
+				AtomicReference<String> s = new AtomicReference<String>();
 
-							return list.get(i);
-						}
+				list.forEach((rank, player) -> {
 
+					if (rank == place) {
+						s.set(player);
 					}
-				}
+
+				});
+
+				return s.get();
 			}
 		}
 		return "Unknown";
@@ -316,20 +366,21 @@ public class PlayerAPI {
 
 	public String getRankOfEarningsJob(Job job, String UUID) {
 
-		if (today_ranked != null) {
-			if (today_ranked.containsKey(job)) {
-				HashMap<Integer, String> list = today_ranked.get(job);
+		if (!today_ranked.isEmpty() && today_ranked.containsKey(job.getConfigID())) {
+			if (!today_ranked.get(job.getConfigID()).isEmpty()) {
+				HashMap<Integer, String> list = today_ranked.get(job.getConfigID());
 
-				if (list.size() != 0) {
-					for (int i = 0; i != list.size(); i++) {
+				AtomicInteger s = new AtomicInteger();
 
-						if (list.get(i).equalsIgnoreCase(UUID)) {
-							int calc = (i + 1);
-							return "" + calc;
-						}
+				list.forEach((rank, player) -> {
 
+					if (player.equalsIgnoreCase(UUID)) {
+						s.set(rank);
 					}
-				}
+
+				});
+
+				return "" + s.get();
 			}
 		}
 		return "Unknown";
@@ -338,20 +389,22 @@ public class PlayerAPI {
 
 	public String getPlaceOfEarningsJob(Job job, int place) {
 
-		if (today_ranked != null) {
-			if (today_ranked.containsKey(job)) {
-				HashMap<Integer, String> list = today_ranked.get(job);
+		if (!today_ranked.isEmpty() && today_ranked.containsKey(job.getConfigID())) {
+			if (!today_ranked.get(job.getConfigID()).isEmpty()) {
+				HashMap<Integer, String> list = today_ranked.get(job.getConfigID());
 
-				if (list.size() != 0) {
-					for (int i = 0; i != list.size(); i++) {
-						int calc = (i + 1);
-						if (calc == place) {
+				AtomicReference<String> s = new AtomicReference<String>();
 
-							return list.get(i);
-						}
+				list.forEach((rank, player) -> {
 
+					if (rank == place) {
+						s.set(player);
 					}
-				}
+
+				});
+
+				return s.get();
+
 			}
 		}
 		return "Unknown";
@@ -404,36 +457,80 @@ public class PlayerAPI {
 		return crunchifyResult;
 	}
 
-	public void startSave() {
-
-		new BukkitRunnable() {
-
-			public void run() {
-
-				new BukkitRunnable() {
-
-					@Override
-					public void run() {
-
-						PlayerDataAPI pl = UltimateJobs.getPlugin().getPlayerDataAPI();
-						for (Player p : Bukkit.getOnlinePlayers()) {
-							if (players.contains("" + p.getUniqueId())) {
-								JobsPlayer jb = pllist.get("" + p.getUniqueId());
-								pl.savePlayer(jb, "" + p.getUniqueId());
-							}
-						}
-					}
-				}.runTaskAsynchronously(plugin);
-
-			}
-		}.runTaskTimer(plugin, 0, 20 * plugin.getFileManager().getConfig().getInt("Cache_Saved_Every"));
-	}
-
 	public void removePlayerFromCache(String uuid) {
 
 		players.remove(uuid);
 		pllist.remove("" + uuid);
 
+	}
+
+	public double calculateAmountOnAddOrRemove(String UUID, Job job, MultiplierType type, MultiplierWeight weight,
+			double org) {
+		if (plugin.getPlayerAPI().getMultipliers(UUID) != null) {
+			if (plugin.getPlayerAPI().getMultipliersByTypeAndWeightAndJob(UUID, type, weight,
+					job.getConfigID()) != null) {
+
+				double first = org;
+
+				for (JobsMultiplier listed : plugin.getPlayerAPI().getMultipliersByTypeAndWeightAndJob(UUID, type,
+						weight, job.getConfigID())) {
+
+					double value = listed.getValue();
+
+					if (weight.equals(MultiplierWeight.ADD)) {
+						first = first + value;
+					} else if (weight.equals(MultiplierWeight.REMOVE)) {
+						first = first - value;
+					} else if (weight.equals(MultiplierWeight.PERCENT_ADD)) {
+						first = first + (first / 100) * value;
+					} else if (weight.equals(MultiplierWeight.PERCENT_REMOVE)) {
+						first = first - (first / 100) * value;
+					}
+
+					return first;
+				}
+
+			}
+		}
+		return org;
+	}
+
+	public double getRealCalculatedAmountOfExp(String UUID, Job job, double org) {
+
+		double od1 = org;
+
+		od1 = plugin.getPlayerAPI().calculateAmountOnAddOrRemove(UUID, job, MultiplierType.EXP, MultiplierWeight.ADD,
+				od1);
+		od1 = plugin.getPlayerAPI().calculateAmountOnAddOrRemove(UUID, job, MultiplierType.EXP, MultiplierWeight.REMOVE,
+				od1);
+
+		od1 = plugin.getPlayerAPI().calculateAmountOnAddOrRemove(UUID, job, MultiplierType.EXP,
+				MultiplierWeight.PERCENT_ADD, od1);
+		od1 = plugin.getPlayerAPI().calculateAmountOnAddOrRemove(UUID, job, MultiplierType.EXP,
+				MultiplierWeight.PERCENT_REMOVE, od1);
+
+		return od1;
+	}
+
+	public double getRealCalculatedAmountOfMoney(String UUID, Job job, double org) {
+
+		int lvl = getLevelOF(UUID, job);
+
+		double od1 = org;
+
+		od1 = plugin.getPlayerAPI().calculateAmountOnAddOrRemove(UUID, job, MultiplierType.MONEY, MultiplierWeight.ADD,
+				od1);
+		od1 = plugin.getPlayerAPI().calculateAmountOnAddOrRemove(UUID, job, MultiplierType.MONEY,
+				MultiplierWeight.REMOVE, od1);
+
+		od1 = plugin.getPlayerAPI().calculateAmountOnAddOrRemove(UUID, job, MultiplierType.MONEY,
+				MultiplierWeight.PERCENT_ADD, od1);
+		od1 = plugin.getPlayerAPI().calculateAmountOnAddOrRemove(UUID, job, MultiplierType.MONEY,
+				MultiplierWeight.PERCENT_REMOVE, od1);
+
+		double level = (od1 / 100) * job.getMultiOfLevel(lvl);
+
+		return od1 + level;
 	}
 
 	public ArrayList<String> getOnlinePlayersInJob(Job job) {
@@ -567,6 +664,82 @@ public class PlayerAPI {
 			executeCustomEvent(UUID, job, true);
 		} else {
 			plugin.getPlayerDataAPI().updateDateJoinedOfJob(UUID, job, date);
+		}
+	}
+
+	public ArrayList<JobsMultiplier> getMultipliers(String uuid) {
+		if (existInCacheByUUID(uuid)) {
+			return getCacheJobPlayers().get(uuid).getMultipliers();
+		} else {
+			return plugin.getPlayerDataAPI().getMultipliers(uuid);
+		}
+	}
+
+	public ArrayList<JobsMultiplier> getMultipliersByTypeAndWeightAndJob(String uuid, MultiplierType type,
+			MultiplierWeight weight, String job) {
+
+		ArrayList<JobsMultiplier> list = new ArrayList<JobsMultiplier>();
+
+		for (JobsMultiplier m : getMultipliers(uuid)) {
+			if (m.getJob().equalsIgnoreCase("NONE")) {
+				if (m.getType().equals(type) && m.getWeight().equals(weight)) {
+					list.add(m);
+				}
+			} else if (m.getType().equals(type) && m.getWeight().equals(weight) && m.getJob().equalsIgnoreCase(job)) {
+				list.add(m);
+			}
+		}
+		return list;
+
+	}
+
+	public JobsMultiplier getMultiplierByName(String uuid, String name) {
+
+		for (JobsMultiplier m : getMultipliers(uuid)) {
+			if (m.getName().equalsIgnoreCase(name)) {
+				return m;
+			}
+		}
+		return null;
+	}
+
+	public void removeMultiplier(String UUID, String name) {
+		if (existInCacheByUUID(UUID)) {
+			ArrayList<JobsMultiplier> listed = getCacheJobPlayers().get(UUID).getMultipliers();
+
+			listed.remove(getMultiplierByName(UUID, name));
+
+			getCacheJobPlayers().get(UUID).updateMultiList(listed);
+		} else {
+			plugin.getPlayerDataAPI().removeMultiplier(UUID, name);
+		}
+	}
+
+	public boolean existMultiplier(String uuid, String name) {
+		for (JobsMultiplier b : getMultipliers(uuid)) {
+			if (b.getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void addMultiplier(String UUID, JobsMultiplier m) {
+		if (existInCacheByUUID(UUID)) {
+			ArrayList<JobsMultiplier> listed = getCacheJobPlayers().get(UUID).getMultipliers();
+
+			listed.add(m);
+
+			getCacheJobPlayers().get(UUID).updateMultiList(listed);
+
+		} else {
+			if (plugin.getPlayerDataAPI().existMultiplier(UUID, m.getName())) {
+				plugin.getPlayerDataAPI().updateMultiplier(UUID, m.getName(), m.getByPlugin(), m.getType(),
+						m.getUntil(), m.getWeight(), m.getValue(), m.getJob());
+			} else {
+				plugin.getPlayerDataAPI().createMultiplier(UUID, m.getName(), m.getByPlugin(), m.getType(),
+						m.getUntil(), m.getWeight(), m.getValue(), m.getJob());
+			}
 		}
 	}
 
@@ -815,8 +988,12 @@ public class PlayerAPI {
 		ArrayList<String> owned = plm.getOwnedJobs("" + UUID);
 		ArrayList<String> current = plm.getCurrentJobs("" + UUID);
 
+		ArrayList<JobsMultiplier> multi = plm.getMultipliers("" + UUID);
+
 		double sal = plm.getSalary("" + UUID);
 		String sat = plm.getSalaryDate("" + UUID);
+
+		double points = plm.getPoints("" + UUID);
 
 		HashMap<String, JobStats> stats = new HashMap<String, JobStats>();
 
@@ -885,10 +1062,9 @@ public class PlayerAPI {
 
 		Language langusged = plugin.getLanguageAPI().getLanguages().get(lused);
 
-		JobsPlayer jp = new JobsPlayer(name, current, owned, plm.getPoints("" + UUID),
+		JobsPlayer jp = new JobsPlayer(name, current, owned, points,
 
-				plm.getMaxJobs("" + UUID), "" + UUID, UUID, langusged, stats, sal, sat,
-				plugin.getPlayerDataAPI().getMultipliers("" + UUID));
+				plm.getMaxJobs("" + UUID), "" + UUID, UUID, langusged, stats, sal, sat, multi);
 
 		pllist.put("" + UUID, jp);
 		players.add("" + UUID);

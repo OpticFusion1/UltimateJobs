@@ -13,7 +13,9 @@ import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.utils.admincommand.AdminSubCommand;
 import de.warsteiner.jobs.utils.objects.AdminCommandOptions;
 import de.warsteiner.jobs.utils.objects.GUIType;
-import de.warsteiner.jobs.utils.objects.Language; 
+import de.warsteiner.jobs.utils.objects.Language;
+import de.warsteiner.jobs.utils.objects.MultiplierType;
+import de.warsteiner.jobs.utils.objects.MultiplierWeight; 
 
 public class AdminTabComplete implements TabCompleter {
 
@@ -61,6 +63,23 @@ public class AdminTabComplete implements TabCompleter {
 									};
 								} else if (type.equalsIgnoreCase("OPTIONS")) {
 									for(AdminCommandOptions k : AdminCommandOptions.values()) {
+										l.add(k.toString().toLowerCase()); 
+									};
+								}  else if (type.equalsIgnoreCase("BOOST_OPTIONS")) {
+									l.add("set");
+									l.add("info");
+									l.add("unset");
+								}  else if (type.equalsIgnoreCase("BOOST_TYPES")) {
+									for(MultiplierType k : MultiplierType.values()) {
+										l.add(k.toString().toLowerCase()); 
+									};
+								}   else if (type.equalsIgnoreCase("BOOST_UNTIL")) {
+									l.add("1m");
+									l.add("1h");
+									l.add("1d");
+									l.add("X");
+								}   else if (type.equalsIgnoreCase("BOOST_WEIGHT")) {
+									for(MultiplierWeight k : MultiplierWeight.values()) {
 										l.add(k.toString().toLowerCase()); 
 									};
 								} 

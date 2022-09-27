@@ -9,14 +9,14 @@ public class JobsMultiplier {
 	
 	private MultiplierType type;
 	
-	private Job hasJob;
+	private String hasJob;
 	
 	private String until;
 	
 	private MultiplierWeight weight;
 	private double val;
 
-	public JobsMultiplier(String name, String by_plugin, MultiplierType type_of, String until, MultiplierWeight weight, double value, Job job) {
+	public JobsMultiplier(String name, String by_plugin, MultiplierType type_of, String until, MultiplierWeight weight, double value, String job) {
 		this.name = name;
 		this.by = by_plugin;
 		this.type = type_of;
@@ -30,7 +30,7 @@ public class JobsMultiplier {
 		return name;
 	}
 	
-	public Job getJob() {
+	public String getJob() {
 		return hasJob;
 	}
 	

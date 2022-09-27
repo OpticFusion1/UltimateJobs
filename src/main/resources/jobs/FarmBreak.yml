@@ -31,13 +31,78 @@ IDS:
   FARM_BREAK:
     List:
       - "WHEAT" 
-      - "CARROT" 
+      - "CARROTS" 
       - "SUGAR_CANE"
+      - "POTATO"
+      - "BAMBOO"
+      - "MELON"
+      - "CACTUS"
+      - "COCOA"
 
-    CARROT:
+    COCOA:
 
       Chance: 85
-      ID: "CARROT"
+      ID: "COCOA"
+      Money: 2
+      Exp: 5
+      Points: 0.05
+      RewardsGUI:
+    
+        See: true
+        Icon: "COCOA_BEANS"
+
+    CACTUS:
+
+      Chance: 85
+      ID: "CACTUS"
+      Money: 2
+      Exp: 5
+      Points: 0.05
+      RewardsGUI:
+    
+        See: true
+        Icon: "CACTUS"
+
+    MELON:
+
+      Chance: 85
+      ID: "MELON"
+      Money: 2
+      Exp: 5
+      Points: 0.05
+      RewardsGUI:
+    
+        See: true
+        Icon: "MELON"
+
+    BAMBOO:
+
+      Chance: 85
+      ID: "BAMBOO"
+      Money: 2
+      Exp: 5
+      Points: 0.05
+      RewardsGUI:
+    
+        See: true
+        Icon: "BAMBOO"
+
+    POTATO:
+
+      Chance: 85
+      ID: "POTATOS"
+      Money: 2
+      Exp: 5
+      Points: 0.05
+      RewardsGUI:
+    
+        See: true
+        Icon: "POTATO"
+
+    CARROTS:
+
+      Chance: 85
+      ID: "CARROTS"
       Money: 2
       Exp: 5
       Points: 0.05

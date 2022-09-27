@@ -3482,7 +3482,102 @@ Jobs:
       
     IDS:
 
-      CARROT:
+      COCOA:
+      
+        Display: "&6Cocoa"
+        
+        Rewards:
+        
+          Display: "&8< &6Cocoa &8>"
+          
+          Lore:
+            - "&8-----------"
+            - "&7Reward &8: &c$<money>"
+            - "&7Chance &8: &9<chance>%"
+            - "&7Exp &8: &a<exp>"
+            - "&7Points &8: &6<points>"
+            - "&7Action &8: &4<action>"
+            - "&7"
+            - "&7Times broken &8: &6<times> Blocks"
+            - "&7Earned Money &8: &a<earned> Dollars"
+
+      CACTUS:
+      
+        Display: "&aCactus"
+        
+        Rewards:
+        
+          Display: "&8< &aCactus &8>"
+          
+          Lore:
+            - "&8-----------"
+            - "&7Reward &8: &c$<money>"
+            - "&7Chance &8: &9<chance>%"
+            - "&7Exp &8: &a<exp>"
+            - "&7Points &8: &6<points>"
+            - "&7Action &8: &4<action>"
+            - "&7"
+            - "&7Times broken &8: &6<times> Blocks"
+            - "&7Earned Money &8: &a<earned> Dollars"
+
+      MELON:
+      
+        Display: "&aMelon"
+        
+        Rewards:
+        
+          Display: "&8< &aMelon &8>"
+          
+          Lore:
+            - "&8-----------"
+            - "&7Reward &8: &c$<money>"
+            - "&7Chance &8: &9<chance>%"
+            - "&7Exp &8: &a<exp>"
+            - "&7Points &8: &6<points>"
+            - "&7Action &8: &4<action>"
+            - "&7"
+            - "&7Times broken &8: &6<times> Blocks"
+            - "&7Earned Money &8: &a<earned> Dollars"
+
+      BAMBOO:
+      
+        Display: "&aBamboo"
+        
+        Rewards:
+        
+          Display: "&8< &aBamboo &8>"
+          
+          Lore:
+            - "&8-----------"
+            - "&7Reward &8: &c$<money>"
+            - "&7Chance &8: &9<chance>%"
+            - "&7Exp &8: &a<exp>"
+            - "&7Points &8: &6<points>"
+            - "&7Action &8: &4<action>"
+            - "&7"
+            - "&7Times broken &8: &6<times> Blocks"
+            - "&7Earned Money &8: &a<earned> Dollars"
+
+      POTATO:
+      
+        Display: "&6Potato"
+        
+        Rewards:
+        
+          Display: "&8< &6Potato &8>"
+          
+          Lore:
+            - "&8-----------"
+            - "&7Reward &8: &c$<money>"
+            - "&7Chance &8: &9<chance>%"
+            - "&7Exp &8: &a<exp>"
+            - "&7Points &8: &6<points>"
+            - "&7Action &8: &4<action>"
+            - "&7"
+            - "&7Times broken &8: &6<times> Blocks"
+            - "&7Earned Money &8: &a<earned> Dollars"
+
+      CARROTS:
       
         Display: "&cCarrot"
         

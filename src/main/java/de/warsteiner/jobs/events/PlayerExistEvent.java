@@ -46,7 +46,7 @@ public class PlayerExistEvent implements Listener {
 				if (data.ExistPlayer("" + UUID) == false) {
 					data.createPlayer("" + UUID, name);
 
-					data.addPlayerToPlayersList("" + UUID, name, name);
+					data.addAPlayerToList("" + UUID, name.toUpperCase(), name);
 
 					String lang = plugin.getFileManager().getLanguageConfig().getString("PlayerDefaultLanguage");
 

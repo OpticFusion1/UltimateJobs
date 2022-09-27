@@ -4,6 +4,7 @@ public enum MultiplierWeight {
 	
 	ADD,
 	REMOVE,
-	MULTIPLY;
+	PERCENT_ADD,
+	PERCENT_REMOVE;
 
 }
