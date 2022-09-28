@@ -260,7 +260,7 @@ public class BoostSub extends AdminSubCommand {
 
 	@Override
 	public String FormatTab() {
-		return "command boost boost_options players_online none boost_types boost_until boost_weight none jobs_listed";
+		return "command boost admin_gen players_online none boost_types boost_until boost_weight none jobs_listed";
 	}
 
 	@Override

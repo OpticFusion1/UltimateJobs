@@ -45,24 +45,17 @@ import de.warsteiner.jobs.api.plugins.WorldGuardManager;
 import de.warsteiner.jobs.command.AdminCommand;
 import de.warsteiner.jobs.command.AdminTabComplete;
 import de.warsteiner.jobs.command.JobTabComplete;
-import de.warsteiner.jobs.command.JobsCommand;
-import de.warsteiner.jobs.command.admincommand.AddExpSub;
-import de.warsteiner.jobs.command.admincommand.AddMaxSub;
-import de.warsteiner.jobs.command.admincommand.AddPointsSub;
+import de.warsteiner.jobs.command.JobsCommand; 
 import de.warsteiner.jobs.command.admincommand.BoostSub;
+import de.warsteiner.jobs.command.admincommand.ExpSub;
 import de.warsteiner.jobs.command.admincommand.FirstSub;
 import de.warsteiner.jobs.command.admincommand.HelpSub;
 import de.warsteiner.jobs.command.admincommand.IDSub;
+import de.warsteiner.jobs.command.admincommand.LanguageSub;
+import de.warsteiner.jobs.command.admincommand.LevelSub;
+import de.warsteiner.jobs.command.admincommand.MaxSub;
 import de.warsteiner.jobs.command.admincommand.OpenSub;
-import de.warsteiner.jobs.command.admincommand.ReloadSub;
-import de.warsteiner.jobs.command.admincommand.RemoveExpSub;
-import de.warsteiner.jobs.command.admincommand.RemoveMaxSub;
-import de.warsteiner.jobs.command.admincommand.RemovePointsSub;
-import de.warsteiner.jobs.command.admincommand.SetExpSub;
-import de.warsteiner.jobs.command.admincommand.SetLanguageSub;
-import de.warsteiner.jobs.command.admincommand.SetLevelSub;
-import de.warsteiner.jobs.command.admincommand.SetMaxSub;
-import de.warsteiner.jobs.command.admincommand.SetPointsSub;
+import de.warsteiner.jobs.command.admincommand.ReloadSub;  
 import de.warsteiner.jobs.command.admincommand.UpdateSub;
 import de.warsteiner.jobs.command.admincommand.VersionSub;
 import de.warsteiner.jobs.command.playercommand.EarningsSub;
@@ -439,33 +432,23 @@ public class UltimateJobs extends JavaPlugin {
 		getAdminSubCommandManager().getSubCommandList().add(new HelpSub());
 
 		if (getFileManager().getLanguageConfig().getBoolean("EnabledLanguages")) {
-			getAdminSubCommandManager().getSubCommandList().add(new SetLanguageSub());
+			getAdminSubCommandManager().getSubCommandList().add(new LanguageSub());
 		}
 
 		getAdminSubCommandManager().getSubCommandList().add(new OpenSub());
 		getAdminSubCommandManager().getSubCommandList().add(new IDSub());
-
-		getAdminSubCommandManager().getSubCommandList().add(new SetMaxSub());
-		getAdminSubCommandManager().getSubCommandList().add(new AddMaxSub());
-		getAdminSubCommandManager().getSubCommandList().add(new RemoveMaxSub());
-
-		getAdminSubCommandManager().getSubCommandList().add(new SetLevelSub());
-
-		getAdminSubCommandManager().getSubCommandList().add(new SetExpSub());
-		getAdminSubCommandManager().getSubCommandList().add(new AddExpSub());
-		getAdminSubCommandManager().getSubCommandList().add(new RemoveExpSub());
-
-		getAdminSubCommandManager().getSubCommandList().add(new SetPointsSub());
-		getAdminSubCommandManager().getSubCommandList().add(new AddPointsSub());
-		getAdminSubCommandManager().getSubCommandList().add(new RemovePointsSub());
-
+  
 		getAdminSubCommandManager().getSubCommandList().add(new ReloadSub());
 		getAdminSubCommandManager().getSubCommandList().add(new VersionSub());
 
 		getAdminSubCommandManager().getSubCommandList().add(new FirstSub());
 		getAdminSubCommandManager().getSubCommandList().add(new UpdateSub());
 		
-		getAdminSubCommandManager().getSubCommandList().add(new BoostSub());
+		getAdminSubCommandManager().getSubCommandList().add(new BoostSub()); 
+		getAdminSubCommandManager().getSubCommandList().add(new MaxSub());
+		getAdminSubCommandManager().getSubCommandList().add(new LevelSub());
+		getAdminSubCommandManager().getSubCommandList().add(new ExpSub());
+		getAdminSubCommandManager().getSubCommandList().add(new de.warsteiner.jobs.command.admincommand.PointsSub());
 	}
 
 	public void loadClasses() {

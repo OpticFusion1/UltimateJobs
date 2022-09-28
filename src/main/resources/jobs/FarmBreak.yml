@@ -33,7 +33,7 @@ IDS:
       - "WHEAT" 
       - "CARROTS" 
       - "SUGAR_CANE"
-      - "POTATO"
+      - "POTATOE"
       - "BAMBOO"
       - "MELON"
       - "CACTUS"
@@ -87,17 +87,17 @@ IDS:
         See: true
         Icon: "BAMBOO"
 
-    POTATO:
+    POTATOE:
 
       Chance: 85
-      ID: "POTATOS"
+      ID: "POTATOES"
       Money: 2
       Exp: 5
       Points: 0.05
       RewardsGUI:
     
         See: true
-        Icon: "POTATO"
+        Icon: "POTATOE"
 
     CARROTS:
 

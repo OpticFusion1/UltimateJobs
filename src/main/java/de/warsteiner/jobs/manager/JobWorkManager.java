@@ -129,7 +129,7 @@ public class JobWorkManager {
 	}
 
 	public void executeBerrysEvent(Player player, String id, Block block) {
-
+		 
 		UUID UUID = player.getUniqueId();
 
 		if (getJobOnWork("" + UUID, JobAction.COLLECTBERRYS, "" + id.toUpperCase()) != null) {

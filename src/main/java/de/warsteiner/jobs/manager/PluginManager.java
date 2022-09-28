@@ -111,7 +111,7 @@ public class PluginManager {
 	
 	private List<Material> bypassmeta = List.of(
 			  Material.CRIMSON_FUNGUS, Material.WARPED_FUNGUS, Material.BROWN_MUSHROOM, Material.RED_MUSHROOM, Material.CARROTS,
-			  Material.WHEAT, Material.POTATOES, Material.SWEET_BERRY_BUSH, Material.BEETROOTS, Material.BAMBOO, Material.COCOA);
+			  Material.WHEAT, Material.POTATOES, Material.BEETROOTS, Material.BAMBOO, Material.COCOA);
 	
 	public boolean isFullyGrownOld(Block block) {
 	 

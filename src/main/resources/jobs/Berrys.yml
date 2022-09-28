@@ -19,8 +19,21 @@ IDS:
 
   COLLECTBERRYS:
     List:
-      - "B1"   
+      - "B1" 
+      - "B2"  
+      
+    B2:
 
+      Chance: 85
+      ID: "CAVE_VINES_PLANT"
+      Money: 2
+      Exp: 5
+      Points: 0.05
+      RewardsGUI:
+    
+        See: true
+        Icon: "GLOW_BERRIES"
+        
     B1:
 
       Chance: 85

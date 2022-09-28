@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
@@ -87,7 +88,7 @@ public class PlayerAPI {
 						for (Player player : players) {
 							String UUID = "" + player.getUniqueId();
 							if (existInCacheByUUID(UUID)) {
-
+ 
 								for (JobsMultiplier multi : getMultipliers(UUID)) {
 
 									if(!multi.getUntil().equalsIgnoreCase("X")) {
@@ -126,137 +127,139 @@ public class PlayerAPI {
 
 							if (plugin.getPlayerDataAPI().getUltimatePlayers() != null) {
 
-								today_ranked.clear();
-								blocks_ranked.clear();
-								level_ranked.clear();
-								ranked_points.clear();
+								if(plugin.getPlayerDataAPI().getUltimatePlayers().size() != 0) {
+									today_ranked.clear();
+									blocks_ranked.clear();
+									level_ranked.clear();
+									ranked_points.clear();
 
-								List<String> players = plugin.getPlayerDataAPI().getUltimatePlayers();
+									List<String> players = plugin.getPlayerDataAPI().getUltimatePlayers();
 
-								if (plugin.getFileManager().getRankingGlobalConfig()
-										.getBoolean("EnabledGlobalRanking")) {
+									if (plugin.getFileManager().getRankingGlobalConfig()
+											.getBoolean("EnabledGlobalRanking")) {
 
-									Map<String, Double> map = new HashMap<String, Double>();
-
-									for (String member : players) {
-
-										map.put(member, getPoints(member));
-
-									}
-
-									if (map.size() >= 1) {
-										Map<String, Double> sort = SortByValue(map);
-
-										ArrayList<String> f = new ArrayList<String>();
-
-										sort.forEach((k, v) -> {
-											f.add(k);
-										});
-
-										Collections.reverse(f);
-
-										ranked_points.clear();
-
-										for (int i = 0; i != f.size(); i++) {
-
-											ranked_points.put(i, f.get(i));
-
-										}
-									}
-								}
-
-								if (plugin.getFileManager().getRankingPerJobConfig()
-										.getBoolean("EnabledRankingPerJob")) {
-
-									ArrayList<String> alljobs = plugin.getLoaded();
-
-									for (String job : alljobs) {
-
-										Job real = plugin.getJobCache().get(job);
-
-										HashMap<Integer, String> today = new HashMap<Integer, String>();
-
-										HashMap<Double, String> ma = new HashMap<Double, String>();
-
-										HashMap<Integer, String> times = new HashMap<Integer, String>();
-
-										HashMap<Double, String> ma2 = new HashMap<Double, String>();
-
-										HashMap<Integer, String> level = new HashMap<Integer, String>();
-
-										HashMap<Double, String> ma3 = new HashMap<Double, String>();
+										Map<String, Double> map = new HashMap<String, Double>();
 
 										for (String member : players) {
-											if (plugin.getPlayerAPI().getOwnedJobs(member)
-													.contains(real.getConfigID())) {
-												double earnings_all = plugin.getPlayerAPI().getEarningsOfToday(member,
-														real);
 
-												ma.put(earnings_all, member);
+											map.put(member, getPoints(member));
 
-												double d3 = plugin.getPlayerAPI().getBrokenTimes(member, real);
+										}
 
-												ma2.put(d3, member);
+										if (map.size() >= 1) {
+											Map<String, Double> sort = SortByValue(map);
 
-												double d4 = plugin.getPlayerAPI().getLevelOF(member, real);
+											ArrayList<String> f = new ArrayList<String>();
 
-												ma3.put(d4, member);
+											sort.forEach((k, v) -> {
+												f.add(k);
+											});
+
+											Collections.reverse(f);
+
+											ranked_points.clear();
+
+											for (int i = 0; i != f.size(); i++) {
+
+												ranked_points.put(i, f.get(i));
+
 											}
 										}
+									}
 
-										if (ma.size() != 0) {
-											Map<Double, String> c = ma.entrySet().stream()
-													.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
-													.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-															(e1, e2) -> e1, LinkedHashMap::new));
+									if (plugin.getFileManager().getRankingPerJobConfig()
+											.getBoolean("EnabledRankingPerJob")) {
 
-											c.forEach((points, player) -> {
-												int rank = today.size() + 1;
-												today.put(rank, player);
-											});
+										ArrayList<String> alljobs = plugin.getLoaded();
 
-										}
+										for (String job : alljobs) {
 
-										if (ma2.size() != 0) {
-											Map<Double, String> time = ma2.entrySet().stream()
-													.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
-													.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-															(e1, e2) -> e1, LinkedHashMap::new));
+											Job real = plugin.getJobCache().get(job);
 
-											time.forEach((points, player) -> {
-												int rank = times.size() + 1;
-												times.put(rank, player);
-											});
+											HashMap<Integer, String> today = new HashMap<Integer, String>();
 
-										}
+											HashMap<Double, String> ma = new HashMap<Double, String>();
 
-										if (ma3.size() != 0) {
-											Map<Double, String> lvl = ma3.entrySet().stream()
-													.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
-													.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-															(e1, e2) -> e1, LinkedHashMap::new));
+											HashMap<Integer, String> times = new HashMap<Integer, String>();
 
-											lvl.forEach((points, player) -> {
-												int rank = level.size() + 1;
-												level.put(rank, player);
-											});
+											HashMap<Double, String> ma2 = new HashMap<Double, String>();
 
-										}
+											HashMap<Integer, String> level = new HashMap<Integer, String>();
 
-										if (!today.isEmpty()) {
-											today_ranked.put(real.getConfigID(), today);
-										}
+											HashMap<Double, String> ma3 = new HashMap<Double, String>();
 
-										if (!times.isEmpty()) {
-											blocks_ranked.put(real.getConfigID(), times);
-										}
+											for (String member : players) {
+												if (plugin.getPlayerAPI().getOwnedJobs(member)
+														.contains(real.getConfigID())) {
+													double earnings_all = plugin.getPlayerAPI().getEarningsOfToday(member,
+															real);
 
-										if (!level.isEmpty()) {
-											level_ranked.put(real.getConfigID(), level);
+													ma.put(earnings_all, member);
+
+													double d3 = plugin.getPlayerAPI().getBrokenTimes(member, real);
+
+													ma2.put(d3, member);
+
+													double d4 = plugin.getPlayerAPI().getLevelOF(member, real);
+
+													ma3.put(d4, member);
+												}
+											}
+
+											if (ma.size() != 0) {
+												Map<Double, String> c = ma.entrySet().stream()
+														.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
+														.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+																(e1, e2) -> e1, LinkedHashMap::new));
+
+												c.forEach((points, player) -> {
+													int rank = today.size() + 1;
+													today.put(rank, player);
+												});
+
+											}
+
+											if (ma2.size() != 0) {
+												Map<Double, String> time = ma2.entrySet().stream()
+														.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
+														.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+																(e1, e2) -> e1, LinkedHashMap::new));
+
+												time.forEach((points, player) -> {
+													int rank = times.size() + 1;
+													times.put(rank, player);
+												});
+
+											}
+
+											if (ma3.size() != 0) {
+												Map<Double, String> lvl = ma3.entrySet().stream()
+														.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
+														.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+																(e1, e2) -> e1, LinkedHashMap::new));
+
+												lvl.forEach((points, player) -> {
+													int rank = level.size() + 1;
+													level.put(rank, player);
+												});
+
+											}
+
+											if (!today.isEmpty()) {
+												today_ranked.put(real.getConfigID(), today);
+											}
+
+											if (!times.isEmpty()) {
+												blocks_ranked.put(real.getConfigID(), times);
+											}
+
+											if (!level.isEmpty()) {
+												level_ranked.put(real.getConfigID(), level);
+											}
+
 										}
 
 									}
-
 								}
 							}
 						}

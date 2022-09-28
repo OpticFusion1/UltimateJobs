@@ -8,14 +8,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
- 
-import de.warsteiner.jobs.UltimateJobs; 
+
+import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.utils.admincommand.AdminSubCommand;
 import de.warsteiner.jobs.utils.objects.AdminCommandOptions;
 import de.warsteiner.jobs.utils.objects.GUIType;
 import de.warsteiner.jobs.utils.objects.Language;
 import de.warsteiner.jobs.utils.objects.MultiplierType;
-import de.warsteiner.jobs.utils.objects.MultiplierWeight; 
+import de.warsteiner.jobs.utils.objects.MultiplierWeight;
 
 public class AdminTabComplete implements TabCompleter {
 
@@ -24,7 +24,7 @@ public class AdminTabComplete implements TabCompleter {
 	public List<String> onTabComplete(CommandSender s, Command arg1, String arg2, String[] args) {
 
 		ArrayList<String> l = new ArrayList<String>();
- 
+
 		if (s.hasPermission("ultimatejobs.complete")) {
 
 			if (args.length == 1) {
@@ -44,45 +44,54 @@ public class AdminTabComplete implements TabCompleter {
 
 								String type = getFromFormat(args.length, c).toUpperCase();
 
-								 if (type.equalsIgnoreCase("PLAYERS_ONLINE")) {
+								if (type.equalsIgnoreCase("PLAYERS_ONLINE")) {
 									for (Player b : Bukkit.getOnlinePlayers()) {
 										l.add(b.getName());
 									}
-								}   else if (type.equalsIgnoreCase("JOBS_LISTED")) {
+								} else if (type.equalsIgnoreCase("JOBS_LISTED")) {
 									for (String b : plugin.getLoaded()) {
 										String id = plugin.getJobCache().get(b).getConfigID();
 										l.add(id);
 									}
 								} else if (type.equalsIgnoreCase("GUI_TYPES")) {
-									for(GUIType k : GUIType.values()) {
-										l.add(k.toString().toLowerCase()); 
-									};
-								}  else if (type.equalsIgnoreCase("LANGUAGES")) {
-									for(Language lang : plugin.getLanguageAPI().getLoadedLanguagesAsArray()) {
-										l.add(lang.getName()); 
-									};
+									for (GUIType k : GUIType.values()) {
+										l.add(k.toString().toLowerCase());
+									}
+									;
+								} else if (type.equalsIgnoreCase("LANGUAGES")) {
+									for (Language lang : plugin.getLanguageAPI().getLoadedLanguagesAsArray()) {
+										l.add(lang.getName());
+									}
+									;
 								} else if (type.equalsIgnoreCase("OPTIONS")) {
-									for(AdminCommandOptions k : AdminCommandOptions.values()) {
-										l.add(k.toString().toLowerCase()); 
-									};
-								}  else if (type.equalsIgnoreCase("BOOST_OPTIONS")) {
+									for (AdminCommandOptions k : AdminCommandOptions.values()) {
+										l.add(k.toString().toLowerCase());
+									}
+									;
+								} else if (type.equalsIgnoreCase("ADMIN_GEN")) {
 									l.add("set");
-									l.add("info");
-									l.add("unset");
-								}  else if (type.equalsIgnoreCase("BOOST_TYPES")) {
-									for(MultiplierType k : MultiplierType.values()) {
-										l.add(k.toString().toLowerCase()); 
-									};
-								}   else if (type.equalsIgnoreCase("BOOST_UNTIL")) {
+									l.add("add");
+									l.add("remove");
+								} else if (type.equalsIgnoreCase("LEVEL_OPTIONS")) {
+									l.add("set"); 
+								} else if (type.equalsIgnoreCase("LANGUAGE_OPTIONS")) {
+									l.add("set"); 
+								}    else if (type.equalsIgnoreCase("BOOST_TYPES")) {
+									for (MultiplierType k : MultiplierType.values()) {
+										l.add(k.toString().toLowerCase());
+									}
+									;
+								} else if (type.equalsIgnoreCase("BOOST_UNTIL")) {
 									l.add("1m");
 									l.add("1h");
 									l.add("1d");
 									l.add("X");
-								}   else if (type.equalsIgnoreCase("BOOST_WEIGHT")) {
-									for(MultiplierWeight k : MultiplierWeight.values()) {
-										l.add(k.toString().toLowerCase()); 
-									};
-								} 
+								} else if (type.equalsIgnoreCase("BOOST_WEIGHT")) {
+									for (MultiplierWeight k : MultiplierWeight.values()) {
+										l.add(k.toString().toLowerCase());
+									}
+									;
+								}
 
 							}
 						}
@@ -98,7 +107,7 @@ public class AdminTabComplete implements TabCompleter {
 		return l;
 
 	}
- 
+
 	public String getFromFormat(int length, AdminSubCommand c) {
 		String[] format = c.FormatTab().split(" ");
 		if (format.length <= length) {

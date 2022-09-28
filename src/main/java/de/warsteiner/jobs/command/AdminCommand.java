@@ -77,7 +77,7 @@ public class AdminCommand implements CommandExecutor {
  
 		List<AdminSubCommand> commands = plugin.getAdminSubCommandManager().getSubCommandList();
 
-		int pageLength = 6;
+		int pageLength = 8;
 
 		int calc = pageLength * page + 1; 
 		int min = calc - 5;
