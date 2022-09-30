@@ -51,24 +51,12 @@ public class PlayerAPI {
 	}
 
 	public JobsPlayer getRealJobPlayer(String ID) {
-
-		if (!pllist.containsKey(ID)) {
-			if (plugin.getPlayerDataAPI().getNameByUUID(ID) != null) {
-				loadData(plugin.getPlayerDataAPI().getNameByUUID(ID), UUID.fromString(ID.toString()));
-			}
-		}
-
+ 
 		return pllist.get(ID);
 	}
 
 	public JobsPlayer getRealJobPlayer(UUID ID) {
-
-		if (!pllist.containsKey("" + ID)) {
-			if (plugin.getPlayerDataAPI().getNameByUUID("" + ID) != null) {
-				loadData(plugin.getPlayerDataAPI().getNameByUUID("" + ID), ID);
-			}
-		}
-
+ 
 		return pllist.get("" + ID);
 	}
 
@@ -572,7 +560,7 @@ public class PlayerAPI {
 	}
 
 	public boolean existInCacheByUUID(String uuid) {
-		return this.players.contains(uuid);
+		return getRealJobPlayer(uuid) != null;
 	}
 
 	public void executeCustomEvent(String UUID, String job, boolean online) {

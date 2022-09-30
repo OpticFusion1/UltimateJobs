@@ -113,7 +113,7 @@ public class PluginManager {
 			  Material.CRIMSON_FUNGUS, Material.WARPED_FUNGUS, Material.BROWN_MUSHROOM, Material.RED_MUSHROOM, Material.CARROTS,
 			  Material.WHEAT, Material.POTATOES, Material.BEETROOTS, Material.BAMBOO, Material.COCOA);
 	
-	public boolean isFullyGrownOld(Block block) {
+	public boolean isFullyGrown(Block block) {
 	 
 		if (breakingMaterials.contains(block.getType())) {
 			return true;

@@ -438,7 +438,7 @@ public class JobWorkManager {
 		final Block block = event.getBlock();
 		final Material type = event.getBlock().getType();
 
-		if (!plugin.getPluginManager().isFullyGrownOld(block)) {
+		if (!plugin.getPluginManager().isFullyGrown(block)) {
 			return;
 		}
 
@@ -511,7 +511,7 @@ public class JobWorkManager {
 			Job job = getJobOnWork("" + UUID, JobAction.FARM_GROW, "" + type);
 
 			if (job.getConfig().getBoolean("GetMoneyOnlyWhenFullyGrown")) {
-				if (!plugin.getPluginManager().isFullyGrownOld(block)) {
+				if (!plugin.getPluginManager().isFullyGrown(block)) {
 					return;
 				}
 			}

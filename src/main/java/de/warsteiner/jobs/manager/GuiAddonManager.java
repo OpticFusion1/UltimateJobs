@@ -12,8 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.ChatColor; 
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -2363,10 +2362,14 @@ public class GuiAddonManager {
 
 				JobAction real = job.getActionofID(type);
 
-				String icon = job.getConfig().getString("IDS." + real.toString() + "." + type + ".RewardsGUI.Icon");
+				String icon = "BARRIER";
 				String display = sp.getLanguage().getConfig()
 						.getString("Jobs." + job.getConfigID() + ".IDS." + type + ".Rewards.Display");
-
+ 
+				if(job.getConfig().contains("IDS." + real.toString() + "." + type + ".RewardsGUI.Icon")) {
+					icon = job.getConfig().getString("IDS." + real.toString() + "." + type + ".RewardsGUI.Icon");
+				}
+				
 				ItemStack i2 = plugin.getItemAPI().createItem(pl, icon);
 				ItemMeta m = i2.getItemMeta();
 

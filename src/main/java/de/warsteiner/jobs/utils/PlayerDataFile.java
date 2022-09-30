@@ -7,8 +7,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.warsteiner.jobs.UltimateJobs;
  
-public class PlayerDataFile {
+/**
+ * Class to manage the local data file
+*/
 
+public class PlayerDataFile {
+	 
 	public String name;
 	
 	public PlayerDataFile(String file) {
@@ -17,13 +21,25 @@ public class PlayerDataFile {
 	
 	public File cfile;
 	public FileConfiguration config;
+	
+	/**
+	 * Where the file is saved
+	*/
 
 	public String location = "plugins/UltimateJobs/data/";
 	public UltimateJobs plugin = UltimateJobs.getPlugin();
 
+	/**
+	 * Name of the File
+	*/
+	
 	public String getName() {
 		return name;
 	}
+	
+	/**
+	 * Create and Load the File
+	*/
 	
 	public void create() {
 		if (getfile() != null && !this.plugin.getDataFolder().exists())
@@ -36,22 +52,38 @@ public class PlayerDataFile {
 		}
 		this.config = (FileConfiguration) YamlConfiguration.loadConfiguration(this.cfile);
 	}
+	
+	/**
+	 * Get the File
+	*/
 
 	public File getfile() {
-		this.cfile = new File(this.location, name+".json");
+		this.cfile = new File(this.location, name+".yml");
 		if (this.cfile != null) {
 			return this.cfile;
 		}
 		return null;
 	}
+	
+	/**
+	 * Load the File without Create
+	*/
 
 	public void load() {
 		this.config = (FileConfiguration) YamlConfiguration.loadConfiguration(this.cfile);
 	}
+	
+	/**
+	 * Get the File as Config
+	*/
 
 	public FileConfiguration get() {
 		return this.config;
 	}
+	
+	/**
+	 * Save the File
+	*/
 
 	public void save() {
 		try {

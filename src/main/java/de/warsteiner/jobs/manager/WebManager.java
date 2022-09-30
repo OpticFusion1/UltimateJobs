@@ -51,9 +51,8 @@ public class WebManager {
 			if (!version.equalsIgnoreCase(ver)) {
 				canUpdate = true;
 				newVersion = version;
-				
-				getChangeLogOfVersion(version);
-				Bukkit.getConsoleSender().sendMessage("§c§lThere was a Update found for UltimateJobs!");
+				 
+				Bukkit.getConsoleSender().sendMessage("§c§lThere was a Update found for UltimateJobs! https://www.spigotmc.org/resources/ultimatejobs-player-jobs.99978/");
 			} else {
 				Bukkit.getConsoleSender().sendMessage("§a§lNo Update for UltimateJobs found!");
 			}
@@ -116,9 +115,8 @@ public class WebManager {
 			if (!version.equalsIgnoreCase(ver)) {
 				canUpdate = true;
 				newVersion = version;
-				
-				getChangeLogOfVersion(version);
-				player.sendMessage(AdminCommand.prefix+"§4There was a new Update Found!");
+				 
+				player.sendMessage(AdminCommand.prefix+"§4There was a new Update Found! https://www.spigotmc.org/resources/ultimatejobs-player-jobs.99978/");
 				UltimateJobs.getPlugin().getGUIAddonManager().createUpdateMenu(player);
 			} else {
 				player.sendMessage(AdminCommand.prefix+"§aNo Update Found!");
@@ -127,53 +125,6 @@ public class WebManager {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 			player.sendMessage(AdminCommand.prefix+"§4Failed to contact Webserver...");
-		}
-	}
- 
- 
-	public void getChangeLogOfVersion(String v) {
-		try {
-			
-			added.clear();
-			updated.clear();
-			removed.clear();
- 
-			URLConnection connection = new URL("https://apiv3.war-projects.com/ultimatejobs/changelogs/"+v+".txt").openConnection();
-			connection.setRequestProperty("User-Agent",
-					"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
-			connection.connect();
-
-			BufferedReader r = new BufferedReader(
-					new InputStreamReader(connection.getInputStream(), Charset.forName("UTF-8")));
-
-			StringBuilder sb = new StringBuilder();
-			String line;
-			String m = null;
-			 while ((line = r.readLine()) != null)  {
-				sb.append(line);  
-			}
-			 
-			 m = sb.toString();
-			 
-			String[] split = m.split(":");
-			
-			for(String s : split) {
-		 
-				String[] l = s.split(",");
-			 
-				if(l[0].toUpperCase().equals("ADDED")) {
-					added.add(l[1]);
-				} else if(l[0].toUpperCase().equals("UPDATED")) {
-					updated.add(l[1]);
-				} else if(l[0].toUpperCase().equals("REMOVED")) {
-					removed.add(l[1]);
-				}
-				
-			}
-			r.close();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-			Bukkit.getConsoleSender().sendMessage("§cFailed to send Web Request to Web-Server!");
 		}
 	}
  

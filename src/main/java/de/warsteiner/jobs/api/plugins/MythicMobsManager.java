@@ -15,14 +15,16 @@ public class MythicMobsManager {
 
 	public void executeWork(MythicMobDeathEvent event) {
 		String type = "" + event.getMobType().getInternalName();
-		UUID UUID = ((Player) event.getKiller()).getUniqueId();
-		if (plugin.getJobWorkManager().getJobOnWork("" + UUID, JobAction.MMKILL, "" + type) != null) {
+		if(event.getKiller() instanceof Player) {
+			UUID UUID = ((Player) event.getKiller()).getUniqueId();
+			if (plugin.getJobWorkManager().getJobOnWork("" + UUID, JobAction.MMKILL, "" + type) != null) {
 
-			Job job = plugin.getJobWorkManager().getJobOnWork("" + UUID, JobAction.MMKILL, "" + type);
+				Job job = plugin.getJobWorkManager().getJobOnWork("" + UUID, JobAction.MMKILL, "" + type);
 
-			plugin.getJobWorkManager().finalWork(type, UUID, JobAction.MMKILL, "mmkill-action", 1, null,
-					event.getEntity(), true, false, true, job);
-			return;
+				plugin.getJobWorkManager().finalWork(type, UUID, JobAction.MMKILL, "mmkill-action", 1, null,
+						event.getEntity(), true, false, true, job);
+				return;
+			}
 		}
 	}
 
