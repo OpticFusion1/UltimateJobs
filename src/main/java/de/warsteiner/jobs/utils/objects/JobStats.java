@@ -18,6 +18,7 @@ public class JobStats {
 	private HashMap<String, Integer> brokenof_times;
 	
 	private HashMap<String, Double> earnings;
+	 
 	
 	private String joined; 
 	  
@@ -32,7 +33,7 @@ public class JobStats {
 		this.joined = joinedy;
 		this.brokenof_money = brokenof;
 		this.brokenof_times = brokenof_times;
-		this.earnings = earnings;
+		this.earnings = earnings; 
 	}
  
 	public void updateCacheJoinedDate(String jn) {

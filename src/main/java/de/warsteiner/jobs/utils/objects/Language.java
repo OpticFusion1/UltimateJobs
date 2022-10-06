@@ -54,7 +54,7 @@ public class Language {
 	}
 	
 
-	public String getStringFromLanguage(UUID UUID, String path) {  
+	public String getSimpleElement(UUID UUID, String path) {  
 		if(cfg.getString(path) == null) {
 			Bukkit.getConsoleSender().sendMessage("§4Missing Element from Path: "+path+" in Config "+name+" located in "+getFile().getPath());
 		}
@@ -62,7 +62,7 @@ public class Language {
 
 	}
 
-	public String getStringFromPath(UUID UUID, String what) {
+	public String getElementFromCustomPath(UUID UUID, String what) {
  
 		String found = null;
 
@@ -83,7 +83,7 @@ public class Language {
 
 	}
 
-	public List<String> getListFromPath(UUID UUID, String what) {
+	public List<String> getCustomListedElementsFromPath(UUID UUID, String what) {
  
 		List<String> found = null;
 
@@ -104,7 +104,7 @@ public class Language {
 
 	}
 
-	public List<String> getListFromLanguage(UUID UUID, String path) {
+	public List<String> getSimpleListedElements(UUID UUID, String path) {
  
 		return cfg.getStringList(path);
 

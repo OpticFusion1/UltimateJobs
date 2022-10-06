@@ -7,6 +7,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.utils.PlayerDataFile;
  
+/**
+ * Class to manage Locations
+*/
+
 public class LocationAPI {
 	
 	public void setLocation(Location loc, String name) {

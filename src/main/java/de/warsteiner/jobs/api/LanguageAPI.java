@@ -9,6 +9,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.warsteiner.jobs.utils.objects.Language;
  
+/**
+ * Class to manage Player Languages
+*/
+
 public class LanguageAPI {
 
 
@@ -81,9 +85,9 @@ public class LanguageAPI {
 						
 						if(cfg.getBoolean("LanguageEnabled")) {
 							arraylangs.add(lg);
+							langs.put(newname, lg);
 						}
-						
-						langs.put(newname, lg);
+						 
 						Bukkit.getConsoleSender().sendMessage("§aLoaded Language : "+newname+"...");
 					}
 				}

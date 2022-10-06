@@ -63,7 +63,12 @@ public class EarningsMenuClickEvent implements Listener {
 			String next = jb.getLanguage().getStringFromPath(p.getUniqueId(), cfg.getString("PageItems.Next.Display"));
 			String pre = jb.getLanguage().getStringFromPath(p.getUniqueId(),
 					cfg.getString("PageItems.Previous.Display"));
-			int page = plugin.getPlayerDataAPI().getPageFromID("" + p.getUniqueId(), "EARNINGS_ALL");
+			 
+			int page = 1;
+			
+			if(plugin.getPlayerAPI().existSettingData(""+UUID, "EARNINGS_ALL")) {
+				page = plugin.getPlayerAPI().getPageData(""+UUID,"EARNINGS_ALL");
+			}
 
 			ArrayList<String> l2 = plugin.getGUIAddonManager().getAmountToDisplay(cfg, p, page);
 
@@ -73,7 +78,7 @@ public class EarningsMenuClickEvent implements Listener {
 				int cl = page * perpage + 1;
 
 				if (l2.size() >= cl) {
-					plugin.getPlayerDataAPI().addOnePageFromID("" + p.getUniqueId(), "EARNINGS_ALL");
+					plugin.getPlayerAPI().addOnePage("" + p.getUniqueId(), "EARNINGS_ALL");
 					plugin.getGUIAddonManager().createEarningsGUI_ALL_Jobs(p, UpdateTypes.REOPEN);
 					plugin.getAPI().playSound("EARNINGS_ALL_PAGE_LEVELS", p);
 
@@ -103,7 +108,7 @@ public class EarningsMenuClickEvent implements Listener {
 
 					plugin.getAPI().playSound("EARNINGS_ALL_FIRST_ALREADY", p);
 				} else {
-					plugin.getPlayerDataAPI().removeOnePageFromID("" + p.getUniqueId(), "EARNINGS_ALL");
+					plugin.getPlayerAPI().removeOnePage("" + p.getUniqueId(), "EARNINGS_ALL");
 					plugin.getGUIAddonManager().createEarningsGUI_ALL_Jobs(p, UpdateTypes.REOPEN);
 					plugin.getAPI().playSound("LAST_EARNINGS_ALL", p);
 				}
@@ -122,8 +127,13 @@ public class EarningsMenuClickEvent implements Listener {
 			String next = jb.getLanguage().getStringFromPath(p.getUniqueId(), cf.getString("PageItems.Next.Display"));
 			String pre = jb.getLanguage().getStringFromPath(p.getUniqueId(),
 					cf.getString("PageItems.Previous.Display"));
-			int page = plugin.getPlayerDataAPI().getPageFromID("" + p.getUniqueId(), "EARNINGS_" + found.getConfigID());
-
+		 
+			int page = 1;
+			
+			if(plugin.getPlayerAPI().existSettingData(""+UUID, "EARNINGS_" + found.getConfigID())) {
+				page = plugin.getPlayerAPI().getPageData(""+UUID, "EARNINGS_" + found.getConfigID());
+			}
+			
 			ArrayList<String> l2 = plugin.getGUIAddonManager().getAmountToDisplay(cf, p, page);
 
 			if (display.equalsIgnoreCase(plugin.getPluginManager().toHex(next).replaceAll("&", "§"))) {
@@ -132,7 +142,7 @@ public class EarningsMenuClickEvent implements Listener {
 				int cl = page * perpage + 1;
 
 				if (l2.size() >= cl) {
-					plugin.getPlayerDataAPI().addOnePageFromID("" + p.getUniqueId(), "EARNINGS_" + found.getConfigID());
+					plugin.getPlayerAPI().addOnePage("" + p.getUniqueId(), "EARNINGS_" + found.getConfigID());
 					plugin.getGUIAddonManager().createEarningsGUI_Single_Job(p, UpdateTypes.REOPEN, found);
 					plugin.getAPI().playSound("EARNINGS_JOB_PAGE_LEVELS", p);
 
@@ -162,7 +172,7 @@ public class EarningsMenuClickEvent implements Listener {
 
 					plugin.getAPI().playSound("EARNINGS_JOB_FIRST_ALREADY", p);
 				} else {
-					plugin.getPlayerDataAPI().removeOnePageFromID("" + p.getUniqueId(),
+					plugin.getPlayerAPI().removeOnePage("" + p.getUniqueId(),
 							"EARNINGS_" + found.getConfigID());
 					plugin.getGUIAddonManager().createEarningsGUI_Single_Job(p, UpdateTypes.REOPEN, found);
 					plugin.getAPI().playSound("LAST_EARNINGS_ALL", p);

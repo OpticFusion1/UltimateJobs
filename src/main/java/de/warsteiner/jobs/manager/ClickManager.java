@@ -64,6 +64,8 @@ public class ClickManager {
 							new BukkitRunnable() {
 								public void run() {
 									player.closeInventory();
+								
+									cancel();
 								}
 							}.runTaskLater(plugin, 2);
 						} else if (action.contains("PLAYER_COMMAND:")) {
@@ -121,12 +123,12 @@ public class ClickManager {
 								plugin.getGUIAddonManager().createLeaveConfirmGUI(player, UpdateTypes.OPEN, job);
 							} else {
 
-								if (job.getConfig().getBoolean("CannotLeaveJob")) {
-									api.playSound("CANNOT_LEAVE_JOB", player);
-									if (job.getConfig().getString("CannotLeaveJobMessage") != null) {
+								if (job.getOptionValue("CannotLeaveJob")) {
+									api.playSound("CANNOT_LEAVE_JOB", player);  
+									if (job.getOptionMessageOf("CannotLeaveJobMessage") != null) {
 										player.sendMessage(jb.getLanguage()
 												.getStringFromPath(jb.getUUID(),
-														job.getConfig().getString("CannotLeaveJobMessage"))
+														job.getOptionMessageOf("CannotLeaveJobMessage"))
 												.replaceAll("<job>", job.getDisplay("" + player.getUniqueId())));
 									}
 								} else {
@@ -158,7 +160,7 @@ public class ClickManager {
 
 									for (Job mine : jb.getCurrentJobsAsObject()) {
 
-										if (!mine.getConfig().getBoolean("CannotLeaveJob")) {
+										if (!mine.getOptionValue("CannotLeaveJob")) {
 
 											PlayerQuitJobEvent event = new PlayerQuitJobEvent(player, jb, mine);
 
@@ -237,18 +239,11 @@ public class ClickManager {
 
 			OptionalJobJoin(event);
 
-			new BukkitRunnable() {
 
-				@Override
-				public void run() {
-					plugin.getPlayerAPI().updateDataOfJob(job.toUpperCase(), jb, "" + player.getUniqueId());
-
-					jb.addCurrentJob(job);
-					
-					plugin.getPlayerAPI().updateDateJoinedOfJob(jb.getUUIDAsString(), job,
-							plugin.getPluginManager().getDateTodayFromCal());
-				}
-			}.runTaskAsynchronously(plugin);
+			jb.addCurrentJob(job);
+			
+			plugin.getPlayerAPI().updateDateJoinedOfJob(jb.getUUIDAsString(), job,
+					plugin.getPluginManager().getDateTodayFromCal());
 
 			api.playSound("JOB_JOINED", player);
 
@@ -257,6 +252,8 @@ public class ClickManager {
 					gui.setCustomitems(player, player.getName(), player.getOpenInventory(), "Main_Custom.",
 							cfg.getStringList("Main_Custom.List"), name, cfg, plugin.getJobCache().get(job));
 					gui.setMainInventoryJobItems(player.getOpenInventory(), player, name);
+					
+					cancel();
 				}
 			}.runTaskLater(plugin, 1);
  
@@ -270,16 +267,15 @@ public class ClickManager {
 	public void OptionalJobQuit(PlayerQuitJobEvent event) {
 		if (event.getJob() != null) {
 
-			Job job = event.getJob();
-			YamlConfiguration cfg = job.getConfig();
+			Job job = event.getJob(); 
 
-			if (cfg.contains("Commands.Quit")) {
+			if (job.getQuitCommands() != null) {
 
 				Player pl = event.getPlayer();
 
 				ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 
-				List<String> commands = cfg.getStringList("Commands.Quit");
+				List<String> commands = job.getQuitCommands();
 
 				for (String command : commands) {
 					Bukkit.dispatchCommand(console,
@@ -292,16 +288,15 @@ public class ClickManager {
 	public void OptionalJobJoin(PlayerJoinJobEvent event) {
 		if (event.getJob() != null) {
 
-			Job job = event.getJob();
-			YamlConfiguration cfg = job.getConfig();
-
-			if (cfg.contains("Commands.Join")) {
+			Job job = event.getJob(); 
+			
+			if (job.getJoinCommands() != null) {
 
 				Player pl = event.getPlayer();
 
 				ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 
-				List<String> commands = cfg.getStringList("Commands.Join");
+				List<String> commands = job.getJoinCommands();
 
 				for (String command : commands) {
 					Bukkit.dispatchCommand(console,
@@ -390,17 +385,7 @@ public class ClickManager {
 		FileConfiguration cfg = plugin.getFileManager().getGUI();
 		plugin.getEco().withdrawPlayer(player, money);
 
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-
-				jb.addOwnedJob(job.getConfigID());
-
-				plugin.getPlayerAPI().updateDataOfJob(job.getConfigID().toUpperCase(), jb, "" + player.getUniqueId());
-
-			}
-		}.runTaskAsynchronously(plugin);
+		jb.addOwnedJob(job.getConfigID());
 
 		api.playSound("JOB_BOUGHT", player);
 

@@ -73,12 +73,12 @@ public class LeaveConfirmMenuClickEvent implements Listener {
 
 			if (display.equalsIgnoreCase(dis_1)) {
 
-				if(job.getConfig().getBoolean("CannotLeaveJob")) {
+				if (job.getOptionValue("CannotLeaveJob")) {
 					plugin.getAPI().playSound("CANNOT_LEAVE_JOB", p);
-					if (job.getConfig().getString("CannotLeaveJobMessage") != null) {
+					if (job.getOptionMessageOf("CannotLeaveJobMessage") != null) {
 						p.sendMessage(jb.getLanguage()
 								.getStringFromPath(jb.getUUID(),
-										job.getConfig().getString("CannotLeaveJobMessage"))
+										job.getOptionMessageOf("CannotLeaveJobMessage"))
 								.replaceAll("<job>", job.getDisplay("" + p.getUniqueId())));
 					}
 				} else {

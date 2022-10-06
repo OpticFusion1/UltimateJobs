@@ -78,6 +78,11 @@ public class PlayerDataFile {
 	*/
 
 	public FileConfiguration get() {
+		
+		if(this.config == null) {
+			load();
+		}
+		
 		return this.config;
 	}
 	

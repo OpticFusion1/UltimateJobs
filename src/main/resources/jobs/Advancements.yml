@@ -5,7 +5,7 @@ ID: "ADVANCEMENTS"
 
 Material: "BOOK"
 
-ColorOfBossBar: "ORANGE"
+ColorOfBossBar: "GREEN"
 
 Slot: 21
 
@@ -47,9 +47,7 @@ IDS:
         Icon: "IRON_PICKAXE"
  
 LEVELS:
-
-  CountOfLevels: 4
-
+ 
   1:
 
     Money: 0 

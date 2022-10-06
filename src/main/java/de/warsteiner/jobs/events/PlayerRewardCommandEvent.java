@@ -22,7 +22,7 @@ public class PlayerRewardCommandEvent implements Listener  {
 		Job job = event.getJob();
 		JobAction ac = event.getActionUsed();
 	 
-		if(job.isCommandonBlock(id, ac)) {
+		if(job.hasCommandsOfBlock(id, ac)) {
 			ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 		 
 			List<String> commands = job.getCommandsOfBlock(id, ac);
@@ -38,10 +38,10 @@ public class PlayerRewardCommandEvent implements Listener  {
 		Player player = event.getPlayer(); 
 		Job job = event.getJob();
 		Integer level = event.getJobsPlayer().getStatsOf(job.getConfigID()).getLevel();
-		if(job.isCommand(level)) {
+		if(job.hasLevelCommands(level)) {
 			ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 		 
-			List<String> commands = job.getCommands(level);
+			List<String> commands = job.getLevelCommands(level);
 			  
 			for(String command : commands) {
 				Bukkit.dispatchCommand(console, command.replaceAll("<name>", player.getName()));

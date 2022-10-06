@@ -5,7 +5,7 @@ ID: "HONEYKEEPER"
 
 Material: "HONEY_BOTTLE"
 
-ColorOfBossBar: "ORANGE"
+ColorOfBossBar: "YELLOW"
 
 Slot: 23
 
@@ -47,9 +47,7 @@ IDS:
         Icon: "BEEHIVE"
  
 LEVELS:
-
-  CountOfLevels: 4
-
+ 
   1:
 
     Money: 0 

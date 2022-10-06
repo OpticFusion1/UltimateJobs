@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.api.Job;
+import de.warsteiner.jobs.api.Job; 
 import de.warsteiner.jobs.command.AdminCommand;
 import de.warsteiner.jobs.utils.JsonMessage;
 import de.warsteiner.jobs.utils.admincommand.AdminSubCommand;
@@ -34,7 +34,7 @@ public class BoostSub extends AdminSubCommand {
 	}
 
 	@Override
-	public void perform(CommandSender sender, String[] args) {
+	public void perform(CommandSender sender, String[] args) { 
 		if (args.length == 1) {
 			
 			sender.sendMessage("§7");
@@ -76,7 +76,7 @@ public class BoostSub extends AdminSubCommand {
 			 
 			String player = args[2];
 			
-			if (plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase()) == null) {
+			if (plugin.getPlayerAPI().getUUIDByName(player.toUpperCase()) == null) {
 				sender.sendMessage(AdminCommand.prefix + "Error! Player §c" + player + " §7does not exist!");
 				if(sender instanceof Player) {
 					Player player3 = (Player) sender;
@@ -85,7 +85,7 @@ public class BoostSub extends AdminSubCommand {
 				return;
 			}
  
-			String uuid =plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase());
+			String uuid = plugin.getPlayerAPI().getUUIDByName(player.toUpperCase());
 			
 		 
 			if(plugin.getPlayerAPI().getMultipliers(uuid) == null || plugin.getPlayerAPI().getMultipliers(uuid).size() == 0) {
@@ -116,7 +116,7 @@ public class BoostSub extends AdminSubCommand {
 			
 			String player = args[2];
 			
-			if (plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase()) == null) {
+			if (plugin.getPlayerAPI().getUUIDByName(player.toUpperCase()) == null) {
 				sender.sendMessage(AdminCommand.prefix + "Error! Player §c" + player + " §7does not exist!");
 				if(sender instanceof Player) {
 					Player player3 = (Player) sender;
@@ -125,7 +125,7 @@ public class BoostSub extends AdminSubCommand {
 				return;
 			}
  
-			String uuid =plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase());
+			String uuid =plugin.getPlayerAPI().getUUIDByName(player.toUpperCase());
 			
 			String named = args[3];
 			
@@ -135,7 +135,7 @@ public class BoostSub extends AdminSubCommand {
 			}
 			
 			plugin.getPlayerAPI().removeMultiplier(uuid, named);
-			plugin.getPlayerDataAPI().removeMultiplier(uuid, named);
+			plugin.getPlayerOfflineAPI().removeMultiplier(uuid, named);
 			
 			sender.sendMessage(AdminCommand.prefix + "Removed the boost : "+named);
 			
@@ -143,7 +143,7 @@ public class BoostSub extends AdminSubCommand {
 		 
 			String player = args[2];
 			
-			if (plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase()) == null) {
+			if (plugin.getPlayerAPI().getUUIDByName(player.toUpperCase()) == null) {
 				sender.sendMessage(AdminCommand.prefix + "Error! Player §c" + player + " §7does not exist!");
 				if(sender instanceof Player) {
 					Player player3 = (Player) sender;
@@ -152,7 +152,7 @@ public class BoostSub extends AdminSubCommand {
 				return;
 			}
  
-			String uuid =plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase());
+			String uuid =plugin.getPlayerAPI().getUUIDByName(player.toUpperCase());
 			
 			String named = args[3];
 			

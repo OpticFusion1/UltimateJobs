@@ -51,9 +51,7 @@ IDS:
         Icon: "url;http://textures.minecraft.net/texture/5f497786d7ba192369932966686aa9fb7147fa5884f9a6209c4a73e2d60f39f5"
 
 LEVELS:
-
-  CountOfLevels: 4
-
+ 
   1:
 
     Money: 0 

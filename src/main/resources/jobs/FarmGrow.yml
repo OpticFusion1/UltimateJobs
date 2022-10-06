@@ -66,9 +66,7 @@ IDS:
         Icon: "WHEAT"
  
 LEVELS:
-
-  CountOfLevels: 4
-
+ 
   1:
 
     Money: 0 

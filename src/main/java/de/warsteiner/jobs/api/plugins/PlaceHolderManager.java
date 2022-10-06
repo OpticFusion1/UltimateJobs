@@ -53,7 +53,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				if(plugin.getPlayerAPI().getPlaceOfGlobalPlayer(rank).equalsIgnoreCase("Unknown")) {
 					dis = "Unknown";
 				} else {
-					dis = plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfGlobalPlayer(rank));
+					dis = plugin.getPlayerAPI().getDisplayByUUID(plugin.getPlayerAPI().getPlaceOfGlobalPlayer(rank));
 				}
 				
 				return dis;
@@ -71,7 +71,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				if(plugin.getPlayerAPI().getPlaceOfLevelsJob(job, rank).equalsIgnoreCase("Unknown")) {
 					dis = "Unknown";
 				} else {
-					dis = plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfLevelsJob(job, rank));
+					dis =plugin.getPlayerAPI().getDisplayByUUID(plugin.getPlayerAPI().getPlaceOfLevelsJob(job, rank));
 				}
 				
 				return dis;
@@ -89,7 +89,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				if(plugin.getPlayerAPI().getPlaceOfBlocksJob(job, rank).equalsIgnoreCase("Unknown")) {
 					dis = "Unknown";
 				} else {
-					dis = plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfBlocksJob(job, rank));
+					dis = plugin.getPlayerAPI().getDisplayByUUID(plugin.getPlayerAPI().getPlaceOfBlocksJob(job, rank));
 				}
 				
 				return dis;
@@ -107,7 +107,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				if(plugin.getPlayerAPI().getPlaceOfEarningsJob(job, rank).equalsIgnoreCase("Unknown")) {
 					dis = "Unknown";
 				} else {
-					dis = plugin.getPlayerDataAPI().getNameByUUID(plugin.getPlayerAPI().getPlaceOfEarningsJob(job, rank));
+					dis = plugin.getPlayerAPI().getDisplayByUUID(plugin.getPlayerAPI().getPlaceOfEarningsJob(job, rank));
 				}
 				
 				return dis;

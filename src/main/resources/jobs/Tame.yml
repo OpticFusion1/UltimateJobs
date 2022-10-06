@@ -47,9 +47,7 @@ IDS:
         Icon: "CAT_SPAWN_EGG"
  
 LEVELS:
-
-  CountOfLevels: 4
-
+ 
   1:
 
     Money: 0 

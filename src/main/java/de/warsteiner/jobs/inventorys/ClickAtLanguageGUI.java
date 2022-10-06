@@ -74,7 +74,7 @@ public class ClickAtLanguageGUI implements Listener {
 						jb.updateLocalLanguage(lang);
 					}
 					
-					plugin.getPlayerDataAPI().updateSettingData(pp.getUUIDAsString(), "LANG", lang.getName());
+					plugin.getPlayerAPI().updateSettingData(pp.getUUIDAsString(), "LANG", lang.getName());
 					
 					player.sendMessage(
 							pp.getLanguage().getStringFromLanguage(player.getUniqueId(), "LanguageChangedMessage")

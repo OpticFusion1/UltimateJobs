@@ -459,7 +459,7 @@ public class JobWorkManager {
 
 			List<Block> blockstocheck = new ArrayList<>();
 
-			if (job.getConfig().getBoolean("CheckIfThereAreOtherCanesAbove")) {
+			if (job.getOptionValue("CheckIfThereAreOtherCanesAbove")) {
 
 				if (breakingMaterials.contains(type)) {
 
@@ -510,7 +510,7 @@ public class JobWorkManager {
 
 			Job job = getJobOnWork("" + UUID, JobAction.FARM_GROW, "" + type);
 
-			if (job.getConfig().getBoolean("GetMoneyOnlyWhenFullyGrown")) {
+			if (job.getOptionValue("GetMoneyOnlyWhenFullyGrown")) {
 				if (!plugin.getPluginManager().isFullyGrown(block)) {
 					return;
 				}
@@ -623,11 +623,10 @@ public class JobWorkManager {
 	public void finalWork(String real, UUID ID, JobAction ac, String flag, int amount, Block block, Entity ent,
 			boolean checkplayer, boolean checkblock, boolean checkentity, Job job) {
 
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
+		new BukkitRunnable() {
+			
 			@Override
 			public void run() {
-
 				String PUID = "" + ID;
 
 				FileConfiguration cfg = plugin.getFileManager().getConfig();
@@ -661,125 +660,136 @@ public class JobWorkManager {
 
 					if (api.canReward(job, iD, ac)) {
 
-						boolean can = api.checkforDailyMaxEarnings(PUID, job);
+						String usedid = job.getNotRealIDByRealOne(real.toUpperCase(), ac);
+						
+						if(usedid != null) {
+							boolean can = api.checkforDailyMaxEarnings(PUID, job);
 
-						String date = plugin.getDate();
- 
-						double reward = job.getRewardOf(iD, ac);
+							String date = plugin.getDate();
+	 
+							double reward = job.getRewardOf(iD, ac);
 
-						double exp_old = plugin.getPlayerAPI().getExpOf(PUID, job);
-						double EPC1 = plugin.getPlayerAPI().getRealCalculatedAmountOfExp(PUID, job, job.getExpOf(iD, ac) * amount);
+							double exp_old = plugin.getPlayerAPI().getExpOf(PUID, job);
+							double EPC1 = plugin.getPlayerAPI().getRealCalculatedAmountOfExp(PUID, job, job.getExpOf(iD, ac) * amount);
 
-						Integer broken = plugin.getPlayerAPI().getBrokenTimes(PUID, job) + amount;
-						double points = job.getPointsOf(iD, ac) * amount;
-						double old_points = plugin.getPlayerAPI().getPoints(PUID);
+							Integer broken = plugin.getPlayerAPI().getBrokenTimes(PUID, job) + amount;
+							double points = job.getPointsOf(iD, ac) * amount;
+							double old_points = plugin.getPlayerAPI().getPoints(PUID);
 
-						double fixed = reward * amount;
- 
-						double od1 = plugin.getPlayerAPI().getRealCalculatedAmountOfMoney(PUID, job, fixed);
- 
-						String usedid = job.getNotRealIDByRealOne(real.toUpperCase());
+							double fixed = reward * amount;
+	 
+							double od1 = plugin.getPlayerAPI().getRealCalculatedAmountOfMoney(PUID, job, fixed);
+	 
+							 
+	 
+							double earned_old = plugin.getPlayerAPI().getEarnedFrom(PUID, job, usedid, "" + ac);
+	 
+							double earnedcalc = plugin.getPlayerAPI().getEarnedAt(PUID, job, date) + od1;
 
-						double earned_old = plugin.getPlayerAPI().getEarnedFrom(PUID, job, usedid, "" + ac);
+							if (job.hasVaultReward(iD, ac)) {
+								if (can) {
 
-						double earnedcalc = plugin.getPlayerAPI().getEarnedAt(PUID, job, date) + od1;
+									if (plugin.getFileManager().getConfig().getString("PayMentMode").toUpperCase()
+											.equalsIgnoreCase("INSTANT")) {
 
-						if (job.hasVaultReward(iD, ac)) {
-							if (can) {
-
-								if (plugin.getFileManager().getConfig().getString("PayMentMode").toUpperCase()
-										.equalsIgnoreCase("INSTANT")) {
-
-									if (Bukkit.getPlayer(ID).isOnline()) {
-										UltimateJobs.getPlugin().getEco().depositPlayer(Bukkit.getPlayer(ID), od1);
-									} else {
-										UltimateJobs.getPlugin().getEco().depositPlayer(Bukkit.getOfflinePlayer(ID),
-												od1);
-									}
-								} else {
-
-									if (Bukkit.getPlayer(ID).isOnline()) {
-
-										double old = plugin.getPlayerAPI().getSalary("" + ID);
-
-										plugin.getPlayerAPI().updateSalary("" + ID, old + od1);
-
-									} else {
-
-										if (UltimateJobs.getPlugin().getFileManager().getConfig()
-												.getInt("MaxDefaultJobs") != 0) {
-											return;
+										if (Bukkit.getPlayer(ID).isOnline()) {
+											UltimateJobs.getPlugin().getEco().depositPlayer(Bukkit.getPlayer(ID), od1);
+										} else {
+											UltimateJobs.getPlugin().getEco().depositPlayer(Bukkit.getOfflinePlayer(ID),
+													od1);
 										}
+									} else {
 
-										double old = plugin.getPlayerAPI().getSalary("" + ID);
+										if (Bukkit.getPlayer(ID).isOnline()) {
 
-										plugin.getPlayerAPI().updateSalary("" + ID, old + od1);
+											double old = plugin.getPlayerAPI().getSalary("" + ID);
 
+											plugin.getPlayerAPI().updateSalary("" + ID, old + od1);
+
+										} else {
+
+											if (UltimateJobs.getPlugin().getFileManager().getConfig()
+													.getInt("MaxDefaultJobs") != 0) {
+												return;
+											}
+
+											double old = plugin.getPlayerAPI().getSalary("" + ID);
+
+											plugin.getPlayerAPI().updateSalary("" + ID, old + od1);
+
+										}
 									}
 								}
+
 							}
 
-						}
+							plugin.getPlayerAPI().updateBrokenTimes(PUID, job, broken);
 
-						plugin.getPlayerAPI().updateBrokenTimes(PUID, job, broken);
+							int ol = plugin.getPlayerAPI().getBrokenTimesOfID(PUID, job, usedid, "" + ac);
 
-						int ol = plugin.getPlayerAPI().getBrokenTimesOfID(PUID, job, usedid, "" + ac);
+							plugin.getPlayerAPI().updateBrokenTimesOf(PUID, job, usedid, ol + amount, "" + ac);
 
-						plugin.getPlayerAPI().updateBrokenTimesOf(PUID, job, usedid, ol + amount, "" + ac);
+							if (can == false) {
 
-						if (can == false) {
+								if (cfg.getBoolean("Jobs.MaxEarnings.IfReached_Can_Earn_Exp")) {
+									plugin.getPlayerAPI().updateExp(PUID, job, exp_old + EPC1);
+								}
+								if (cfg.getBoolean("Jobs.MaxEarnings.IfReached_Can_Earn_Points")) {
+									plugin.getPlayerAPI().updatePoints(PUID, points + old_points);
+								}
+								if (cfg.getBoolean("Jobs.MaxEarnings.IfReached_Can_Stats")) {
+									plugin.getPlayerAPI().updateEarningsOfToday(PUID, job, earnedcalc);
+									plugin.getPlayerAPI().updateBrokenMoneyOf(PUID, job, usedid, earned_old + od1,
+											"" + ac);
 
-							if (cfg.getBoolean("Jobs.MaxEarnings.IfReached_Can_Earn_Exp")) {
+								}
+
+							} else {
 								plugin.getPlayerAPI().updateExp(PUID, job, exp_old + EPC1);
-							}
-							if (cfg.getBoolean("Jobs.MaxEarnings.IfReached_Can_Earn_Points")) {
 								plugin.getPlayerAPI().updatePoints(PUID, points + old_points);
-							}
-							if (cfg.getBoolean("Jobs.MaxEarnings.IfReached_Can_Stats")) {
+
 								plugin.getPlayerAPI().updateEarningsOfToday(PUID, job, earnedcalc);
+
 								plugin.getPlayerAPI().updateBrokenMoneyOf(PUID, job, usedid, earned_old + od1,
 										"" + ac);
-
 							}
 
-						} else {
-							plugin.getPlayerAPI().updateExp(PUID, job, exp_old + EPC1);
-							plugin.getPlayerAPI().updatePoints(PUID, points + old_points);
+							if (Bukkit.getPlayer(ID).isOnline()) {
 
-							plugin.getPlayerAPI().updateEarningsOfToday(PUID, job, earnedcalc);
+								Player player = Bukkit.getPlayer(ID);
 
-							plugin.getPlayerAPI().updateBrokenMoneyOf(PUID, job, usedid, earned_old + od1,
-									"" + ac);
-						}
+								JobsPlayer d = plugin.getPlayerAPI().getRealJobPlayer(PUID);
 
-						if (Bukkit.getPlayer(ID).isOnline()) {
+								api.playSound("FINISHED_WORK", player);
 
-							Player player = Bukkit.getPlayer(ID);
+								new BukkitRunnable() {
+									public void run() {
+										new PlayerFinishedWorkEvent(player, d, job, iD, ac);
+									
+										cancel();
+									}
+								}.runTaskLater(plugin, 1);
 
-							JobsPlayer d = plugin.getPlayerAPI().getRealJobPlayer(PUID);
-
-							api.playSound("FINISHED_WORK", player);
-
-							new BukkitRunnable() {
-								public void run() {
-									new PlayerFinishedWorkEvent(player, d, job, iD, ac);
+								if (cfg.getBoolean("Enable_Levels")) {
+									UltimateJobs.getPlugin().getLevelAPI().check(player, job, d, iD);
 								}
-							}.runTaskLater(plugin, 1);
-
-							if (cfg.getBoolean("Enable_Levels")) {
-								UltimateJobs.getPlugin().getLevelAPI().check(player, job, d, iD);
+								UltimateJobs.getPlugin().getAPI().sendReward(d, player, job, EPC1, od1, iD, can, ac,
+										amount);
 							}
-							UltimateJobs.getPlugin().getAPI().sendReward(d, player, job, EPC1, od1, iD, can, ac,
-									amount);
-						}
 
-						return;
+							return;
+						}
 
 					}
 				}
+				
+				cancel();
 			}
-		});
-		return;
+		}.runTaskAsynchronously(plugin);
+			  
+			
+			 
+		 
 	}
 
 }

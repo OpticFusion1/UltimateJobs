@@ -25,8 +25,11 @@ public class JobsPlayer {
 	private String saldate; 
 	private ArrayList<JobsMultiplier> multi;
 	
+
+	private HashMap<String, String> settings;
+	
 	public JobsPlayer(String name, ArrayList<String> current2, ArrayList<String> owned2,  double points,
-			int max, String UUID, UUID rUUID, Language lang, HashMap<String, JobStats> stats, double s, String saldate, ArrayList<JobsMultiplier> multis) {
+			int max, String UUID, UUID rUUID, Language lang, HashMap<String, JobStats> stats, double s, String saldate, ArrayList<JobsMultiplier> multis, HashMap<String, String> settings) {
 		this.name = name;
 		this.UUID = UUID; 
 		this.points = points;
@@ -39,6 +42,28 @@ public class JobsPlayer {
 		this.sal = s;
 		this.saldate = saldate; 
 		this.multi = multis;
+		this.settings = settings;
+	}
+	
+	public void addSetting(String name, String val) {
+		HashMap<String, String> listed = getPlayerSettings();
+		
+		listed.put(name, val);
+		
+		this.settings = listed;
+	}
+	
+	public void updateSetting(String name, String val) {
+		HashMap<String, String> listed = getPlayerSettings();
+		
+		listed.remove(name);
+		listed.put(name, val);
+		
+		this.settings = listed;
+	}
+	
+	public HashMap<String, String> getPlayerSettings() {
+		return settings;
 	}
 	
 	public ArrayList<JobsMultiplier> getMultipliers() {
@@ -78,9 +103,31 @@ public class JobsPlayer {
 		JobStats used = null;
 		
 		if(!stats.containsKey(job)) {
-			if(owned.contains(job)) {
-				used = UltimateJobs.getPlugin().getPlayerAPI().loadSingleJobData(rUUID, job);
-			}
+			
+			HashMap<String, JobStats> newstats = this.stats;
+			
+			Job real = UltimateJobs.getPlugin().getJobCache().get(job);
+			
+			HashMap<String, Double> list01 = new HashMap<String, Double>();
+			HashMap<String, Integer> list02 = new HashMap<String, Integer>();
+			
+			HashMap<String, Double> list03 = new HashMap<String, Double>();
+			 
+			real.getActionList().forEach((action) -> {
+				
+				real.getIDsOf(action).forEach((id, type) -> {
+					list01.put(id, 0.0);
+					list02.put(id, 1);
+					list03.put(id, 0.0);
+				});
+				
+			});
+			
+			used = new JobStats(real, job, 0, 1, 0, UltimateJobs.getPlugin().getDate(), list01, list02, list03, UltimateJobs.getPlugin().getDate());
+			
+			newstats.put(job, used);
+			
+			this.stats = newstats;
 		} else {
 			used = stats.get(job);
 		}

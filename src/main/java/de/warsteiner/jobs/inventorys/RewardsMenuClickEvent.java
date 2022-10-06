@@ -62,14 +62,20 @@ public class RewardsMenuClickEvent implements Listener {
 			String next = jb.getLanguage().getStringFromPath(p.getUniqueId(), cfg.getString("PageItems.Next.Display"));
 			String pre = jb.getLanguage().getStringFromPath(p.getUniqueId(),
 					cfg.getString("PageItems.Previous.Display"));
-			int page = plugin.getPlayerDataAPI().getPageFromID("" + p.getUniqueId(), "REWARDS_" + j.getConfigID());
+			
+			int page = 1;
+			
+			if(plugin.getPlayerAPI().existSettingData(""+UUID, "REWARDS_" + j.getConfigID())) {
+				page = plugin.getPlayerAPI().getPageData(""+UUID, "REWARDS_" + j.getConfigID());
+			}
+			
 			if (display.equalsIgnoreCase(plugin.getPluginManager().toHex(next).replaceAll("&", "§"))) {
 				int d = cfg.getStringList("Rewards_Slots").size();
 				int perpage = d;
 				int cl = page * perpage + 1;
 
 				if (j.getAllNotRealIDSFromActionsAsArray().size() >= cl) {
-					plugin.getPlayerDataAPI().addOnePageFromID("" + p.getUniqueId(), "REWARDS_" + j.getConfigID());
+					plugin.getPlayerAPI().addOnePage("" + p.getUniqueId(), "REWARDS_" + j.getConfigID());
 					plugin.getGUIAddonManager().createRewardsGUI(p, UpdateTypes.REOPEN, j);
 					plugin.getAPI().playSound("NEW_PAGE_REWARDS", p);
 
@@ -99,7 +105,7 @@ public class RewardsMenuClickEvent implements Listener {
 
 					plugin.getAPI().playSound("REWARDS_FIRST_ALREADY", p);
 				} else {
-					plugin.getPlayerDataAPI().removeOnePageFromID("" + p.getUniqueId(), "REWARDS_" + j.getConfigID());
+					plugin.getPlayerAPI().removeOnePage("" + p.getUniqueId(), "REWARDS_" + j.getConfigID());
 					plugin.getGUIAddonManager().createRewardsGUI(p, UpdateTypes.REOPEN, j);
 					plugin.getAPI().playSound("LAST_PAGE_REWARDS", p);
 				}

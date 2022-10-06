@@ -20,9 +20,9 @@
 
 #
 # <----- IMPORTANT ----->
-# Choose between YML and SQL to save data!
+# Choose between FILE and SQL to save data!
 #
-Mode: "YML"
+Mode: "FILE"
 
 # .----------------.  .----------------.  .----------------. 
 #| .--------------. || .--------------. || .--------------. |

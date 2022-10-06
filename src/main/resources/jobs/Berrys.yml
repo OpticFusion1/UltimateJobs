@@ -47,9 +47,7 @@ IDS:
         Icon: "SWEET_BERRIES"
  
 LEVELS:
-
-  CountOfLevels: 4
-
+ 
   1:
 
     Money: 0 

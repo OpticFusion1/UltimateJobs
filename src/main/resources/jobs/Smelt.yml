@@ -34,9 +34,7 @@ IDS:
         Icon: "IRON_INGOT"
 
 LEVELS:
-
-  CountOfLevels: 4
-
+ 
   1:
 
     Money: 0 

@@ -110,6 +110,8 @@ public class GuiManager {
 						null);
 
 				setLanguageItems(player, inv, cfg);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 
@@ -130,6 +132,8 @@ public class GuiManager {
 								cfg, null);
 
 						setLanguageItems(player, inv, cfg);
+						
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -207,6 +211,8 @@ public class GuiManager {
 				setPlaceHolders(player, inv_view, cfg.getStringList("Help_Place"), name);
 				setCustomitems(player, player.getName(), inv_view, "Help_Custom.",
 						cfg.getStringList("Help_Custom.List"), name, cfg, null);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -236,6 +242,8 @@ public class GuiManager {
 				setCustomitems(player, player.getName(), inv_view, "AreYouSureGUI_Custom.",
 						cfg.getStringList("AreYouSureGUI_Custom.List"), name, cfg, null);
 				setAreYouSureItems(player, job, name, inv_view);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -339,6 +347,8 @@ public class GuiManager {
 
 				setPlaceHolders(player, inv_view, cfg.getStringList("Main_Place"), name);
 				UpdateMainInventoryItems(player, name);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -354,6 +364,8 @@ public class GuiManager {
 						setCustomitems(player, player.getName(), player.getOpenInventory(), "Main_Custom.",
 								cfg.getStringList("Main_Custom.List"), name, cfg, null);
 						setMainInventoryJobItems(player.getOpenInventory(), player, name);
+						
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -383,6 +395,8 @@ public class GuiManager {
 				setPlaceHolders(player, inv_view, cfg.getStringList("Settings_Place"), name);
 				setCustomitems(player, player.getName(), inv_view, "Settings_Custom.",
 						cfg.getStringList("Settings_Custom.List"), name, cfg, job);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 
@@ -399,6 +413,8 @@ public class GuiManager {
 					public void run() {
 						setCustomitems(player, player.getName(), inv, "Settings_Custom.",
 								cfg.getStringList("Settings_Custom.List"), name, cfg, job);
+						
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -602,8 +618,8 @@ public class GuiManager {
 												.replaceAll("<salary>", plugin.getAPI().Format(sp.getSalary()))
 												.replaceAll("<stats_args_4>", usedlvl)
 												.replace("<earned>",
-														"" + api.Format(plugin.getPlayerDataAPI().getEarnedAt(
-																"" + player.getUniqueId(), job.getConfigID(),
+														"" + api.Format(plugin.getPlayerAPI().getEarnedAt(
+																"" + player.getUniqueId(), job,
 																plugin.getDate())))
 												.replaceAll("<stats_args_3>", "" + level)
 												.replaceAll("<stats_args_2>", "" + broken)

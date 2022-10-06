@@ -60,9 +60,7 @@ IDS:
         Icon: "DIAMOND_SWORD"
  
 LEVELS:
-
-  CountOfLevels: 4
-
+ 
   1:
 
     Money: 0 

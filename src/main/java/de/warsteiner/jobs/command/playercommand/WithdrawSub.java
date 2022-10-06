@@ -32,13 +32,7 @@ public class WithdrawSub extends SubCommand {
 		final Player player = (Player) sender;
 		UUID UUID = player.getUniqueId();
 		if (args.length == 1) {
-
-			if (UltimateJobs.getPlugin().getFileManager().getConfig().getInt("MaxDefaultJobs") != 0) {
-				sender.sendMessage(AdminCommand.prefix
-						+ "Withdraw System is not possible to be used with multiplie Jobs per Player");
-				return;
-			}
-
+ 
 			plugin.getGUIAddonManager().createWithdrawMenu(player, UpdateTypes.OPEN);
 
 		} else {

@@ -13,12 +13,20 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import de.warsteiner.jobs.UltimateJobs;
 
+/**
+ * Class to manage everything related to the Player-Chunks
+*/
+
 public class PlayerChunkAPI {
 
 	private static UltimateJobs plugin = UltimateJobs.getPlugin();
 
 	public HashMap<String, HashMap<Job, List<String>>> players = new HashMap<String, HashMap<Job, List<String>>>();
 
+	/**
+	 * Loading Chunks from a player in a Job
+	*/
+	
 	public void loadChunks(String UUID, Job job) {
 		FileConfiguration cfg = plugin.getChunkData().get();
 
@@ -43,6 +51,10 @@ public class PlayerChunkAPI {
 		players.put(UUID, tempMap);
 
 	}
+	
+	/**
+	 * Adding a new Chunk to a player
+	*/
 
 	public void addChunk(String UUID, Job job, String c) {
 		List<String> old = players.get(UUID).get(job);
@@ -51,6 +63,10 @@ public class PlayerChunkAPI {
 
 		players.get(UUID).put(job, old);
 	}
+	
+	/**
+	 * Saving all Chunks of a player
+	*/
 
 	public void savePlayerChunks(String UUID, Job job) {
 		File file = plugin.getChunkData().getfile();

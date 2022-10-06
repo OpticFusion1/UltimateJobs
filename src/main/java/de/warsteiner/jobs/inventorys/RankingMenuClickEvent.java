@@ -72,7 +72,7 @@ public class RankingMenuClickEvent implements Listener {
 				
 				if(e.getSlot() == slot) {
 					
-					String current = plugin.getPlayerDataAPI().getSettingData(""+p.getUniqueId(), "RANKING");
+					String current = plugin.getPlayerAPI().getSettingData(""+p.getUniqueId(), "RANKING");
 					
 					String next = null;
 					
@@ -98,7 +98,7 @@ public class RankingMenuClickEvent implements Listener {
 					}
 					
 					if(next != null) {
-						plugin.getPlayerDataAPI().updateSettingData(""+p.getUniqueId(), "RANKING", next.toUpperCase());
+						plugin.getPlayerAPI().updateSettingData(""+p.getUniqueId(), "RANKING", next.toUpperCase());
 					 
 						plugin.getAPI().playSound("UPDATED_RANKING_JOB", p);
 						

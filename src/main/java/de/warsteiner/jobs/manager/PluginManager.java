@@ -18,6 +18,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import de.warsteiner.jobs.UltimateJobs;
+import de.warsteiner.jobs.utils.objects.DataMode;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 
@@ -40,13 +41,13 @@ public class PluginManager {
 		Date data = new Date();
 		return format.format(data);
 	}
-	
+
 	public String getDateTodayFromCalWith() {
 		DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date data = new Date();
 		return format.format(data);
 	}
- 
+
 	public String formatText(String text, Map<String, String> replacer, OfflinePlayer player) {
 		text = toHex(text).replaceAll("&", "§");
 		for (String key : replacer.keySet()) {
@@ -71,11 +72,14 @@ public class PluginManager {
 					@Override
 					public void run() {
 
-						if (plugin.getInit().isClosed()) {
+						if (plugin.getPluginMode().equals(DataMode.SQL)) {
+							if (plugin.getInit().isClosed()) {
 
-							plugin.connect();
+								plugin.connect();
 
-						}
+							}
+						}  
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -106,27 +110,24 @@ public class PluginManager {
 	}
 
 	private List<Material> breakingMaterials = List.of(Material.SUGAR_CANE, Material.CACTUS, Material.BAMBOO,
-			  Material.CRIMSON_FUNGUS, Material.WARPED_FUNGUS, Material.BROWN_MUSHROOM, Material.RED_MUSHROOM, Material.MELON, Material.PUMPKIN);
-	
-	
-	private List<Material> bypassmeta = List.of(
-			  Material.CRIMSON_FUNGUS, Material.WARPED_FUNGUS, Material.BROWN_MUSHROOM, Material.RED_MUSHROOM, Material.CARROTS,
-			  Material.WHEAT, Material.POTATOES, Material.BEETROOTS, Material.BAMBOO, Material.COCOA);
-	
-	public boolean isFullyGrown(Block block) {
-	 
+			Material.CRIMSON_FUNGUS, Material.WARPED_FUNGUS, Material.BROWN_MUSHROOM, Material.RED_MUSHROOM,
+			Material.MELON, Material.PUMPKIN);
+
+	private List<Material> bypassmeta = List.of(Material.CRIMSON_FUNGUS, Material.WARPED_FUNGUS,
+			Material.BROWN_MUSHROOM, Material.RED_MUSHROOM, Material.CARROTS, Material.WHEAT, Material.POTATOES,
+			Material.BEETROOTS, Material.BAMBOO, Material.COCOA, Material.NETHER_WART);
+
+	public boolean isFullyGrown(Block block) { 
 		if (breakingMaterials.contains(block.getType())) {
 			return true;
 		}
-		
-		if(block.hasMetadata("placed-by-player") && !bypassmeta.contains(block.getType())) {
+
+		if (block.hasMetadata("placed-by-player") && !bypassmeta.contains(block.getType())) {
 			return false;
-		}
- 
-		if(block.getBlockData() == null) {
+		} 
+		if (block.getBlockData() == null) {
 			return false;
-		}
-		
+		}  
 		BlockData bdata = block.getBlockData();
 		if (bdata instanceof Ageable) {
 			Ageable age = (Ageable) bdata;

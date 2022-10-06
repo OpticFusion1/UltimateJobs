@@ -1,17 +1,21 @@
 package de.warsteiner.jobs.api;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.util.concurrent.AtomicDouble;
@@ -19,13 +23,20 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.utils.JobAction;
 import de.warsteiner.jobs.utils.database.statements.SQLStatementAPI;
+import de.warsteiner.jobs.utils.objects.DataMode;
 import de.warsteiner.jobs.utils.objects.JobStats;
 import de.warsteiner.jobs.utils.objects.JobsMultiplier;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
 import de.warsteiner.jobs.utils.objects.MultiplierType;
 import de.warsteiner.jobs.utils.objects.MultiplierWeight;
 
-public class PlayerDataAPI {
+/**
+ * Class to manage ALL Offline Player Data
+ * 
+ * DO NOT USE THIS CLASS AS API IN ANY PLUGIN.
+*/
+
+public class OfflinePlayerAPI {
 
 	private SQLStatementAPI mg = UltimateJobs.getPlugin().getSQLStatementAPI();
 	private UltimateJobs plugin = UltimateJobs.getPlugin();
@@ -41,10 +52,6 @@ public class PlayerDataAPI {
 						"CREATE TABLE IF NOT EXISTS playerlist (UUID varchar(200), NAME varchar(200), DISPLAY varchar(200))");
 				s.executeUpdate(
 						"CREATE TABLE IF NOT EXISTS playersettings (UUID varchar(200), TYPE varchar(200), MODE varchar(200))");
-
-				s.executeUpdate("CREATE TABLE IF NOT EXISTS pagedata (UUID varchar(200), ID varchar(200), PAGE int)");
-				s.executeUpdate(
-						"CREATE TABLE IF NOT EXISTS pagecat (UUID varchar(200), ID varchar(200), TYPE varchar(200))");
 
 				s.executeUpdate(
 						"CREATE TABLE IF NOT EXISTS job_stats (UUID varchar(200), JOB varchar(200), DATE varchar(200), LEVEL int, EXP double, BROKEN int)");
@@ -71,13 +78,16 @@ public class PlayerDataAPI {
 
 				s.executeUpdate(
 						"CREATE TABLE IF NOT EXISTS job_player_multipliers (UUID varchar(200), NAME varchar(200), PLUGIN varchar(200), TYPE varchar(200), UNTIL varchar(200), WEIGHT varchar(200), VAL double, JOB varchar(200))");
+
+				cancel();
 			}
+
 		}.runTaskAsynchronously(plugin);
 	}
 
 	public boolean existMultiplier(String UUID, String name) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -90,7 +100,7 @@ public class PlayerDataAPI {
 					});
 			return a.get() != null;
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
@@ -102,8 +112,8 @@ public class PlayerDataAPI {
 
 	public void updateMultiplier(String uuid, String name, String by_plugin, MultiplierType type_of, String until,
 			MultiplierWeight weight, double value, String job) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			final String insertQuery = "UPDATE `job_player_multipliers` SET PLUGIN='" + by_plugin + "' AND SET TYPE='"
 					+ type_of.toString() + "' AND SET JOB='" + job + "' AND SET VAL='" + value + "' AND SET WEIGHT='"
@@ -111,7 +121,7 @@ public class PlayerDataAPI {
 					+ "'";
 			mg.executeUpdate(insertQuery);
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
@@ -133,9 +143,9 @@ public class PlayerDataAPI {
 	}
 
 	public ArrayList<JobsMultiplier> getMultipliers(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		Collection<JobsMultiplier> ms = new ArrayList<JobsMultiplier>();
-		if (mode.equalsIgnoreCase("SQL")) {
+		if (mode.equals(DataMode.SQL)) {
 
 			mg.executeQuery("SELECT * FROM job_player_multipliers WHERE UUID= '" + UUID + "'", rs -> {
 
@@ -160,7 +170,7 @@ public class PlayerDataAPI {
 			});
 
 			return (ArrayList<JobsMultiplier>) ms;
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
 			List<String> listed = cfg.getStringList("MultipliersList." + UUID);
@@ -187,8 +197,8 @@ public class PlayerDataAPI {
 	}
 
 	public void removeMultiplier(String UUID, String name) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			mg.executeUpdate("DELETE FROM job_player_multipliers WHERE UUID='" + UUID + "' AND NAME='" + name + "';");
 		} else {
 			File file = plugin.getPlayerDataFile().getfile();
@@ -209,8 +219,8 @@ public class PlayerDataAPI {
 
 	public void createMultiplier(String uuid, String name, String by_plugin, MultiplierType type_of, String until,
 			MultiplierWeight weight, double value, String job) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			final String insertQuery = "INSERT INTO job_player_multipliers(UUID,NAME,PLUGIN,TYPE,UNTIL,WEIGHT,VAL, JOB) VALUES(?,?,?,?,?,?,?,?)";
 			mg.executeUpdate(insertQuery, ps -> {
@@ -228,7 +238,7 @@ public class PlayerDataAPI {
 				}
 			});
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
@@ -253,8 +263,8 @@ public class PlayerDataAPI {
 	}
 
 	public void updateSalaryDate(String UUID, String date) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			if (existSalary(UUID)) {
 
@@ -270,7 +280,7 @@ public class PlayerDataAPI {
 				});
 			}
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
@@ -286,8 +296,8 @@ public class PlayerDataAPI {
 	}
 
 	public String getSalaryDate(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -299,7 +309,7 @@ public class PlayerDataAPI {
 			});
 			return a.get();
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
@@ -310,8 +320,8 @@ public class PlayerDataAPI {
 	}
 
 	public boolean existSalaryDate(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -323,7 +333,7 @@ public class PlayerDataAPI {
 			});
 			return a.get() != null;
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.contains("CDATE." + UUID);
 		}
@@ -331,11 +341,11 @@ public class PlayerDataAPI {
 	}
 
 	public double getSalary(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		if (!existSalary(UUID)) {
 			updateSalary(UUID, 0.0);
 		}
-		if (mode.equalsIgnoreCase("SQL")) {
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicDouble a = new AtomicDouble();
 
@@ -347,7 +357,7 @@ public class PlayerDataAPI {
 			});
 			return a.get();
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
@@ -358,8 +368,8 @@ public class PlayerDataAPI {
 	}
 
 	public void updateSalary(String UUID, double sal) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			if (existSalary(UUID)) {
 
@@ -375,7 +385,7 @@ public class PlayerDataAPI {
 				});
 			}
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
@@ -391,8 +401,8 @@ public class PlayerDataAPI {
 	}
 
 	public boolean existSalary(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -404,7 +414,7 @@ public class PlayerDataAPI {
 			});
 			return a.get() != null;
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.contains("Salary." + UUID);
 		}
@@ -412,11 +422,11 @@ public class PlayerDataAPI {
 	}
 
 	public String getJobDateJoined(String UUID, String job) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		if (!existDateJoined(UUID, job)) {
 			updateDateJoinedOfJob(UUID, job, plugin.getPluginManager().getDateTodayFromCal());
 		}
-		if (mode.equalsIgnoreCase("SQL")) {
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -429,7 +439,7 @@ public class PlayerDataAPI {
 					});
 			return a.get();
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
@@ -440,8 +450,8 @@ public class PlayerDataAPI {
 	}
 
 	public void updateDateJoinedOfJob(String UUID, String job, String date) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			if (existDateJoined(UUID, job)) {
 
@@ -458,7 +468,7 @@ public class PlayerDataAPI {
 				});
 			}
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
@@ -474,8 +484,8 @@ public class PlayerDataAPI {
 	}
 
 	public boolean existDateJoined(String UUID, String job) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -488,7 +498,7 @@ public class PlayerDataAPI {
 					});
 			return a.get() != null;
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.contains("JobDates." + UUID + ".Job." + job);
 		}
@@ -496,8 +506,8 @@ public class PlayerDataAPI {
 	}
 
 	public void createFirstPluginStart(String date) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			final String insertQuery = "INSERT INTO jobs_plugin(DATE,PLY) VALUES(?,?)";
 			mg.executeUpdate(insertQuery, ps -> {
@@ -505,7 +515,7 @@ public class PlayerDataAPI {
 				ps.setString(2, "null");
 			});
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
@@ -521,8 +531,8 @@ public class PlayerDataAPI {
 	}
 
 	public boolean isFirstPluginStart() {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicBoolean a = new AtomicBoolean(false);
 
@@ -538,7 +548,7 @@ public class PlayerDataAPI {
 
 			return a.get();
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
@@ -548,27 +558,46 @@ public class PlayerDataAPI {
 		return false;
 	}
 
-	public boolean isInPageCategory(String UUID, String id) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+	public HashMap<String, String> getSettingsOfPlayer(String uuid) {
 
-			AtomicReference<String> a = new AtomicReference<String>();
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 
-			mg.executeQuery("SELECT * FROM pagecat WHERE UUID= '" + UUID + "' AND ID= '" + id + "'", rs -> {
-				if (rs.next()) {
-					a.set(rs.getString("TYPE"));
+		HashMap<String, String> data = new HashMap<String, String>();
+
+		if (mode.equals(DataMode.SQL)) {
+
+			Collection<String> settings = new ArrayList<String>();
+			mg.executeQuery("SELECT * FROM playersettings WHERE UUID='" + uuid + "'", rs -> {
+
+				while (rs.next()) {
+					settings.add(rs.getString("TYPE"));
 				}
+
 				return 1;
 			});
-			return a.get() != null;
+
+			settings.forEach((type) -> {
+				data.put(type, getSettingData(uuid, type));
+			});
+
+		} else {
+
+			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+
+			List<String> listed = cfg.getStringList("SettingsList." + uuid);
+
+			listed.forEach((type) -> {
+				data.put(type, getSettingData(uuid, type));
+			});
 
 		}
-		return false;
+
+		return data;
 	}
 
-	public boolean isInSettingData(String UUID, String id) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+	public boolean existSettingData(String UUID, String id) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -585,8 +614,8 @@ public class PlayerDataAPI {
 	}
 
 	public boolean existPlayer(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -598,7 +627,7 @@ public class PlayerDataAPI {
 			});
 			return a.get() != null;
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
@@ -609,8 +638,8 @@ public class PlayerDataAPI {
 	}
 
 	public void createSettingData(String UUID, String type, String value) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			final String insertQuery = "INSERT INTO playersettings(UUID,TYPE,MODE) VALUES(?,?,?)";
 			mg.executeUpdate(insertQuery, ps -> {
@@ -619,12 +648,18 @@ public class PlayerDataAPI {
 				ps.setString(3, value);
 			});
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
+			List<String> listed = cfg.getStringList("SettingsList." + UUID);
+
+			listed.add(type);
+
 			cfg.set("Settings." + UUID + "." + type, value);
+
+			cfg.set("SettingsList." + UUID, listed);
 			try {
 				cfg.save(file);
 			} catch (IOException e) {
@@ -635,14 +670,14 @@ public class PlayerDataAPI {
 	}
 
 	public void updateSettingData(String UUID, String type, String value) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			final String insertQuery = "UPDATE `playersettings` SET `MODE`='" + value + "' WHERE UUID='" + UUID
 					+ "' AND TYPE= '" + type + "'";
 			mg.executeUpdate(insertQuery);
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
@@ -658,8 +693,8 @@ public class PlayerDataAPI {
 	}
 
 	public String getSettingData(String UUID, String type) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -671,7 +706,7 @@ public class PlayerDataAPI {
 			});
 			return a.get();
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
@@ -682,13 +717,13 @@ public class PlayerDataAPI {
 	}
 
 	public void updateName(String UUID, String name) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			final String insertQuery = "UPDATE `playerlist` SET `NAME`='" + name + "' WHERE UUID='" + UUID + "'";
 			mg.executeUpdate(insertQuery);
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
@@ -704,13 +739,13 @@ public class PlayerDataAPI {
 	}
 
 	public void updateDisplay(String UUID, String name) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			final String insertQuery = "UPDATE `playerlist` SET `DISPLAY`='" + name + "' WHERE UUID='" + UUID + "'";
 			mg.executeUpdate(insertQuery);
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			File file = plugin.getPlayerDataFile().getfile();
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
@@ -725,161 +760,9 @@ public class PlayerDataAPI {
 		}
 	}
 
-	public int getPageFromID(String UUID, String id) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
-
-			if (!isInPageData(UUID, id)) {
-				final String insertQuery = "INSERT INTO pagedata(UUID,ID,PAGE) VALUES(?,?,?)";
-				mg.executeUpdate(insertQuery, ps -> {
-					ps.setString(1, UUID);
-					ps.setString(2, id);
-					ps.setInt(3, 1);
-				});
-			}
-			AtomicInteger a = new AtomicInteger();
-
-			mg.executeQuery("SELECT * FROM pagedata WHERE UUID= '" + UUID + "' AND ID= '" + id + "'", rs -> {
-				if (rs.next()) {
-					a.set(rs.getInt("PAGE"));
-				}
-				return 1;
-			});
-			return a.get();
-
-		} else if (mode.equalsIgnoreCase("YML")) {
-
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-
-			if (cfg.getInt("Pages." + UUID + "." + id) == 0) {
-				return 1;
-			}
-			return cfg.getInt("Pages." + UUID + "." + id);
-
-		}
-		return 1;
-	}
-
-	public boolean isInPageData(String UUID, String id) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
-
-			AtomicReference<String> a = new AtomicReference<String>();
-
-			mg.executeQuery("SELECT * FROM pagedata WHERE UUID= '" + UUID + "' AND ID= '" + id + "'", rs -> {
-				if (rs.next()) {
-					a.set(rs.getString("ID"));
-				}
-				return 1;
-			});
-			return a.get() != null;
-
-		} else if (mode.equalsIgnoreCase("YML")) {
-
-		}
-		return false;
-	}
-
-	public String getCategoryData(String UUID, String id) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
-
-			AtomicReference<String> a = new AtomicReference<String>();
-
-			mg.executeQuery("SELECT * FROM pagecat WHERE UUID= '" + UUID + "' AND ID= '" + id + "'", rs -> {
-				if (rs.next()) {
-					a.set(rs.getString("TYPE"));
-				}
-				return 1;
-			});
-			return a.get();
-
-		} else if (mode.equalsIgnoreCase("YML")) {
-
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-
-			return cfg.getString("PagesCate." + UUID + "." + id);
-
-		}
-		return null;
-	}
-
-	public void createPageCategory(String UUID, String id, String value) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
-
-			final String insertQuery = "INSERT INTO pagecat(UUID,ID,TYPE) VALUES(?,?,?)";
-			mg.executeUpdate(insertQuery, ps -> {
-				ps.setString(1, UUID);
-				ps.setString(2, id);
-				ps.setString(3, value);
-			});
-
-		} else if (mode.equalsIgnoreCase("YML")) {
-
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-
-			cfg.set("PagesCate." + UUID + "." + id, value);
-			try {
-				cfg.save(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
-	public void updatePageCategory(String UUID, String id, String value) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
-
-			final String insertQuery = "UPDATE `pagecat` SET `TYPE`='" + value + "' WHERE UUID='" + UUID + "' AND ID= '"
-					+ id + "'";
-			mg.executeUpdate(insertQuery);
-
-		} else if (mode.equalsIgnoreCase("YML")) {
-
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-
-			cfg.set("PagesCate." + UUID + "." + id, value);
-			try {
-				cfg.save(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
-	public void updatePageFromID(String UUID, String id, int value) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-
-		if (mode.equalsIgnoreCase("SQL")) {
-
-			final String insertQuery = "UPDATE `pagedata` SET `PAGE`='" + value + "' WHERE UUID='" + UUID
-					+ "' AND ID= '" + id + "'";
-			mg.executeUpdate(insertQuery);
-
-		} else if (mode.equalsIgnoreCase("YML")) {
-
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-
-			cfg.set("Pages." + UUID + "." + id, value);
-			try {
-				cfg.save(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
 	public void addAPlayerToList(String UUID, String name, String dis) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			final String insertQuery = "INSERT INTO playerlist(UUID,NAME,DISPLAY) VALUES(?,?,?)";
 			mg.executeUpdate(insertQuery, ps -> {
@@ -888,7 +771,7 @@ public class PlayerDataAPI {
 				ps.setString(3, dis);
 			});
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			List<String> list = getUltimatePlayers();
 
@@ -916,9 +799,9 @@ public class PlayerDataAPI {
 
 	public List<String> getUltimatePlayers() {
 
-		String mode = UltimateJobs.getPlugin().getPluginMode();
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 
-		if (mode.equalsIgnoreCase("SQL")) {
+		if (mode.equals(DataMode.SQL)) {
 
 			Collection<String> jobs = new ArrayList<String>();
 			mg.executeQuery("SELECT * FROM playerlist", rs -> {
@@ -940,29 +823,9 @@ public class PlayerDataAPI {
 		}
 	}
 
-	public void addOnePageFromID(String UUID, String id) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		int value = getPageFromID(UUID, id);
-		if (mode.equalsIgnoreCase("SQL")) {
-			updatePageFromID(UUID, id, value + 1);
-		} else if (mode.equalsIgnoreCase("YML")) {
-			updatePageFromID(UUID, id, value + 1);
-		}
-	}
-
-	public void removeOnePageFromID(String UUID, String id) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		int value = getPageFromID(UUID, id);
-		if (mode.equalsIgnoreCase("SQL")) {
-			updatePageFromID(UUID, id, value - 1);
-		} else if (mode.equalsIgnoreCase("YML")) {
-			updatePageFromID(UUID, id, value - 1);
-		}
-	}
-
 	public String getUUIDByName(String name) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -974,7 +837,7 @@ public class PlayerDataAPI {
 			});
 			return a.get();
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.getString("Fetcher." + name.toUpperCase() + ".UUID");
 		}
@@ -982,8 +845,8 @@ public class PlayerDataAPI {
 	}
 
 	public String getDisplayByUUID(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -995,7 +858,7 @@ public class PlayerDataAPI {
 			});
 			return a.get();
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.getString("Fetcher." + UUID + ".Display");
 		}
@@ -1003,8 +866,8 @@ public class PlayerDataAPI {
 	}
 
 	public String getNameByUUID(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -1016,7 +879,7 @@ public class PlayerDataAPI {
 			});
 			return a.get();
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.getString("Fetcher." + UUID + ".Name");
 		}
@@ -1024,12 +887,12 @@ public class PlayerDataAPI {
 	}
 
 	public void updateEarningsTimesOf(String UUID, String job, String id, int time, String action) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			final String insertQuery = "UPDATE `earnings_stats_per_action` SET `TIMES`='" + time + "' WHERE UUID='"
 					+ UUID + "' AND JOB= '" + job + "' AND ID= '" + id + "' AND IDACTION= '" + action + "'";
 			mg.executeUpdate(insertQuery);
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
@@ -1041,12 +904,12 @@ public class PlayerDataAPI {
 	}
 
 	public void updateEarningsAmountOf(String UUID, String job, String id, double money, String action) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			final String insertQuery = "UPDATE `earnings_stats_per_action` SET `MONEY`='" + money + "' WHERE UUID='"
 					+ UUID + "' AND JOB= '" + job + "' AND ID= '" + id + "' AND IDACTION= '" + action + "'";
 			mg.executeUpdate(insertQuery);
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
@@ -1057,8 +920,8 @@ public class PlayerDataAPI {
 	}
 
 	public boolean ExistEarningsOfBlock(String UUID, String job, String id, String action) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			AtomicReference<String> a = new AtomicReference<String>();
 
 			mg.executeQuery("SELECT * FROM earnings_stats_per_action WHERE UUID= '" + UUID + "' AND JOB= '" + job
@@ -1069,7 +932,7 @@ public class PlayerDataAPI {
 						return 1;
 					});
 			return a.get() != null;
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.contains("Earnings." + UUID + "." + job + "." + id + ".Action." + action + ".Times");
 		}
@@ -1077,8 +940,8 @@ public class PlayerDataAPI {
 	}
 
 	public int getBrokenTimesOfBlock(String UUID, String job, String id, String action) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			if (ExistEarningsOfBlock(UUID, job, id, action)) {
 				AtomicInteger a = new AtomicInteger();
 
@@ -1093,7 +956,7 @@ public class PlayerDataAPI {
 			} else {
 				createEarningsOfBlock(UUID, job, id, action);
 			}
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
 
@@ -1108,8 +971,8 @@ public class PlayerDataAPI {
 	}
 
 	public double getEarnedOfBlock(String UUID, String job, String id, String action) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			if (ExistEarningsOfBlock(UUID, job, id, action)) {
 				AtomicDouble a = new AtomicDouble();
 
@@ -1125,7 +988,7 @@ public class PlayerDataAPI {
 				createEarningsOfBlock(UUID, job, id, action);
 			}
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
@@ -1142,8 +1005,8 @@ public class PlayerDataAPI {
 	}
 
 	public void createEarningsOfBlock(String UUID, String job, String id, String action) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			final String insertQuery = "INSERT INTO earnings_stats_per_action(UUID,IDACTION,JOB,ID,TIMES,MONEY) VALUES(?,?,?,?,?,?)";
 			mg.executeUpdate(insertQuery, ps -> {
 				ps.setString(1, UUID);
@@ -1157,8 +1020,8 @@ public class PlayerDataAPI {
 	}
 
 	public boolean ExistEarningsDataToday(String UUID, String job, String date) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			AtomicReference<String> a = new AtomicReference<String>();
 
 			mg.executeQuery("SELECT * FROM earnings_all WHERE UUID= '" + UUID + "' AND JOB= '" + job + "' AND DATE= '"
@@ -1169,7 +1032,7 @@ public class PlayerDataAPI {
 						return 1;
 					});
 			return a.get() != null;
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.getString("Earnings." + UUID + "." + date + "." + job) != null;
 		}
@@ -1177,8 +1040,8 @@ public class PlayerDataAPI {
 	}
 
 	public void createEarningsData(String UUID, String job, String date) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			final String insertQuery = "INSERT INTO earnings_all(UUID,JOB,DATE,MONEY) VALUES(?,?,?,?)";
 			mg.executeUpdate(insertQuery, ps -> {
 				ps.setString(1, UUID);
@@ -1191,11 +1054,11 @@ public class PlayerDataAPI {
 	}
 
 	public void updatePoints(String UUID, double value) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			final String insertQuery = "UPDATE `job_players` SET `POINTS`='" + value + "' WHERE UUID='" + UUID + "'";
 			mg.executeUpdate(insertQuery);
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
 
@@ -1205,12 +1068,12 @@ public class PlayerDataAPI {
 	}
 
 	public void updateLevel(String UUID, int value, String job) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			final String insertQuery = "UPDATE `job_stats` SET `LEVEL`='" + value + "' WHERE UUID='" + UUID
 					+ "' AND JOB='" + job + "'";
 			mg.executeUpdate(insertQuery);
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
@@ -1222,11 +1085,11 @@ public class PlayerDataAPI {
 	}
 
 	public void updateMax(String UUID, int value) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			final String insertQuery = "UPDATE `job_players` SET `MAX`='" + value + "' WHERE UUID='" + UUID + "'";
 			mg.executeUpdate(insertQuery);
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
@@ -1238,12 +1101,12 @@ public class PlayerDataAPI {
 	}
 
 	public void updateExp(String UUID, double d, String job) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			final String insertQuery = "UPDATE `job_stats` SET `EXP`='" + d + "' WHERE UUID='" + UUID + "' AND JOB`='"
 					+ job + "'";
 			mg.executeUpdate(insertQuery);
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
@@ -1256,8 +1119,8 @@ public class PlayerDataAPI {
 
 	public void savePlayer(JobsPlayer pl, String UUID) {
 
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			mg.executeUpdate("DELETE FROM job_current WHERE UUID='" + UUID + "';");
 
@@ -1265,11 +1128,45 @@ public class PlayerDataAPI {
 			Collection<String> owned = pl.getOwnJobs();
 			int max = pl.getMaxJobs();
 			double points = pl.getPoints();
+			
+			final String insertQuery_owned = "INSERT INTO job_current(UUID,JOB) VALUES(?,?)";
+
+			if (current != null) {
+				for (String job : current) {
+
+					mg.executeUpdate(insertQuery_owned, ps -> {
+						ps.setString(1, UUID);
+						ps.setString(2, job);
+
+					});
+				}
+			}
+
+			HashMap<String, String> settings = pl.getPlayerSettings();
+
+			if (!settings.isEmpty()) {
+				settings.forEach((type, value) -> {
+					if (existSettingData(UUID, type)) {
+
+						final String insertQuery = "UPDATE `playersettings` SET `MODE`='" + value + "' WHERE UUID='"
+								+ UUID + "' AND TYPE= '" + type + "'";
+						mg.executeUpdate(insertQuery);
+
+					} else {
+
+						final String insertQuery = "INSERT INTO playersettings(UUID,TYPE,MODE) VALUES(?,?,?)";
+						mg.executeUpdate(insertQuery, ps -> {
+							ps.setString(1, UUID);
+							ps.setString(2, type);
+							ps.setString(3, value);
+						});
+
+					}
+				});
+			}
 
 			String dated = UltimateJobs.getPlugin().getDate();
-
-			// updating player stats
-
+ 
 			if (dated != null) {
 				final String insertQuery = "UPDATE `job_players` SET `DATE`='" + dated + "' WHERE UUID='" + UUID + "'";
 				mg.executeUpdate(insertQuery);
@@ -1281,14 +1178,14 @@ public class PlayerDataAPI {
 
 			final String insertQuery_max = "UPDATE `job_players` SET `MAX`='" + max + "' WHERE UUID='" + UUID + "'";
 			mg.executeUpdate(insertQuery_max);
-
-			// updating salary
-
+ 
 			double sal = pl.getSalary();
 
 			String sat = pl.getSalaryDate();
 
-			updateSalaryDate("" + UUID, sat);
+			final String insertQuery_sal = "UPDATE `jobs_earnings_storage_dates` SET `CDATE`='" + sat + "' WHERE UUID='"
+					+ UUID + "'";
+			mg.executeUpdate(insertQuery_sal);
 
 			if (existSalary(UUID)) {
 
@@ -1314,35 +1211,78 @@ public class PlayerDataAPI {
 				String job = s.getJob();
 
 				if (existMultiplier(UUID, name)) {
-					updateMultiplier(UUID, name, by, type, until, weight, value, job);
+
+					final String insertQuery = "UPDATE `job_player_multipliers` SET PLUGIN='" + by + "' AND SET TYPE='"
+							+ type.toString() + "' AND SET JOB='" + job + "' AND SET VAL='" + value
+							+ "' AND SET WEIGHT='" + weight.toString() + "' AND SET UNTIL='" + until + "' WHERE UUID='"
+							+ UUID + "' AND NAME='" + name + "'";
+					mg.executeUpdate(insertQuery);
+
 				} else {
-					createMultiplier(UUID, name, by, type, until, weight, value, job);
+
+					final String insertQuery = "INSERT INTO job_player_multipliers(UUID,NAME,PLUGIN,TYPE,UNTIL,WEIGHT,VAL, JOB) VALUES(?,?,?,?,?,?,?,?)";
+					mg.executeUpdate(insertQuery, ps -> {
+						ps.setString(1, UUID);
+						ps.setString(2, name);
+						ps.setString(3, by);
+						ps.setString(4, type.toString());
+						ps.setString(5, until);
+						ps.setString(6, weight.toString());
+						ps.setDouble(7, value);
+						if (job != null) {
+							ps.setString(8, job);
+						} else {
+							ps.setString(8, "NONE");
+						}
+					});
+
 					;
 				}
 
 			}
 
 			for (String job : owned) {
-
+ 
 				Job j = plugin.getJobCache().get(job);
-
+				
 				JobStats stats = pl.getStatsOf(job);
-
-				stats.getEarningsList().forEach((key, value) -> {
-
-					updateEarnings(UUID, job, key, value);
-				});
-
-				plugin.getPlayerChunkAPI().savePlayerChunks(UUID, j);
-
+				
 				int level = stats.getLevel();
 				double exp = stats.getExp();
 				int broken = stats.getBrokenTimes();
 				String date = stats.getDate();
 
 				String jd = stats.getJoinedDate();
+			 
+				if(! ExistJobData(UUID, job)) {
+				 
+					final String insertQuery = "INSERT INTO job_stats(UUID,JOB,DATE,LEVEL,EXP,BROKEN) VALUES(?,?,?,?,?,?)";
+					mg.executeUpdate(insertQuery, ps -> {
+						ps.setString(1, UUID);
+						ps.setString(2, job);
+						ps.setString(3, date);
+						ps.setInt(4, level);
+						ps.setDouble(5, exp);
+						ps.setInt(6, broken);
+					});
+					
+				}
+				 
+				stats.getEarningsList().forEach((key, value) -> {
 
-				updateDateJoinedOfJob(UUID, job, jd);
+					final String insertQuery = "UPDATE `earnings_all` SET `MONEY`='" + value + "' WHERE UUID='" + UUID
+							+ "' AND JOB= '" + job + "' AND DATE= '" + key + "' ";
+					mg.executeUpdate(insertQuery);
+
+				});
+
+				plugin.getPlayerChunkAPI().savePlayerChunks(UUID, j);
+
+			 
+
+				final String insertQuery = "UPDATE `job_dates_joined` SET `DATE`='" + jd + "' WHERE UUID='" + UUID
+						+ "' AND JOBID= '" + job + "'";
+				mg.executeUpdate(insertQuery);
 
 				final String insertQuery_date = "UPDATE `job_stats` SET `DATE`='" + date + "' WHERE UUID='" + UUID
 						+ "' AND JOB='" + j.getConfigID() + "'";
@@ -1364,13 +1304,19 @@ public class PlayerDataAPI {
 
 					stats.getBrokenList().forEach((key, value) -> {
 
-						updateEarningsAmountOf(UUID, job, key, value, "" + action);
+						final String insert_earnings = "UPDATE `earnings_stats_per_action` SET `MONEY`='" + value
+								+ "' WHERE UUID='" + UUID + "' AND JOB= '" + job + "' AND ID= '" + key
+								+ "' AND IDACTION= '" + action.toString() + "'";
+						mg.executeUpdate(insert_earnings);
 
 					});
 
 					stats.getBrokenTimesOfIDList().forEach((key, value) -> {
 
-						updateEarningsTimesOf(UUID, job, key, value, "" + action);
+						final String insert_times = "UPDATE `earnings_stats_per_action` SET `TIMES`='" + value
+								+ "' WHERE UUID='" + UUID + "' AND JOB= '" + job + "' AND ID= '" + key
+								+ "' AND IDACTION= '" + action.toString() + "'";
+						mg.executeUpdate(insert_times);
 
 					});
 
@@ -1378,19 +1324,8 @@ public class PlayerDataAPI {
 
 			}
 
-			final String insertQuery_owned = "INSERT INTO job_current(UUID,JOB) VALUES(?,?)";
-
-			if (current != null) {
-				for (String job : current) {
-
-					mg.executeUpdate(insertQuery_owned, ps -> {
-						ps.setString(1, UUID);
-						ps.setString(2, job);
-
-					});
-				}
-			}
-		} else if (mode.equalsIgnoreCase("YML")) {
+			 
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
 
@@ -1402,9 +1337,26 @@ public class PlayerDataAPI {
 
 			String sat = pl.getSalaryDate();
 
-			updateSalaryDate("" + UUID, sat);
+			HashMap<String, String> settings = pl.getPlayerSettings();
+
+			if (!settings.isEmpty()) {
+				settings.forEach((type, value) -> {
+					if (existSettingData(UUID, type)) {
+						cfg.set("Settings." + UUID + "." + type, value);
+					} else {
+						List<String> listed = cfg.getStringList("SettingsList." + UUID);
+
+						listed.add(type);
+
+						cfg.set("Settings." + UUID + "." + type, value);
+
+						cfg.set("SettingsList." + UUID, listed);
+					}
+				});
+			}
 
 			cfg.set("Player." + UUID + ".Points", points);
+			cfg.set("CDATE." + UUID, sat);
 			cfg.set("Player." + UUID + ".Date", plugin.getDate());
 			cfg.set("Player." + UUID + ".Max", max);
 			cfg.set("Salary." + UUID, sal);
@@ -1422,10 +1374,26 @@ public class PlayerDataAPI {
 				String job = s.getJob();
 
 				if (existMultiplier(UUID, name)) {
-					updateMultiplier(UUID, name, by, type, until, weight, value, job);
+
+					cfg.set("Multipliers." + UUID + "." + name + ".Plugin", by);
+					cfg.set("Multipliers." + UUID + "." + name + ".Type", type.toString());
+					cfg.set("Multipliers." + UUID + "." + name + ".Until", until);
+					cfg.set("Multipliers." + UUID + "." + name + ".Weight", weight.toString());
+					cfg.set("Multipliers." + UUID + "." + name + ".Value", value);
+					cfg.set("Multipliers." + UUID + "." + name + ".Job", job);
+
 				} else {
-					createMultiplier(UUID, name, by, type, until, weight, value, job);
-					;
+					List<String> listed = cfg.getStringList("MultipliersList." + UUID);
+
+					cfg.set("Multipliers." + UUID + "." + name + ".Plugin", by);
+					cfg.set("Multipliers." + UUID + "." + name + ".Type", type.toString());
+					cfg.set("Multipliers." + UUID + "." + name + ".Until", until);
+					cfg.set("Multipliers." + UUID + "." + name + ".Weight", weight.toString());
+					cfg.set("Multipliers." + UUID + "." + name + ".Value", value);
+					cfg.set("Multipliers." + UUID + "." + name + ".Job", job);
+					listed.add(name);
+					cfg.set("MultipliersList." + UUID, listed);
+
 				}
 
 			}
@@ -1437,7 +1405,7 @@ public class PlayerDataAPI {
 				JobStats stats = pl.getStatsOf(job);
 
 				stats.getEarningsList().forEach((key, value) -> {
-					updateEarnings(UUID, job, key, value);
+					cfg.set("EarnedDate." + UUID + "." + key + "." + job, value);
 				});
 
 				int level = stats.getLevel();
@@ -1458,13 +1426,15 @@ public class PlayerDataAPI {
 
 					stats.getBrokenList().forEach((key, value) -> {
 
-						updateEarningsAmountOf(UUID, job, key, value, "" + action);
+						cfg.set("Earnings." + UUID + "." + job + "." + key + ".Action." + action.toString() + ".Money",
+								value);
 
 					});
 
 					stats.getBrokenTimesOfIDList().forEach((key, value) -> {
 
-						updateEarningsTimesOf(UUID, job, key, value, "" + action);
+						cfg.set("Earnings." + UUID + "." + job + "." + key + ".Action." + action.toString() + ".Times",
+								value);
 
 					});
 
@@ -1475,18 +1445,22 @@ public class PlayerDataAPI {
 			cfg.set("Player." + UUID + ".Owned", newowned);
 			cfg.set("Player." + UUID + ".Current", current);
 
-			save(cfg, file);
+			try {
+				cfg.save(file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}
 
 	public void updateEarnings(String UUID, String job, String date, double money) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			final String insertQuery = "UPDATE `earnings_all` SET `MONEY`='" + money + "' WHERE UUID='" + UUID
 					+ "' AND JOB= '" + job + "' AND DATE= '" + date + "' ";
 			mg.executeUpdate(insertQuery);
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
@@ -1497,8 +1471,8 @@ public class PlayerDataAPI {
 	}
 
 	public double getEarnedAt(String UUID, String job, String date) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			if (ExistEarningsDataToday(UUID, job, date)) {
 				AtomicDouble a = new AtomicDouble();
 
@@ -1514,7 +1488,7 @@ public class PlayerDataAPI {
 				createEarningsData(UUID, job, date);
 			}
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
@@ -1526,13 +1500,13 @@ public class PlayerDataAPI {
 
 	public void updateBrokenTimes(String UUID, String job, int val) {
 
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			final String insertQuery = "UPDATE `job_stats` SET `BROKEN`='" + val + "' WHERE UUID='" + UUID
 					+ "' AND JOB='" + job + "'";
 			mg.executeUpdate(insertQuery);
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
@@ -1541,43 +1515,10 @@ public class PlayerDataAPI {
 			save(cfg, file);
 		}
 	}
-
-	public void createJobData(String UUID, String job) {
-
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
-
-			String date = UltimateJobs.getPlugin().getDate();
-			final String insertQuery = "INSERT INTO job_stats(UUID,JOB,DATE,LEVEL,EXP,BROKEN) VALUES(?,?,?,?,?,?)";
-			mg.executeUpdate(insertQuery, ps -> {
-				ps.setString(1, UUID);
-				ps.setString(2, job);
-				ps.setString(3, date);
-				ps.setInt(4, 1);
-				ps.setDouble(5, 0);
-				ps.setInt(6, 0);
-
-			});
-
-		} else if (mode.equalsIgnoreCase("YML")) {
-
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
-
-			String date = plugin.getDate();
-
-			cfg.set("Jobs." + UUID + "." + job + ".Date", date);
-			cfg.set("Jobs." + UUID + "." + job + ".Level", 1);
-			cfg.set("Jobs." + UUID + "." + job + ".Exp", 0);
-			cfg.set("Jobs." + UUID + "." + job + ".Broken", 0);
-			save(cfg, file);
-
-		}
-	}
-
+ 
 	public boolean ExistJobData(String UUID, String job) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			AtomicReference<String> a = new AtomicReference<String>();
 
 			mg.executeQuery("SELECT * FROM job_stats WHERE UUID= '" + UUID + "' AND JOB= '" + job + "'", rs -> {
@@ -1587,7 +1528,7 @@ public class PlayerDataAPI {
 				return 1;
 			});
 			return a.get() != null;
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
 			return cfg.getString("Jobs." + UUID + "." + job + ".Date") != null;
@@ -1596,8 +1537,8 @@ public class PlayerDataAPI {
 	}
 
 	public int getLevelOf(String UUID, String job) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			AtomicInteger a = new AtomicInteger(0);
 
 			mg.executeQuery("SELECT * FROM job_stats WHERE UUID= '" + UUID + "' AND JOB= '" + job + "'", rs -> {
@@ -1607,7 +1548,7 @@ public class PlayerDataAPI {
 				return 1;
 			});
 			return a.get();
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
 			return cfg.getInt("Jobs." + UUID + "." + job + ".Level");
@@ -1616,8 +1557,8 @@ public class PlayerDataAPI {
 	}
 
 	public double getExpOf(String UUID, String job) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			AtomicDouble a = new AtomicDouble();
 
 			mg.executeQuery("SELECT * FROM job_stats WHERE UUID= '" + UUID + "' AND JOB= '" + job + "'", rs -> {
@@ -1627,7 +1568,7 @@ public class PlayerDataAPI {
 				return 0;
 			});
 			return a.get();
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
 			return cfg.getDouble("Jobs." + UUID + "." + job + ".Exp");
@@ -1636,8 +1577,8 @@ public class PlayerDataAPI {
 	}
 
 	public int getBrokenOf(String UUID, String job) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			AtomicInteger a = new AtomicInteger(0);
 
 			mg.executeQuery("SELECT * FROM job_stats WHERE UUID= '" + UUID + "' AND JOB= '" + job + "'", rs -> {
@@ -1647,7 +1588,7 @@ public class PlayerDataAPI {
 				return 0;
 			});
 			return a.get();
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
@@ -1658,8 +1599,8 @@ public class PlayerDataAPI {
 	}
 
 	public String getDateOf(String UUID, String job) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			AtomicReference<String> a = new AtomicReference<String>();
 
 			mg.executeQuery("SELECT * FROM job_stats WHERE UUID= '" + UUID + "' AND JOB= '" + job + "'", rs -> {
@@ -1669,7 +1610,7 @@ public class PlayerDataAPI {
 				return 0;
 			});
 			return a.get();
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
 			return cfg.getString("Jobs." + UUID + "." + job + ".Date");
@@ -1678,8 +1619,8 @@ public class PlayerDataAPI {
 	}
 
 	public ArrayList<String> getOwnedJobs(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			Collection<String> jobs = new ArrayList<String>();
 			mg.executeQuery("SELECT * FROM job_stats WHERE UUID= '" + UUID + "'", rs -> {
 
@@ -1691,7 +1632,7 @@ public class PlayerDataAPI {
 			});
 
 			return (ArrayList<String>) jobs;
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
 			return (ArrayList<String>) cfg.getStringList("Player." + UUID + ".Owned");
@@ -1700,8 +1641,8 @@ public class PlayerDataAPI {
 	}
 
 	public ArrayList<String> getCurrentJobs(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			Collection<String> jobs = new ArrayList<String>();
 			mg.executeQuery("SELECT * FROM job_current WHERE UUID= '" + UUID + "'", rs -> {
 
@@ -1713,7 +1654,7 @@ public class PlayerDataAPI {
 			});
 
 			return (ArrayList<String>) jobs;
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
 			return (ArrayList<String>) cfg.getStringList("Player." + UUID + ".Current");
@@ -1722,8 +1663,8 @@ public class PlayerDataAPI {
 	}
 
 	public double getPoints(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			AtomicDouble a = new AtomicDouble();
 
 			mg.executeQuery("SELECT * FROM job_players WHERE UUID= '" + UUID + "'", rs -> {
@@ -1733,7 +1674,7 @@ public class PlayerDataAPI {
 				return 0.0;
 			});
 			return a.get();
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
 			return cfg.getDouble("Player." + UUID + ".Points");
@@ -1742,8 +1683,8 @@ public class PlayerDataAPI {
 	}
 
 	public int getMaxJobs(String UUID) {
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 			AtomicInteger a = new AtomicInteger(0);
 
 			mg.executeQuery("SELECT * FROM job_players WHERE UUID= '" + UUID + "'", rs -> {
@@ -1753,7 +1694,7 @@ public class PlayerDataAPI {
 				return 0;
 			});
 			return a.get();
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 
 			return cfg.getInt("Player." + UUID + ".Max");
@@ -1763,13 +1704,13 @@ public class PlayerDataAPI {
 
 	public void createPlayer(String UUID, String name) {
 
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			String date = UltimateJobs.getPlugin().getDate();
 			createPlayerDetails(UUID, date);
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			String date = plugin.getDate();
 			createPlayerDetails(UUID, date);
 		}
@@ -1777,8 +1718,8 @@ public class PlayerDataAPI {
 
 	public void createPlayerDetails(String UUID, String date) {
 
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			int max = UltimateJobs.getPlugin().getFileManager().getConfig().getInt("MaxDefaultJobs") - 1;
 			final String insertQuery = "INSERT INTO job_players(UUID,DATE,POINTS,MAX) VALUES(?,?,?,?)";
@@ -1790,7 +1731,7 @@ public class PlayerDataAPI {
 
 			});
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
 			int max = UltimateJobs.getPlugin().getFileManager().getConfig().getInt("MaxDefaultJobs") - 1;
@@ -1808,8 +1749,8 @@ public class PlayerDataAPI {
 
 	public boolean ExistPlayer(String UUID) {
 
-		String mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equalsIgnoreCase("SQL")) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
@@ -1821,7 +1762,7 @@ public class PlayerDataAPI {
 			});
 			return a.get() != null;
 
-		} else if (mode.equalsIgnoreCase("YML")) {
+		} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			return cfg.getString("Player." + UUID + ".Date") != null;
 		}

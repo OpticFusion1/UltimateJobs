@@ -33,7 +33,7 @@ public class FirstSub extends AdminSubCommand {
 				player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 2);
 			}
 			
-			UltimateJobs.getPlugin().getPlayerDataAPI().createFirstPluginStart(UltimateJobs.getPlugin().getPluginManager().getDateTodayFromCal());
+			UltimateJobs.getPlugin().getPlayerOfflineAPI().createFirstPluginStart(UltimateJobs.getPlugin().getPluginManager().getDateTodayFromCal());
 			
 			sender.sendMessage("§a");
 			sender.sendMessage("§8[§9UltimateJobs§8] §7You've §acompleted §7the §9UltimateJobs §7Setup! Info: these messages are sent only one time§8...");

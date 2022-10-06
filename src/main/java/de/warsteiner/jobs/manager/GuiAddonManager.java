@@ -26,8 +26,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.api.Job;
-import de.warsteiner.jobs.api.JobAPI;
-import de.warsteiner.jobs.api.PlayerDataAPI;
+import de.warsteiner.jobs.api.JobAPI; 
 import de.warsteiner.jobs.utils.JobAction;
 import de.warsteiner.jobs.utils.objects.GUIType;
 import de.warsteiner.jobs.utils.objects.JobStats;
@@ -383,6 +382,8 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "PerJobRanking_Custom.",
 						cfg.getStringList("PerJobRanking_Custom.List"), name, cfg, null);
 				setJobRankingItems(inv_view, cfg, player, job);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -400,6 +401,8 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "PerJobRanking_Custom.",
 								cfg.getStringList("PerJobRanking_Custom.List"), name, cfg, null);
 						setJobRankingItems(inv, cfg, player, job);
+						
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -410,14 +413,12 @@ public class GuiAddonManager {
 
 		String MyUUID = "" + pl.getUniqueId();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(MyUUID);
-
-		PlayerDataAPI d = plugin.getPlayerDataAPI();
-
-		if (d.getSettingData(MyUUID, "RANKING") == null) {
-			d.createSettingData(MyUUID, "RANKING", cf.getString("Categories.PlayerDefaultCat").toUpperCase());
+ 
+		if (!plugin.getPlayerAPI().existSettingData(MyUUID, "RANKING")) {
+			 plugin.getPlayerAPI().createSettingData(MyUUID, "RANKING", cf.getString("Categories.PlayerDefaultCat").toUpperCase());
 		}
 
-		String current = d.getSettingData(MyUUID, "RANKING");
+		String current = plugin.getPlayerAPI().getSettingData(MyUUID, "RANKING");
 
 		if (inv != null) {
 
@@ -532,7 +533,7 @@ public class GuiAddonManager {
 
 								UUID ID = UUID.fromString(id.toString());
 
-								String name = plugin.getPlayerDataAPI().getDisplayByUUID("" + ID);
+								String name =  plugin.getPlayerAPI().getDisplayByUUID("" + ID);
 
 								String icon = null;
 
@@ -609,7 +610,7 @@ public class GuiAddonManager {
 
 								UUID ID = UUID.fromString(id.toString());
 
-								String name = plugin.getPlayerDataAPI().getDisplayByUUID("" + ID);
+								String name =  plugin.getPlayerAPI().getDisplayByUUID("" + ID);
 
 								String icon = null;
 
@@ -686,7 +687,7 @@ public class GuiAddonManager {
 
 								UUID ID = UUID.fromString(id.toString());
 
-								String name = plugin.getPlayerDataAPI().getDisplayByUUID("" + ID);
+								String name =   plugin.getPlayerAPI().getDisplayByUUID("" + ID);
 
 								String icon = null;
 
@@ -772,6 +773,8 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Global_Custom.",
 						cfg.getStringList("Global_Custom.List"), name, cfg, null);
 				setGlobalRankingItems(inv_view, cfg, player);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -867,7 +870,7 @@ public class GuiAddonManager {
 					}
 
 					double points = plugin.getPlayerAPI().getPoints(rank_uuid);
-					String name = plugin.getPlayerDataAPI().getDisplayByUUID(rank_uuid);
+					String name =  plugin.getPlayerAPI().getDisplayByUUID(rank_uuid);
 
 					if (name != null) {
 						ItemStack it = plugin.getItemAPI().createItem(name, icon);
@@ -937,6 +940,8 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Job_Earnings_Custom.",
 						cfg.getStringList("Job_Earnings_Custom.List"), name, cfg, job);
 				setEarningsItems_Single(inv_view, cfg, player, job);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -953,6 +958,8 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "Job_Earnings_Custom.",
 								cfg.getStringList("Job_Earnings_Custom.List"), name, cfg, job);
 						setEarningsItems_Single(inv, cfg, player, job);
+						
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -962,7 +969,12 @@ public class GuiAddonManager {
 	public void setEarningsItems_Single(InventoryView inv, FileConfiguration cf, Player pl, Job job) {
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + pl.getUniqueId());
-		int page = plugin.getPlayerDataAPI().getPageFromID(sp.getUUIDAsString(), "EARNINGS_" + job.getConfigID());
+		
+		int page = 1;
+		
+		if(plugin.getPlayerAPI().existSettingData(sp.getUUIDAsString(), "EARNINGS_" + job.getConfigID())) {
+			page = plugin.getPlayerAPI().getPageData(sp.getUUIDAsString(), "EARNINGS_" + job.getConfigID());
+		}
 
 		int days = cf.getInt("HowManyDays");
 
@@ -1200,6 +1212,8 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "All_Earnings_Custom.",
 								cfg.getStringList("All_Earnings_Custom.List"), name, cfg, null);
 						setEarningsItems_ALL(inv_view, cfg, player);
+						
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -1218,6 +1232,8 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "All_Earnings_Custom.",
 								cfg.getStringList("All_Earnings_Custom.List"), name, cfg, null);
 						setEarningsItems_ALL(inv, cfg, player);
+						
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -1227,7 +1243,12 @@ public class GuiAddonManager {
 	public void setEarningsItems_ALL(InventoryView inv, FileConfiguration cf, Player pl) {
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + pl.getUniqueId());
-		int page = plugin.getPlayerDataAPI().getPageFromID(sp.getUUIDAsString(), "EARNINGS_ALL");
+		 
+		int page = 1;
+		
+		if(plugin.getPlayerAPI().existSettingData(sp.getUUIDAsString(), "EARNINGS_ALL")) {
+			page = plugin.getPlayerAPI().getPageData(sp.getUUIDAsString(), "EARNINGS_ALL");
+		}
 
 		int days = cf.getInt("HowManyDays");
 
@@ -1557,6 +1578,8 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "LeaveConfirm_Custom.",
 						cfg.getStringList("LeaveConfirm_Custom.List"), name, cfg, null);
 				setLeaveConfirmItems(player, name, inv_view, job);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -1661,6 +1684,8 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "ConfirmWithdraw_Custom.",
 						cfg.getStringList("ConfirmWithdraw_Custom.List"), name, cfg, null);
 				setWithdrawConfigItems(player, name, inv_view);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -1763,6 +1788,8 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Withdraw_Custom.",
 						cfg.getStringList("Withdraw_Custom.List"), name, cfg, null);
 				setWithdrawItems(inv_view, player, sp);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -1779,6 +1806,8 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "Withdraw_Custom.",
 								cfg.getStringList("Withdraw_Custom.List"), name, cfg, null);
 						setWithdrawItems(inv, player, jb);
+						
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -1954,6 +1983,8 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Levels_Custom.",
 						cfg.getStringList("Levels_Custom.List"), name, cfg, null);
 				setLevelsItems(inv_view, name, cfg, player, job);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -1970,6 +2001,8 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "Levels_Custom.",
 								cfg.getStringList("Levels_Custom.List"), name, cfg, null);
 						setLevelsItems(inv, name, cfg, player, job);
+						
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -1979,11 +2012,16 @@ public class GuiAddonManager {
 	public void setLevelsItems(InventoryView inv, String name, FileConfiguration cf, Player pl, Job job) {
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + pl.getUniqueId());
-		int page = plugin.getPlayerDataAPI().getPageFromID(sp.getUUIDAsString(), "LEVELS_" + job.getConfigID());
+		 
+		int page = 1;
+		
+		if(plugin.getPlayerAPI().existSettingData(sp.getUUIDAsString(), "LEVELS_" + job.getConfigID())) {
+			page = plugin.getPlayerAPI().getPageData(sp.getUUIDAsString(), "LEVELS_" + job.getConfigID());
+		}
 
 		List<String> slots = cf.getStringList("Level_Slots");
 
-		int li = job.getCountOfLevels();
+		int li = job.getLevels().size();
 
 		ArrayList<String> levelslist = new ArrayList<String>();
 
@@ -2212,6 +2250,8 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Rewards_Custom.",
 						cfg.getStringList("Rewards_Custom.List"), name, cfg, null);
 				setRewardsItems(inv_view, name, cfg, player, job);
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -2228,6 +2268,8 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "Rewards_Custom.",
 								cfg.getStringList("Rewards_Custom.List"), name, cfg, null);
 						setRewardsItems(inv, name, cfg, player, job);
+						
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -2237,8 +2279,12 @@ public class GuiAddonManager {
 	public void setRewardsItems(InventoryView inv, String name, FileConfiguration cf, Player pl, Job job) {
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + pl.getUniqueId());
-
-		int page = plugin.getPlayerDataAPI().getPageFromID(sp.getUUIDAsString(), "REWARDS_" + job.getConfigID());
+ 
+		int page = 1;
+		
+		if(plugin.getPlayerAPI().existSettingData(sp.getUUIDAsString(),  "REWARDS_" + job.getConfigID())) {
+			page = plugin.getPlayerAPI().getPageData(sp.getUUIDAsString(),  "REWARDS_" + job.getConfigID());
+		}	
 
 		List<String> slots = cf.getStringList("Rewards_Slots");
 		int pageLength = slots.size();
@@ -2359,23 +2405,19 @@ public class GuiAddonManager {
 			for (int i3 = 0; i3 < itemslist.size(); i3++) {
 
 				String type = itemslist.get(i3);
-
+		 
 				JobAction real = job.getActionofID(type);
-
-				String icon = "BARRIER";
+			 
+				String icon = job.getIconOfID(type);
 				String display = sp.getLanguage().getConfig()
 						.getString("Jobs." + job.getConfigID() + ".IDS." + type + ".Rewards.Display");
  
-				if(job.getConfig().contains("IDS." + real.toString() + "." + type + ".RewardsGUI.Icon")) {
-					icon = job.getConfig().getString("IDS." + real.toString() + "." + type + ".RewardsGUI.Icon");
-				}
-				
+			 
 				ItemStack i2 = plugin.getItemAPI().createItem(pl, icon);
 				ItemMeta m = i2.getItemMeta();
 
-				if (cf.contains("Jobs." + job.getConfigID() + ".IDS." + type + ".Rewards.CustomModelData")) {
-					m.setCustomModelData(
-							cf.getInt("Jobs." + job.getConfigID() + ".IDS." + type + ".Rewards.CustomModelData"));
+				if (job.getModelData(type) != 0) {
+					m.setCustomModelData(job.getModelData(type));
 				}
 
 				ArrayList<String> l = new ArrayList<String>();
@@ -2398,9 +2440,15 @@ public class GuiAddonManager {
 				double exp = job.getExpOf(type, real);
 				double ep = plugin.getPlayerAPI().getRealCalculatedAmountOfExp(""+pl.getUniqueId(), job, exp);
 
-				int brokentimes = plugin.getPlayerAPI().getBrokenTimesOfID("" + pl.getUniqueId(), job, type,
-						real.toString());
-				double ear = plugin.getPlayerAPI().getEarnedFrom("" + pl.getUniqueId(), job, type, real.toString());
+				int brokentimes = 0;
+				double ear = 0.0;
+				
+				if(sp.getOwnJobs().contains(job.getConfigID())) {
+			 
+					 brokentimes = plugin.getPlayerAPI().getBrokenTimesOfID("" + pl.getUniqueId(), job, type,
+							real.toString());
+					 ear = plugin.getPlayerAPI().getEarnedFrom("" + pl.getUniqueId(), job, type, real.toString());
+				}
 
 				for (String line : sp.getLanguage().getListFromLanguage(sp.getUUID(),
 						"Jobs." + job.getConfigID() + ".IDS." + type + ".Rewards.Lore")) {
@@ -2446,6 +2494,8 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Self_Custom.",
 						cfg.getStringList("Self_Custom.List"), name, cfg, null);
 				setStatsItems(inv_view, name, cfg, UUID, player.getName(), player, "Self");
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -2462,6 +2512,8 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "Self_Custom.",
 								cfg.getStringList("Self_Custom.List"), name, cfg, null);
 						setStatsItems(inv, name, cfg, "" + player.getUniqueId(), player.getName(), player, "Self");
+						
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -2493,6 +2545,8 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Other_Custom.",
 						cfg.getStringList("Other_Custom.List"), name, cfg, null);
 				setStatsItems(inv_view, name, cfg, ud, named, player, "Other");
+				
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
@@ -2511,6 +2565,8 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "Other_Custom.",
 								cfg.getStringList("Other_Custom.List"), name, cfg, null);
 						setStatsItems(inv, name, cfg, ud, name, player, "Other");
+						
+						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
 			}
@@ -2528,38 +2584,20 @@ public class GuiAddonManager {
 		if (title.equalsIgnoreCase(need)) {
 
 			// informations
-
-			double points = 0;
-			int max = 0;
-			String mode = cf.getString("DisplayMode").toUpperCase();
-
-			List<String> li = null;
-
-			String how = api.isCurrentlyInCache(WATCHUUID);
-
-			if (how.equalsIgnoreCase("CACHE")) {
-				JobsPlayer jb = plugin.getPlayerAPI().getRealJobPlayer(WATCHUUID);
-				max = jb.getMaxJobs();
-				points = jb.getPoints();
-
-				if (mode.equalsIgnoreCase("CURRENT")) {
-					li = jb.getCurrentJobs();
-				} else if (mode.equalsIgnoreCase("OWNED")) {
-					li = jb.getOwnJobs();
-				}
-
-			} else {
-				PlayerDataAPI plm = plugin.getPlayerDataAPI();
-				max = plm.getMaxJobs(WATCHUUID);
-				points = plm.getPoints(WATCHUUID);
-
-				if (mode.equalsIgnoreCase("CURRENT")) {
-					li = plm.getCurrentJobs(WATCHUUID);
-				} else if (mode.equalsIgnoreCase("OWNED")) {
-					li = plm.getOwnedJobs(WATCHUUID);
-				}
+			
+			String mode = plugin.getFileManager().getStatsConfig().getString("DisplayMode").toUpperCase();
+			
+			ArrayList<String> li = null;
+			
+			if (mode.equalsIgnoreCase("CURRENT")) {
+				li = plugin.getPlayerAPI().getCurrentJobs(WATCHUUID);
+			} else if (mode.equalsIgnoreCase("OWNED")) {
+				li = plugin.getPlayerAPI().getOwnedJobs(WATCHUUID);
 			}
 
+			double points = plugin.getPlayerAPI().getPoints(WATCHUUID);
+			int max = plugin.getPlayerAPI().getMaxJobs(WATCHUUID);
+			 
 			if (cf.getString(prefix + "_Skull.Material") != null) {
 				String skull_item = cf.getString(prefix + "_Skull.Material");
 				String skull_display = sp.getLanguage().getStringFromPath(pl.getUniqueId(),
@@ -2636,37 +2674,14 @@ public class GuiAddonManager {
 
 				} else {
 
-					Job job = plugin.getJobCache().get(li.get(i));
-					String id = job.getConfigID();
-
+					Job job = plugin.getJobCache().get(li.get(i)); 
 					// loading stats
 
-					int level = 0;
-					double exp = 0;
-					String bought = null;
-					Integer broken = 0;
-
-					if (how.equalsIgnoreCase("CACHE")) {
-						JobsPlayer jb = plugin.getPlayerAPI().getRealJobPlayer(WATCHUUID);
-
-						JobStats stats = jb.getStatsOf(job.getConfigID());
-
-						level = stats.getLevel();
-						exp = stats.getExp();
-						bought = stats.getDate();
-						broken = stats.getBrokenTimes();
-
-					} else {
-
-						PlayerDataAPI plm = plugin.getPlayerDataAPI();
-
-						level = plm.getLevelOf(WATCHUUID, job.getConfigID());
-						exp = plm.getExpOf(WATCHUUID, job.getConfigID());
-						bought = plm.getDateOf(WATCHUUID, job.getConfigID());
-						broken = plm.getBrokenOf(WATCHUUID, job.getConfigID());
-
-					}
-
+					int level = plugin.getPlayerAPI().getLevelOF(WATCHUUID, job);
+					double exp =  plugin.getPlayerAPI().getExpOf(WATCHUUID, job);;
+					String bought = plugin.getPlayerAPI().getBoughtDate(WATCHUUID, job);
+					Integer broken = plugin.getPlayerAPI().getBrokenTimes(WATCHUUID, job);
+ 
 					String usedbuy = "";
 					String lvl = job.getLevelDisplay(level, WATCHUUID);
 					String usedlvl = "";
@@ -2703,7 +2718,7 @@ public class GuiAddonManager {
 							l.add(plugin.getPluginManager().toHex(b).replaceAll("<stats_args_4>", usedlvl)
 									.replaceAll("<name>", NAME)
 									.replace("<earned>",
-											"" + api.Format(plugin.getPlayerDataAPI().getEarnedAt(WATCHUUID, id,
+											"" + api.Format(plugin.getPlayerAPI().getEarnedAt(WATCHUUID, job,
 													plugin.getDate())))
 									.replaceAll("<stats_args_3>", "" + level).replaceAll("<stats_args_2>", "" + broken)
 									.replaceAll("<stats_args_6>",

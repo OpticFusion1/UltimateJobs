@@ -5,7 +5,7 @@ ID: "EAT"
 
 Material: "BREAD"
 
-ColorOfBossBar: "ORANGE"
+ColorOfBossBar: "YELLOW"
 
 Slot: 22
 
@@ -60,9 +60,7 @@ IDS:
         Icon: "COOKED_BEEF"
  
 LEVELS:
-
-  CountOfLevels: 4
-
+ 
   1:
 
     Money: 0 

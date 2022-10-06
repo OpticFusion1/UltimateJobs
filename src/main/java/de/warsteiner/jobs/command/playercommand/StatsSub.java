@@ -37,13 +37,13 @@ public class StatsSub extends SubCommand {
 		if (args.length == 2) {
 			String pl = args[1].toUpperCase();
 
-			if (plugin.getPlayerDataAPI().getUUIDByName(pl.toUpperCase()) == null) {
+			if (plugin.getPlayerAPI().getUUIDByName(pl.toUpperCase()) == null) {
 				plugin.getAPI().playSound("COMMAND_PLAYER_NOT_FOUND", player);
 				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_stats_not_found")
 						.replaceAll("<name>", args[1]));
 				return;
 			} else {
-				String uuid = plugin.getPlayerDataAPI().getUUIDByName(pl.toUpperCase());
+				String uuid = plugin.getPlayerAPI().getUUIDByName(pl.toUpperCase());
 
 				if (uuid.equalsIgnoreCase("" + player.getUniqueId())) {
 					plugin.getGUIAddonManager().createSelfStatsGUI(player, UpdateTypes.OPEN);

@@ -5,8 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.api.Job;
-import de.warsteiner.jobs.api.PlayerDataAPI;
+import de.warsteiner.jobs.api.Job; 
 import de.warsteiner.jobs.command.AdminCommand;
 import de.warsteiner.jobs.utils.JsonMessage;
 import de.warsteiner.jobs.utils.admincommand.AdminSubCommand;
@@ -28,8 +27,7 @@ public class LanguageSub extends AdminSubCommand {
 	}
 
 	@Override
-	public void perform(CommandSender sender, String[] args) {
-		 PlayerDataAPI pl = UltimateJobs.getPlugin().getPlayerDataAPI();
+	public void perform(CommandSender sender, String[] args) { 
 		if (args.length == 1) {
 			 
 			sender.sendMessage("§7");
@@ -64,7 +62,7 @@ public class LanguageSub extends AdminSubCommand {
 			String player = args[2]; 
 			String value = args[3]; 
 
-			if (plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase()) == null) {
+			if (plugin.getPlayerAPI().getUUIDByName(player.toUpperCase()) == null) {
 				sender.sendMessage(AdminCommand.prefix + "Error! Player §c" + player + " §7does not exist!");
 				if (sender instanceof Player) {
 					Player player3 = (Player) sender;
@@ -73,7 +71,7 @@ public class LanguageSub extends AdminSubCommand {
 				return;
 			}
 
-			String uuid = plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase());
+			String uuid = plugin.getPlayerAPI().getUUIDByName(player.toUpperCase());
  
 			if (plugin.getLanguageAPI().getLanguageFromName(value.toUpperCase()) != null) {
 
@@ -90,7 +88,7 @@ public class LanguageSub extends AdminSubCommand {
 					jb.updateLocalLanguage(lang);
 				}
 				
-				plugin.getPlayerDataAPI().updateSettingData(uuid, "LANG", lang.getName());
+				plugin.getPlayerAPI().updateSettingData(uuid, "LANG", lang.getName());
 
 				sender.sendMessage(AdminCommand.prefix + "Changed §c" + player + "'s §7Language to §a" + value
 						+ "§7.");

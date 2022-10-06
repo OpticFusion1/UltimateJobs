@@ -63,14 +63,20 @@ public class LevelsMenuClickEvent implements Listener {
 			String next = jb.getLanguage().getStringFromPath(p.getUniqueId(), cfg.getString("PageItems.Next.Display"));
 			String pre = jb.getLanguage().getStringFromPath(p.getUniqueId(),
 					cfg.getString("PageItems.Previous.Display"));
-			int page = plugin.getPlayerDataAPI().getPageFromID("" + p.getUniqueId(), "LEVELS_" + j.getConfigID());
+			
+			int page = 1;
+			
+			if(plugin.getPlayerAPI().existSettingData(""+UUID, "LEVELS_" + j.getConfigID())) {
+				page = plugin.getPlayerAPI().getPageData(""+UUID, "LEVELS_" + j.getConfigID());
+			}
+			 
 			if (display.equalsIgnoreCase(plugin.getPluginManager().toHex(next).replaceAll("&", "§"))) {
 				int d = cfg.getStringList("Level_Slots").size();
 				int perpage = d + 1;
 				int cl = page * perpage + 1;
 
-				if (j.getCountOfLevels() >= cl) {
-					plugin.getPlayerDataAPI().addOnePageFromID("" + p.getUniqueId(), "LEVELS_" + j.getConfigID());
+				if (j.getLevels().size() >= cl) {
+					plugin.getPlayerAPI().addOnePage("" + p.getUniqueId(), "LEVELS_" + j.getConfigID());
 					plugin.getGUIAddonManager().createLevelsGUI(p, UpdateTypes.REOPEN, j);
 					plugin.getAPI().playSound("NEW_PAGE_LEVELS", p);
 
@@ -100,7 +106,7 @@ public class LevelsMenuClickEvent implements Listener {
 
 					plugin.getAPI().playSound("LEVELS_FIRST_ALREADY", p);
 				} else {
-					plugin.getPlayerDataAPI().removeOnePageFromID("" + p.getUniqueId(), "LEVELS_" + j.getConfigID());
+					plugin.getPlayerAPI().removeOnePage("" + p.getUniqueId(), "LEVELS_" + j.getConfigID());
 					plugin.getGUIAddonManager().createLevelsGUI(p, UpdateTypes.REOPEN, j);
 					plugin.getAPI().playSound("LAST_PAGE_LEVELS", p);
 				}

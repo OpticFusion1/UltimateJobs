@@ -5,8 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.api.Job;
-import de.warsteiner.jobs.api.PlayerDataAPI;
+import de.warsteiner.jobs.api.Job; 
 import de.warsteiner.jobs.command.AdminCommand;
 import de.warsteiner.jobs.utils.JsonMessage;
 import de.warsteiner.jobs.utils.admincommand.AdminSubCommand;
@@ -27,8 +26,7 @@ public class ExpSub extends AdminSubCommand {
 	}
 
 	@Override
-	public void perform(CommandSender sender, String[] args) {
-		 PlayerDataAPI pl = UltimateJobs.getPlugin().getPlayerDataAPI();
+	public void perform(CommandSender sender, String[] args) { 
 		if (args.length == 1) {
 			 
 			sender.sendMessage("§7");
@@ -74,7 +72,7 @@ public class ExpSub extends AdminSubCommand {
 			String job = args[3];
 			String value = args[4]; 
 			
-			if (plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase()) == null) {
+			if (plugin.getPlayerAPI().getUUIDByName(player.toUpperCase()) == null) {
 				sender.sendMessage(AdminCommand.prefix + "Error! Player §c" + player + " §7does not exist!");
 				if(sender instanceof Player) {
 					Player player3 = (Player) sender;
@@ -83,23 +81,19 @@ public class ExpSub extends AdminSubCommand {
 				return;
 			}
  
-			String uuid =plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase());
-
-			String how = plugin.getAPI().isCurrentlyInCache(uuid);
-
+			String uuid =plugin.getPlayerAPI().getUUIDByName(player.toUpperCase());
+ 
 			if (plugin.getAPI().isInt(value)) {
 
 				if(plugin.getAPI().isJobFromConfigID(job.toUpperCase()) != null) {
 					Job j = plugin.getAPI().isJobFromConfigID(job.toUpperCase());
-					if (how.equalsIgnoreCase("CACHE")) {
+				  
+						if(plugin.getPlayerAPI().getOwnedJobs(uuid).contains(job.toUpperCase())) {
+							double old = plugin.getPlayerAPI().getExpOf(uuid, job);
+							plugin.getPlayerAPI().updateExp(uuid,job,old-Integer.valueOf(value));
 
-						JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(uuid);
-
-						if(jb.ownJob(j.getConfigID())) { 
-							double old = jb.getStatsOf(job).getExp();
-							plugin.getPlayerAPI().updateExp(uuid, j, old-Integer.valueOf(value)); 
 							sender.sendMessage(AdminCommand.prefix + "Removed §c" + player + " §7Exp in Job §a" + j.getConfigID()
-									+ " §7-> §6"+value+". §8(§aOnline§8)");
+							+ " §7-> §6"+value+".");
 							if(sender instanceof Player) {
 								Player player3 = (Player) sender;
 								player3.playSound(player3.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 3);
@@ -112,29 +106,7 @@ public class ExpSub extends AdminSubCommand {
 								player3.playSound(player3.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 2);
 							}
 							return;
-						}
-
-					} else {
-
-						if(pl.getOwnedJobs(uuid).contains(job.toUpperCase())) {
-							double old = pl.getExpOf(uuid, job);
-							pl.updateExp(uuid,old-Integer.valueOf(value), job);
-
-							sender.sendMessage(AdminCommand.prefix + "Removed §c" + player + " §7Exp in Job §a" + j.getConfigID()
-							+ " §7-> §6"+value+". §8(§cOffline§8)");
-							if(sender instanceof Player) {
-								Player player3 = (Player) sender;
-								player3.playSound(player3.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 3);
-							}
-							return;
-						} else {
-							sender.sendMessage(AdminCommand.prefix + "Error! Player does not own that Job!");
-							if(sender instanceof Player) {
-								Player player3 = (Player) sender;
-								player3.playSound(player3.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 2);
-							}
-							return;
-						}
+						 
 					}
 				} else {
 					sender.sendMessage(AdminCommand.prefix + "Error! Cannot find that Job!");
@@ -160,7 +132,7 @@ public class ExpSub extends AdminSubCommand {
 			String job = args[3];
 			String value = args[4]; 
 			
-			if (plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase()) == null) {
+			if (plugin.getPlayerAPI().getUUIDByName(player.toUpperCase()) == null) {
 				sender.sendMessage(AdminCommand.prefix + "Error! Player §c" + player + " §7does not exist!");
 				if(sender instanceof Player) {
 					Player player3 = (Player) sender;
@@ -169,23 +141,19 @@ public class ExpSub extends AdminSubCommand {
 				return;
 			}
  
-			String uuid =plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase());
-
-			String how = plugin.getAPI().isCurrentlyInCache(uuid);
-
+			String uuid =plugin.getPlayerAPI().getUUIDByName(player.toUpperCase());
+ 
 			if (plugin.getAPI().isInt(value)) {
 
 				if(plugin.getAPI().isJobFromConfigID(job.toUpperCase()) != null) {
 					Job j = plugin.getAPI().isJobFromConfigID(job.toUpperCase());
-					if (how.equalsIgnoreCase("CACHE")) {
+				   
+						if(plugin.getPlayerAPI().getOwnedJobs(uuid).contains(job.toUpperCase())) {
+							double old = plugin.getPlayerAPI().getExpOf(uuid, job);
+							plugin.getPlayerAPI().updateExp(uuid,job,old+Integer.valueOf(value));
 
-						JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(uuid);
-
-						if(jb.ownJob(j.getConfigID())) { 
-							double old = jb.getStatsOf(job).getExp();
-							plugin.getPlayerAPI().updateExp(uuid, j, old+Integer.valueOf(value)); 
 							sender.sendMessage(AdminCommand.prefix + "Added §c" + player + " §7Exp in Job §a" + j.getConfigID()
-									+ " §7-> §6"+value+". §8(§aOnline§8)");
+							+ " §7-> §6"+value+".");
 							if(sender instanceof Player) {
 								Player player3 = (Player) sender;
 								player3.playSound(player3.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 3);
@@ -198,29 +166,7 @@ public class ExpSub extends AdminSubCommand {
 								player3.playSound(player3.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 2);
 							}
 							return;
-						}
-
-					} else {
-
-						if(pl.getOwnedJobs(uuid).contains(job.toUpperCase())) {
-							double old = pl.getExpOf(uuid, job);
-							pl.updateExp(uuid,old+Integer.valueOf(value), job);
-
-							sender.sendMessage(AdminCommand.prefix + "Added §c" + player + " §7Exp in Job §a" + j.getConfigID()
-							+ " §7-> §6"+value+". §8(§cOffline§8)");
-							if(sender instanceof Player) {
-								Player player3 = (Player) sender;
-								player3.playSound(player3.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 3);
-							}
-							return;
-						} else {
-							sender.sendMessage(AdminCommand.prefix + "Error! Player does not own that Job!");
-							if(sender instanceof Player) {
-								Player player3 = (Player) sender;
-								player3.playSound(player3.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 2);
-							}
-							return;
-						}
+						 
 					}
 				} else {
 					sender.sendMessage(AdminCommand.prefix + "Error! Cannot find that Job!");
@@ -246,7 +192,7 @@ public class ExpSub extends AdminSubCommand {
 			String job = args[3];
 			String value = args[4];
 
-			if (plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase()) == null) {
+			if (plugin.getPlayerAPI().getUUIDByName(player.toUpperCase()) == null) {
 				sender.sendMessage(AdminCommand.prefix + "Error! Player §c" + player + " §7does not exist!");
 				if(sender instanceof Player) {
 					Player player3 = (Player) sender;
@@ -255,22 +201,16 @@ public class ExpSub extends AdminSubCommand {
 				return;
 			}
  
-			String uuid =plugin.getPlayerDataAPI().getUUIDByName(player.toUpperCase());
+			String uuid =plugin.getPlayerAPI().getUUIDByName(player.toUpperCase());
 
-			String how = plugin.getAPI().isCurrentlyInCache(uuid);
-
+			 
 			if (plugin.getAPI().isInt(value)) {
 
 				if(plugin.getAPI().isJobFromConfigID(job.toUpperCase()) != null) {
-					Job j = plugin.getAPI().isJobFromConfigID(job.toUpperCase());
-					if (how.equalsIgnoreCase("CACHE")) {
-
-						JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(uuid);
-
-						if(jb.ownJob(j.getConfigID())) { 
-							plugin.getPlayerAPI().updateExp(uuid, j, Integer.valueOf(value)); 
-							sender.sendMessage(AdminCommand.prefix + "Set §c" + player + "'s §7Exp in Job §a" + j.getConfigID()
-									+ " §7to §6"+value+". §8(§aOnline§8)");
+					if(plugin.getPlayerAPI().getOwnedJobs(uuid).contains(job.toUpperCase())) { 
+							plugin.getPlayerAPI().updateExp(uuid, job, Integer.valueOf(value)); 
+							sender.sendMessage(AdminCommand.prefix + "Set §c" + player + "'s §7Exp in Job §a" + job 
+									+ " §7to §6"+value+".");
 							if(sender instanceof Player) {
 								Player player3 = (Player) sender;
 								player3.playSound(player3.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 3);
@@ -285,27 +225,7 @@ public class ExpSub extends AdminSubCommand {
 							return;
 						}
 
-					} else {
-
-						if(pl.getOwnedJobs(uuid).contains(job.toUpperCase())) {
-							pl.updateExp(uuid,Integer.valueOf(value), job);
-
-							sender.sendMessage(AdminCommand.prefix + "Set §c" + player + "'s §7Exp in Job §a" + j.getConfigID()
-							+ " §7to §6"+value+". §8(§cOffline§8)");
-							if(sender instanceof Player) {
-								Player player3 = (Player) sender;
-								player3.playSound(player3.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 3);
-							}
-							return;
-						} else {
-							sender.sendMessage(AdminCommand.prefix + "Error! Player does not own that Job!");
-							if(sender instanceof Player) {
-								Player player3 = (Player) sender;
-								player3.playSound(player3.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 2);
-							}
-							return;
-						}
-					}
+					 
 				} else {
 					sender.sendMessage(AdminCommand.prefix + "Error! Cannot find that Job!");
 					if(sender instanceof Player) {

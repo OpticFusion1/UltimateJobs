@@ -12,6 +12,10 @@ import de.warsteiner.jobs.manager.PluginManager;
 import de.warsteiner.jobs.utils.cevents.PlayerLevelJobEvent;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
 
+/**
+ * Class for the Job Levels
+*/
+
 public class LevelAPI {
 
 	private UltimateJobs plugin;
@@ -90,7 +94,7 @@ public class LevelAPI {
 				int old_level = pl.getStatsOf(job.getConfigID()).getLevel();
 				int new_level = old_level + 1;
 
-				if (old_level >= job.getCountOfLevels()) {
+				if (old_level >= job.getLevels().size()) {
 					return;
 				}
 
@@ -176,6 +180,7 @@ public class LevelAPI {
 						}
 					}
 				}
+				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
 	}
