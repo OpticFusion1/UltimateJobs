@@ -93,7 +93,7 @@ public class GuiManager {
 		}
 
 		int size = cfg.getInt("Size");
-		String name = pp.getLanguage().getStringFromPath(player.getUniqueId(), cfg.getString("Name"));
+		String name = pp.getLanguage().getGUIMessage("Name");
 
 		openInventory(player, size, plugin.getPluginManager().toHex(name), GUIType.LANGUAGE, null, null);
 
@@ -164,9 +164,9 @@ public class GuiManager {
 
 				if (lang.getName().equalsIgnoreCase(
 						plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId()).getLanguage().getName())) {
-					lore = lang.getConfig().getStringList("LanguageChoosenLore");
+					lore = lang.getList("LanguageChoosenLore");
 				} else {
-					lore = lang.getConfig().getStringList("LanguageCanChoose");
+					lore = lang.getList("LanguageCanChoose");
 				}
 
 				ArrayList<String> newlore = new ArrayList<String>();
@@ -192,7 +192,7 @@ public class GuiManager {
 		FileConfiguration cfg = plugin.getFileManager().getHelpSettings();
 		String UUID = "" + player.getUniqueId();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(UUID);
-		String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Help_Name"));
+		String name = sp.getLanguage().getGUIMessage("Help_Name");
 		int size = cfg.getInt("Help_Size");
 
 		openInventory(player, size, name, GUIType.HELP, null, null);
@@ -222,8 +222,8 @@ public class GuiManager {
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 
-		String name = sp.getLanguage().getStringFromPath(player.getUniqueId(), cfg.getString("AreYouSureGUI_Name"))
-				.replaceAll("<job>", job.getDisplay("" + player.getUniqueId()));
+		String name = sp.getLanguage().getGUIMessage("AreYouSureGUI_Name")
+				.replaceAll("<job>", job.getDisplayOfJob("" + player.getUniqueId()));
 		int size = cfg.getInt("AreYouSureGUI_Size");
 
 		openInventory(player, size, name, GUIType.CONFIRM, null, job);
@@ -261,18 +261,16 @@ public class GuiManager {
 						cfg.getString("AreYouSureItems.Button_YES.Icon"));
 
 				String dis = plugin.getPluginManager()
-						.toHex(sp.getLanguage().getStringFromPath(sp.getUUID(),
-								cfg.getString("AreYouSureItems.Button_YES.Display")))
-						.replaceAll("<job>", job.getDisplay(UUID)).replaceAll("&", "§");
+						.toHex(sp.getLanguage().getGUIMessage("AreYouSureItems.Button_YES.Display"))
+						.replaceAll("<job>", job.getDisplayOfJob(UUID)).replaceAll("&", "§");
 				int slot = cfg.getInt("AreYouSureItems.Button_YES.Slot");
-				List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-						cfg.getString("AreYouSureItems.Button_YES.Lore"));
+				List<String> lore = sp.getLanguage().getGUIList("AreYouSureItems.Button_YES.Lore");
 				ArrayList<String> l = new ArrayList<String>();
 
 				ItemMeta meta = item.getItemMeta();
 
 				for (String line : lore) {
-					l.add(plugin.getPluginManager().toHex(line).replaceAll("<job>", job.getDisplay(UUID))
+					l.add(plugin.getPluginManager().toHex(line).replaceAll("<job>", job.getDisplayOfJob(UUID))
 							.replaceAll("&", "§"));
 				}
 
@@ -296,18 +294,16 @@ public class GuiManager {
 						cfg.getString("AreYouSureItems.Button_NO.Icon"));
 
 				String dis = plugin.getPluginManager()
-						.toHex(sp.getLanguage().getStringFromPath(sp.getUUID(),
-								cfg.getString("AreYouSureItems.Button_NO.Display")))
-						.replaceAll("<job>", job.getDisplay(UUID)).replaceAll("&", "§");
+						.toHex(sp.getLanguage().getGUIMessage("AreYouSureItems.Button_NO.Display"))
+						.replaceAll("<job>", job.getDisplayOfJob(UUID)).replaceAll("&", "§");
 				int slot = cfg.getInt("AreYouSureItems.Button_NO.Slot");
-				List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-						cfg.getString("AreYouSureItems.Button_NO.Lore"));
+				List<String> lore = sp.getLanguage().getGUIList("AreYouSureItems.Button_NO.Lore");
 				ArrayList<String> l = new ArrayList<String>();
 
 				ItemMeta meta = item.getItemMeta();
 
 				for (String line : lore) {
-					l.add(plugin.getPluginManager().toHex(line).replaceAll("<job>", job.getDisplay(UUID))
+					l.add(plugin.getPluginManager().toHex(line).replaceAll("<job>", job.getDisplayOfJob(UUID))
 							.replaceAll("&", "§"));
 				}
 
@@ -330,7 +326,7 @@ public class GuiManager {
 	public void createMainGUIOfJobs(Player player, UpdateTypes t) {
 		FileConfiguration cfg = plugin.getFileManager().getGUI();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
-		String name = sp.getLanguage().getStringFromPath(player.getUniqueId(), cfg.getString("Main_Name"));
+		String name = sp.getLanguage().getGUIMessage("Main_Name");
 		int size = cfg.getInt("Main_Size");
 
 		openInventory(player, size, name, GUIType.MAIN, null, null);
@@ -375,8 +371,8 @@ public class GuiManager {
 	public void createSettingsGUI(Player player, Job job, UpdateTypes t) {
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		FileConfiguration cfg = plugin.getFileManager().getSettings();
-		String dis = job.getDisplay("" + player.getUniqueId());
-		String named = sp.getLanguage().getStringFromPath(player.getUniqueId(), cfg.getString("Settings_Name"));
+		String dis = job.getDisplayOfJob("" + player.getUniqueId());
+		String named = sp.getLanguage().getGUIMessage("Settings_Name");
 		;
 		String name = named.replaceAll("<job>", dis);
 		int size = cfg.getInt("Settings_Size");
@@ -437,9 +433,9 @@ public class GuiManager {
 				Job j = plugin.getJobCache().get(li);
 				;
 
-				String display = plugin.getPluginManager().toHex(j.getDisplay(UUID).replaceAll("&", "§"));
+				String display = plugin.getPluginManager().toHex(j.getDisplayOfJob(UUID).replaceAll("&", "§"));
 				int slot = j.getSlot();
-				List<String> lore = j.getLore(UUID);
+				List<String> lore = j.getLoreOfJob(UUID);
 				String mat = j.getIcon();
 				double price = j.getPrice();
 				String id = j.getConfigID();
@@ -464,13 +460,13 @@ public class GuiManager {
 							if (sp.isInJob(id)) {
 								meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, false);
 
-								see = sp.getLanguage().getListFromLanguage(sp.getUUID(), "Main_Job_Items.Lore.In");
+								see = sp.getLanguage().getGUIList("Main_Job_Items.Lore.In");
 							} else {
-								see = sp.getLanguage().getListFromLanguage(sp.getUUID(), "Main_Job_Items.Lore.Bought");
+								see = sp.getLanguage().getGUIList("Main_Job_Items.Lore.Bought");
 							}
 
 						} else {
-							see = sp.getLanguage().getListFromLanguage(sp.getUUID(), "Main_Job_Items.Lore.Price");
+							see = sp.getLanguage().getGUIList("Main_Job_Items.Lore.Price");
 						}
 
 					} else {
@@ -502,7 +498,7 @@ public class GuiManager {
 					Integer broken = statsjob.getBrokenTimes();
 					String joined = statsjob.getJoinedDate();
 
-					if (j.getStatsMessage(UUID) != null) {
+					if (j.getStatsLoreIfJob(UUID) != null) {
 
 						if (lvl == null) {
 							usedlvl = "Error";
@@ -515,10 +511,10 @@ public class GuiManager {
 							usedbuy = bought;
 						}
 
-						for (String l : j.getStatsMessage(UUID)) {
+						for (String l : j.getStatsLoreIfJob(UUID)) {
 
 							filore.add(plugin.getPluginManager().toHex(l).replaceAll("<stats_args_4>", usedlvl)
-									.replaceAll("<online>", "" + plugin.getPlayerAPI().getOnlinePlayersInJob(j).size())
+									.replaceAll("<level_rank>", j.getLevelRankDisplay(level, UUID)).replaceAll("<online>", "" + plugin.getPlayerAPI().getOnlinePlayersInJob(j).size())
 									.replace("<earned>",
 											"" + api.Format(plugin.getPlayerAPI().getEarnedAt("" + player.getUniqueId(),
 													j, plugin.getDate())))
@@ -566,22 +562,21 @@ public class GuiManager {
 		String need = plugin.getPluginManager().toHex(name).replaceAll("&", "§");
 		if (title.equalsIgnoreCase(need)) {
 			for (String pl : list) {
-				if (cfg.contains(prefix + pl + ".Display")) {
-					String display = cfg.getString(prefix + pl + ".Display");
+				if (cfg.contains(prefix + pl + ".Material")) {
+					String display = prefix + pl + ".Display";
 					String mat = cfg.getString(prefix + pl + ".Material");
 					int slot = cfg.getInt(prefix + pl + ".Slot");
 
 					ItemStack item = plugin.getItemAPI().createItem(player, mat);
 					ItemMeta meta = item.getItemMeta();
 
-					meta.setDisplayName(sp.getLanguage().getStringFromPath(sp.getUUID(), display));
+					meta.setDisplayName(sp.getLanguage().getGUIMessage(display));
 
 					int max = sp.getMaxJobs() + 1;
 
-					if (cfg.contains(prefix + pl + ".Lore")) {
+					if ( sp.getLanguage().getGUIList(prefix + pl + ".Lore") != null) {
 
-						List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-								cfg.getString(prefix + pl + ".Lore"));
+						List<String> lore = sp.getLanguage().getGUIList(prefix + pl + ".Lore");
 
 						List<String> filore = new ArrayList<String>();
 
@@ -599,7 +594,7 @@ public class GuiManager {
 								String usedlvl = "";
 								Integer broken = statsjob.getBrokenTimes();
 
-								if (job.getStatsMessage(UUID) != null) {
+								if (job.getStatsLoreIfJob(UUID) != null) {
 
 									if (lvl == null) {
 										usedlvl = "Error";
@@ -616,6 +611,7 @@ public class GuiManager {
 
 										filore.add(plugin.getPluginManager().toHex(l)
 												.replaceAll("<salary>", plugin.getAPI().Format(sp.getSalary()))
+												.replaceAll("<level_rank>", job.getLevelRankDisplay(level, UUID))
 												.replaceAll("<stats_args_4>", usedlvl)
 												.replace("<earned>",
 														"" + api.Format(plugin.getPlayerAPI().getEarnedAt(

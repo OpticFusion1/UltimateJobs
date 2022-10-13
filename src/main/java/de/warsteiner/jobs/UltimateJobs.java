@@ -14,6 +14,7 @@ import java.util.zip.ZipOutputStream;
 
 import de.warsteiner.jobs.events.*;
 import org.bukkit.Bukkit;
+import org.bukkit.boss.BarColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,6 +32,7 @@ import de.warsteiner.jobs.api.PlayerChunkAPI;
 import de.warsteiner.jobs.api.SkullCreatorAPI;
 import de.warsteiner.jobs.api.plugins.ItemsAdderManager;
 import de.warsteiner.jobs.api.plugins.MythicMobsManager;
+import de.warsteiner.jobs.api.plugins.NoteBlockManager;
 import de.warsteiner.jobs.api.plugins.PlaceHolderManager;
 import de.warsteiner.jobs.api.plugins.WorldGuardManager;
 import de.warsteiner.jobs.command.AdminCommand;
@@ -38,17 +40,15 @@ import de.warsteiner.jobs.command.AdminTabComplete;
 import de.warsteiner.jobs.command.JobTabComplete;
 import de.warsteiner.jobs.command.JobsCommand;
 import de.warsteiner.jobs.command.admincommand.BoostSub;
-import de.warsteiner.jobs.command.admincommand.ExpSub;
-import de.warsteiner.jobs.command.admincommand.FirstSub;
+import de.warsteiner.jobs.command.admincommand.ExpSub; 
 import de.warsteiner.jobs.command.admincommand.HelpSub;
 import de.warsteiner.jobs.command.admincommand.IDSub;
 import de.warsteiner.jobs.command.admincommand.LanguageSub;
 import de.warsteiner.jobs.command.admincommand.LevelSub;
 import de.warsteiner.jobs.command.admincommand.MaxSub;
 import de.warsteiner.jobs.command.admincommand.OpenSub;
-import de.warsteiner.jobs.command.admincommand.ReloadSub;
-import de.warsteiner.jobs.command.admincommand.UpdateSub;
-import de.warsteiner.jobs.command.admincommand.VersionSub;
+import de.warsteiner.jobs.command.admincommand.PluginSub;
+import de.warsteiner.jobs.command.admincommand.UpdateSub; 
 import de.warsteiner.jobs.command.playercommand.EarningsSub;
 import de.warsteiner.jobs.command.playercommand.JoinSub;
 import de.warsteiner.jobs.command.playercommand.LangSub;
@@ -168,6 +168,7 @@ public class UltimateJobs extends JavaPlugin {
 	private PlayerChunkAPI capi;
 
 	private ItemsAdderManager aim;
+	private NoteBlockManager ntb;
 
 	/**
 	 * Loading Data, Config-Files and checking for Updates
@@ -183,21 +184,17 @@ public class UltimateJobs extends JavaPlugin {
 
 		createFolders();
 
-		filemanager.generateFiles(false);
+		filemanager.generateFiles();
 
-		if (DataMode.valueOf(getFileManager().getDataConfig().getString("Mode").toUpperCase()) != null) {
-
-			mode = DataMode.valueOf(getFileManager().getDataConfig().getString("Mode").toUpperCase());
-
-		} else {
+		try {
+			mode = DataMode.valueOf(getLocalFileManager().getDataConfig().getString("Mode").toUpperCase());
+		} catch (IllegalArgumentException ex) {
 			Bukkit.getConsoleSender()
 					.sendMessage(PluginColor.FAILED + "Failed to load Data Mode! Continue with files...");
 			mode = DataMode.FILE;
 		}
-		
-		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading Languages...");
 
-		getLanguageAPI().loadLanguages();
+		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading Languages...");
 
 		loadClasses();
 
@@ -206,12 +203,13 @@ public class UltimateJobs extends JavaPlugin {
 			WorldGuardManager.setClass();
 			WorldGuardManager.load();
 		}
- 
+
 		if (filemanager.getConfig().getBoolean("CheckForUpdates")) {
 			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Checking for Updates...");
 			web.checkVersion();
 		}
 
+		getLanguageAPI().loadLanguages();
 	}
 
 	/**
@@ -220,7 +218,7 @@ public class UltimateJobs extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		
+
 		if (mode.equals(DataMode.SQL)) {
 
 			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Connecting to SQL...");
@@ -239,7 +237,7 @@ public class UltimateJobs extends JavaPlugin {
 
 			datafile.create();
 		}
- 
+
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading Vault...");
 
 		setupEconomy();
@@ -249,17 +247,22 @@ public class UltimateJobs extends JavaPlugin {
 			new PlaceHolderManager().register();
 		}
 
+		if (getPluginManager().isInstalled("NoteBlockAPI")) {
+			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading NoteBlockAPI Support...");
+			ntb = new NoteBlockManager();
+		}
+
 		if (getPluginManager().isInstalled("ItemsAdder")) {
 
 			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading ItemsAdder Support...");
 
 			aim = new ItemsAdderManager();
 
-			if (getFileManager().getConfig().getBoolean("Actions.IABreak")) {
+			if (getLocalFileManager().getConfig().getBoolean("Actions.IABreak")) {
 				Bukkit.getPluginManager().registerEvents(new JobAction_IA_Break(), this);
 			}
 
-			if (getFileManager().getConfig().getBoolean("Actions.IAKill")) {
+			if (getLocalFileManager().getConfig().getBoolean("Actions.IAKill")) {
 				Bukkit.getPluginManager().registerEvents(new JobAction_IA_Kill(), this);
 			}
 
@@ -296,35 +299,60 @@ public class UltimateJobs extends JavaPlugin {
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading basic Events...");
 		loadBasicEvents();
 
-		Bukkit.getConsoleSender().sendMessage("§7");
-		Bukkit.getConsoleSender().sendMessage("§7");
-		Bukkit.getConsoleSender().sendMessage(
-				",--. ,--.,--.,--------.,--.,--.   ,--.  ,---. ,--------.,------.     ,--. ,-----. ,-----.   ,---.   ");
-		Bukkit.getConsoleSender().sendMessage(
-				"|  | |  ||  |'--.  .--'|  ||   `.'   | /  O  \\'--.  .--'|  .---'     |  |'  .-.  '|  |) /_ '   .-'  ");
-		Bukkit.getConsoleSender().sendMessage(
-				"|  | |  ||  |   |  |   |  ||  |'.'|  ||  .-.  |  |  |   |  `--, ,--. |  ||  | |  ||  .-.  \\`.  `-.  ");
-		Bukkit.getConsoleSender().sendMessage(
-				"'  '-'  '|  '--.|  |   |  ||  |   |  ||  | |  |  |  |   |  `---.|  '-'  /'  '-'  '|  '--' /.-'    | ");
-		Bukkit.getConsoleSender().sendMessage(
-				" `-----' `-----'`--'   `--'`--'   `--'`--' `--'  `--'   `------' `-----'  `-----' `------' `-----'  ");
-		Bukkit.getConsoleSender().sendMessage("       §bRunning plugin UltimateJobs " + getDescription().getVersion()
-				+ " (" + getDescription().getAPIVersion() + ")");
-		Bukkit.getConsoleSender().sendMessage("       §bRunning UltimateJobs with " + getLoaded().size() + " Jobs");
-		Bukkit.getConsoleSender()
-				.sendMessage("       §bLoaded " + getLanguageAPI().getLanguages().size() + " Languages");
-		Bukkit.getConsoleSender().sendMessage("§7");
-		Bukkit.getConsoleSender().sendMessage("§7");
+		if (getLanguageAPI().getLoadedLanguagesAsArray().size() != 0) {
+			Bukkit.getConsoleSender().sendMessage("§7");
+			Bukkit.getConsoleSender().sendMessage("§7");
+			Bukkit.getConsoleSender().sendMessage(
+					"§a,--. ,--.,--.,--------.,--.,--.   ,--.  ,---. ,--------.,------.     ,--. ,-----. ,-----.   ,---.   ");
+			Bukkit.getConsoleSender().sendMessage(
+					"§a|  | |  ||  |'--.  .--'|  ||   `.'   | /  O  \\'--.  .--'|  .---'     |  |'  .-.  '|  |) /_ '   .-'  ");
+			Bukkit.getConsoleSender().sendMessage(
+					"§a|  | |  ||  |   |  |   |  ||  |'.'|  ||  .-.  |  |  |   |  `--, ,--. |  ||  | |  ||  .-.  \\`.  `-.  ");
+			Bukkit.getConsoleSender().sendMessage(
+					"§a'  '-'  '|  '--.|  |   |  ||  |   |  ||  | |  |  |  |   |  `---.|  '-'  /'  '-'  '|  '--' /.-'    | ");
+			Bukkit.getConsoleSender().sendMessage(
+					"§a `-----' `-----'`--'   `--'`--'   `--'`--' `--'  `--'   `------' `-----'  `-----' `------' `-----'  ");
+			Bukkit.getConsoleSender().sendMessage("       §aRunning plugin UltimateJobs "
+					+ getDescription().getVersion() + " (" + getDescription().getAPIVersion() + ")");
+			Bukkit.getConsoleSender().sendMessage("       §aRunning UltimateJobs with " + getLoaded().size() + " Jobs");
+			Bukkit.getConsoleSender()
+					.sendMessage("       §aLoaded " + getLanguageAPI().getLanguages().size() + " Languages");
+			Bukkit.getConsoleSender().sendMessage("§7");
+			Bukkit.getConsoleSender().sendMessage("§7");
+		} else {
+			 printFailed();
+		}
 
 	}
 
+	public void printFailed() {
+		Bukkit.getConsoleSender().sendMessage("§4");
+		Bukkit.getConsoleSender().sendMessage("§4");
+		Bukkit.getConsoleSender().sendMessage(
+				"§4,--. ,--.,--.,--------.,--.,--.   ,--.  ,---. ,--------.,------.     ,--. ,-----. ,-----.   ,---.   ");
+		Bukkit.getConsoleSender().sendMessage(
+				"§4|  | |  ||  |'--.  .--'|  ||   `.'   | /  O  \\'--.  .--'|  .---'     |  |'  .-.  '|  |) /_ '   .-'  ");
+		Bukkit.getConsoleSender().sendMessage(
+				"§4|  | |  ||  |   |  |   |  ||  |'.'|  ||  .-.  |  |  |   |  `--, ,--. |  ||  | |  ||  .-.  \\`.  `-.  ");
+		Bukkit.getConsoleSender().sendMessage(
+				"§4'  '-'  '|  '--.|  |   |  ||  |   |  ||  | |  |  |  |   |  `---.|  '-'  /'  '-'  '|  '--' /.-'    | ");
+		Bukkit.getConsoleSender().sendMessage(
+				"§4 `-----' `-----'`--'   `--'`--'   `--'`--' `--'  `--'   `------' `-----'  `-----' `------' `-----'  ");
+		Bukkit.getConsoleSender().sendMessage("§4        §4Failed to load plugin UltimateJobs "
+				+ getDescription().getVersion() + "§4 (" + getDescription().getAPIVersion() + ")");
+		Bukkit.getConsoleSender().sendMessage("§7");
+		Bukkit.getConsoleSender().sendMessage("§7");
+
+		Bukkit.getPluginManager().disablePlugin(this);
+	}
+	
 	/**
 	 * Method to connect to SQL Databases
 	 */
 
 	public void connect() {
 
-		FileConfiguration cfg = getFileManager().getDataConfig();
+		FileConfiguration cfg = getLocalFileManager().getDataConfig();
 
 		String host = cfg.getString("Config.host");
 		int port = cfg.getInt("Config.port");
@@ -340,7 +368,8 @@ public class UltimateJobs extends JavaPlugin {
 		if (getInit().getDataSource() == null || getInit().isClosed()) {
 			getInit().initDatabase(new HikariAuthentication(host, port, database, username, password), type, size,
 					pool);
-			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Connected to " + type + " to save data!");
+			Bukkit.getConsoleSender()
+					.sendMessage(PluginColor.INFO.getPrefix() + "Connected to " + type + " to save data!");
 		}
 
 	}
@@ -406,11 +435,13 @@ public class UltimateJobs extends JavaPlugin {
 		}
 
 		plugin.getPlayerAPI().getCacheJobPlayers().clear();
-
-		Bukkit.getConsoleSender().sendMessage("§7");
-		Bukkit.getConsoleSender().sendMessage("     §cPlugin has been disabled!");
-		Bukkit.getConsoleSender().sendMessage("     §cThank you for using my plugin!");
-		Bukkit.getConsoleSender().sendMessage("§7");
+		plugin.getItemAPI().items.clear();
+		plugin.getLanguageAPI().languages_lists.clear();
+		plugin.getLanguageAPI().languages_lists.clear();
+		plugin.getLanguageAPI().gui_languages_lists.clear();
+		plugin.getLanguageAPI().gui_languages_strings.clear();
+		plugin.getLanguageAPI().jobs_languages_strings.clear();
+		plugin.getLanguageAPI().jobs_languages_lists.clear();
 	}
 
 	/**
@@ -418,7 +449,7 @@ public class UltimateJobs extends JavaPlugin {
 	 */
 
 	public void createBackups() {
-		if (getFileManager().getConfig().getBoolean("CreateBackupsOfFiles")) {
+		if (getLocalFileManager().getConfig().getBoolean("CreateBackupsOfFiles")) {
 			if (mode.equals(DataMode.FILE)) {
 				Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Creating Backup...");
 				File log = new File(getDataFolder().getAbsolutePath() + "/backups");
@@ -466,7 +497,7 @@ public class UltimateJobs extends JavaPlugin {
 		getSubCommandManager().getSubCommandList().add(new PointsSub());
 		getSubCommandManager().getSubCommandList().add(new LimitSub());
 		getSubCommandManager().getSubCommandList().add(new JoinSub());
-		if (getFileManager().getLanguageConfig().getBoolean("EnabledLanguages")) {
+		if (getLocalFileManager().getLanguageConfig().getBoolean("EnabledLanguages")) {
 			getSubCommandManager().getSubCommandList().add(new LangSub());
 		}
 		getSubCommandManager().getSubCommandList().add(new StatsSub());
@@ -480,17 +511,15 @@ public class UltimateJobs extends JavaPlugin {
 
 		getAdminSubCommandManager().getSubCommandList().add(new HelpSub());
 
-		if (getFileManager().getLanguageConfig().getBoolean("EnabledLanguages")) {
+		if (getLocalFileManager().getLanguageConfig().getBoolean("EnabledLanguages")) {
 			getAdminSubCommandManager().getSubCommandList().add(new LanguageSub());
 		}
 
 		getAdminSubCommandManager().getSubCommandList().add(new OpenSub());
 		getAdminSubCommandManager().getSubCommandList().add(new IDSub());
 
-		getAdminSubCommandManager().getSubCommandList().add(new ReloadSub());
-		getAdminSubCommandManager().getSubCommandList().add(new VersionSub());
-
-		getAdminSubCommandManager().getSubCommandList().add(new FirstSub());
+		getAdminSubCommandManager().getSubCommandList().add(new PluginSub());
+ 
 		getAdminSubCommandManager().getSubCommandList().add(new UpdateSub());
 
 		getAdminSubCommandManager().getSubCommandList().add(new BoostSub());
@@ -539,10 +568,11 @@ public class UltimateJobs extends JavaPlugin {
 		capi = new PlayerChunkAPI();
 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Classes...");
-		
+
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading and checking for Jobs...");
 
 		api.loadJobs(getLogger());
+		i.loadItems();
 	}
 
 	public ItemsAdderManager getItemsAdderManager() {
@@ -597,6 +627,10 @@ public class UltimateJobs extends JavaPlugin {
 		return cmdmanager;
 	}
 
+	public NoteBlockManager getNoteBlockManager() {
+		return ntb;
+	}
+
 	public static UltimateJobs getPlugin() {
 		return plugin;
 	}
@@ -635,7 +669,7 @@ public class UltimateJobs extends JavaPlugin {
 
 			// create default jobs
 			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading Default Jobs...");
-			getFileManager().createDefaultJobs();
+			getLocalFileManager().createDefaultJobs();
 		}
 
 		File folder_2 = new File(getDataFolder(), "lang");
@@ -653,9 +687,25 @@ public class UltimateJobs extends JavaPlugin {
 		}
 
 		File folder_5 = new File(getDataFolder(), "addons");
+		
+		File folder_7 = new File(getDataFolder(), "guis");
+		
+		if (!folder_7.exists()) {
+			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Create GUIs folder...");
+			folder_7.mkdir();
+		}
+		
 		if (!folder_5.exists()) {
 			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Create Addons folder...");
 			folder_5.mkdir();
+
+			File folder_6 = new File(getDataFolder() + "/addons/", "songs");
+			if (!folder_6.exists()) {
+				Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Create Songs folder...");
+				folder_6.mkdir();
+
+				getLocalFileManager().createDefaultSongs();
+			}
 		}
 
 	}
@@ -691,7 +741,7 @@ public class UltimateJobs extends JavaPlugin {
 
 	public void loadEvents() {
 
-		FileConfiguration cfg = getFileManager().getUtilsConfig();
+		FileConfiguration cfg = getLocalFileManager().getUtilsConfig();
 
 		if (cfg.getBoolean("Actions.Break")) {
 			Bukkit.getPluginManager().registerEvents(new JobActionBreak(), this);
@@ -791,7 +841,8 @@ public class UltimateJobs extends JavaPlugin {
 			econ = (Economy) economyProvider.getProvider();
 			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Vault Support!");
 		} else {
-			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to load vault for Ultimatejobs!");
+			Bukkit.getConsoleSender()
+					.sendMessage(PluginColor.ERROR.getPrefix() + "Failed to load vault for Ultimatejobs!");
 		}
 		return (econ != null);
 	}
@@ -808,7 +859,7 @@ public class UltimateJobs extends JavaPlugin {
 		return ld;
 	}
 
-	public FileManager getFileManager() {
+	public FileManager getLocalFileManager() {
 		return filemanager;
 	}
 

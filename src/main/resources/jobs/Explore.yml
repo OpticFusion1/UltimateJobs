@@ -58,9 +58,43 @@ LEVELS:
   4:
 
     Money: 1000 
-    Icon: "EMERALD" 
+    Icon: "PAPER" 
     Need: 550 
     EarnMore: 0.30
 
-  
+  5:
+
+    Money: 2000 
+    Icon: "PAPER" 
+    Need: 1000 
+    EarnMore: 0.30
+    
+  6:
+
+    Money: 2000 
+    Icon: "PAPER" 
+    Need: 2000 
+    EarnMore: 0.30
+    
+  7:
+
+    Money: 3000 
+    Icon: "PAPER" 
+    Need: 3000 
+    EarnMore: 0.30
+    
+  8:
+
+    Money: 4000 
+    Icon: "PAPER" 
+    Need: 8000 
+    EarnMore: 0.30
+    
+  9:
+
+    Money: 5000 
+    Icon: "EMERALD" 
+    Need: 10000 
+    EarnMore: 0.30  
+ 
   

@@ -1,11 +1,9 @@
 package de.warsteiner.jobs.manager;
 
 import java.util.ArrayList;
-
-import org.bukkit.Bukkit;
+ 
 import org.bukkit.Sound;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.command.CommandSender; 
 import org.bukkit.entity.Player;
 
 import de.warsteiner.jobs.UltimateJobs;
@@ -21,14 +19,13 @@ public class GuiOpenManager {
 	private static UltimateJobs plugin = UltimateJobs.getPlugin();
 
 	public String isStatsMenuOpendAboutPlayer(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getStatsConfig();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.STATS_OTHER)) {
 				String a = plugin.getGUI().getGUIsDetails().get(sp.getUUIDAsString());
 
-				String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Other_Name"))
+				String name = sp.getLanguage().getGUIMessage("Other_Name")
 						.replaceAll("<name>", a);
 
 				if (name.equalsIgnoreCase(title)) {
@@ -41,15 +38,14 @@ public class GuiOpenManager {
 	}
 
 	public Job isSettingsMenu(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getSettings();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.SETTINGS)) {
 
 				Job j = plugin.getGUI().getGUIsJobs().get(sp.getUUIDAsString());
-				String dis = j.getDisplay(sp.getUUIDAsString());
-				String named = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Settings_Name"));
+				String dis = j.getDisplayOfJob(sp.getUUIDAsString());
+				String named = sp.getLanguage().getGUIMessage("Settings_Name");
 				String fin = plugin.getPluginManager().toHex(named.replaceAll("<job>", dis).replaceAll("&", "§"));
 
 				if (fin.equalsIgnoreCase(title)) {
@@ -63,15 +59,14 @@ public class GuiOpenManager {
 	}
 
 	public Job isRewardsMenu(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getRewardsConfig();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.REWARDS)) {
 
 				Job j = plugin.getGUI().getGUIsJobs().get(sp.getUUIDAsString());
-				String dis = j.getDisplay(sp.getUUIDAsString());
-				String named = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Rewards_Name"));
+				String dis = j.getDisplayOfJob(sp.getUUIDAsString());
+				String named = sp.getLanguage().getGUIMessage("Rewards_Name");
 				String fin = plugin.getPluginManager().toHex(named.replaceAll("<job>", dis).replaceAll("&", "§"));
 
 				if (fin.equalsIgnoreCase(title)) {
@@ -85,12 +80,11 @@ public class GuiOpenManager {
 	}
 
 	public String isStatsMenuOpendSelf(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getStatsConfig();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.STATS_SELF)) {
-				String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Self_Name"));
+				String name = sp.getLanguage().getGUIMessage("Self_Name");
 
 				if (name.equalsIgnoreCase(title)) {
 					return "FOUND";
@@ -102,12 +96,11 @@ public class GuiOpenManager {
 	}
 
 	public String isMainOpend(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getGUI();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.MAIN)) {
-				String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Main_Name"));
+				String name = sp.getLanguage().getGUIMessage("Main_Name");
 
 				if (name.equalsIgnoreCase(title)) {
 					return "FOUND";
@@ -119,15 +112,14 @@ public class GuiOpenManager {
 	}
 
 	public Job isLevelsMenu(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getLevelGUIConfig();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.LEVELS)) {
 
 				Job j = plugin.getGUI().getGUIsJobs().get(sp.getUUIDAsString());
-				String dis = j.getDisplay(sp.getUUIDAsString());
-				String named = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Levels_Name"));
+				String dis = j.getDisplayOfJob(sp.getUUIDAsString());
+				String named = sp.getLanguage().getGUIMessage("Levels_Name");
 				String fin = plugin.getPluginManager().toHex(named.replaceAll("<job>", dis).replaceAll("&", "§"));
 
 				if (fin.equalsIgnoreCase(title)) {
@@ -140,16 +132,15 @@ public class GuiOpenManager {
 		return null;
 	}
 	
-	public Job isRankingJobMenu(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getRankingPerJobConfig();
+	public Job isRankingJobMenu(Player player, String title) { 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.JOB_RANKING)) {
 
 				Job j = plugin.getGUI().getGUIsJobs().get(sp.getUUIDAsString());
-				String dis = j.getDisplay(sp.getUUIDAsString());
-				String named = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("PerJobRanking_Name"));
+				String dis = j.getDisplayOfJob(sp.getUUIDAsString());
+				String named = sp.getLanguage().getGUIMessage("PerJobRanking_Name");
 				String fin = plugin.getPluginManager().toHex(named.replaceAll("<job>", dis).replaceAll("&", "§"));
 
 				if (fin.equalsIgnoreCase(title)) {
@@ -163,13 +154,12 @@ public class GuiOpenManager {
 	}
 	
 	public String isGlobalRankingMenu(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getRankingGlobalConfig();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 		 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.GLOBAL_RANKING)) {
 			  
-				String named = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("GlobalRanking_Name"));
+				String named = sp.getLanguage().getGUIMessage("Global_Name");
 				String fin = plugin.getPluginManager().toHex(named.replaceAll("&", "§"));
  
 				if (fin.equalsIgnoreCase(title)) { 
@@ -183,12 +173,11 @@ public class GuiOpenManager {
 	}
 
 	public String isHelpOpend(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getHelpSettings();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.HELP)) {
-				String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Help_Name"));
+				String name = sp.getLanguage().getGUIMessage("Help_Name");
 
 				if (name.equalsIgnoreCase(title)) {
 					return "FOUND";
@@ -199,13 +188,12 @@ public class GuiOpenManager {
 		return null;
 	}
 
-	public String isWithdrawMenu(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getWithdrawConfig();
+	public String isWithdrawMenu(Player player, String title) { 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.WITHDRAW)) {
-				String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Withdraw_Name"));
+				String name = sp.getLanguage().getGUIMessage("Withdraw_Name");
 
 				if (name.equalsIgnoreCase(title)) {
 					return "FOUND";
@@ -216,13 +204,12 @@ public class GuiOpenManager {
 		return null;
 	}
 
-	public String isWithdrawConfirmMenu(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getWithdrawConfirmConfig();
+	public String isWithdrawConfirmMenu(Player player, String title) { 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.CONFIRM_WITHDRAW)) {
-				String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("ConfirmWithdraw_Name"));
+				String name = sp.getLanguage().getGUIMessage("ConfirmWithdraw_Name");
 
 				if (name.equalsIgnoreCase(title)) {
 					return "FOUND";
@@ -234,12 +221,11 @@ public class GuiOpenManager {
 	}
 
 	public String isEarningsALL(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getEarningsAllConfig();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.EARNINGS_ALL)) {
-				String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("All_Earnings_Name"));
+				String name = sp.getLanguage().getGUIMessage("All_Earnings_Name");
 
 				if (name.equalsIgnoreCase(title)) {
 					return "FOUND";
@@ -251,15 +237,14 @@ public class GuiOpenManager {
 	}
 
 	public Job isEarningsAboutJob(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getEarningsJobConfig();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.EARNINGS_JOB)) {
 
 				Job j = plugin.getGUI().getGUIsJobs().get(sp.getUUIDAsString());
-				String dis = j.getDisplay(sp.getUUIDAsString());
-				String named = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Job_Earnings_Name"));
+				String dis = j.getDisplayOfJob(sp.getUUIDAsString());
+				String named = sp.getLanguage().getGUIMessage("Job_Earnings_Name");
 				String fin = plugin.getPluginManager().toHex(named.replaceAll("<job>", dis).replaceAll("&", "§"));
 
 				if (fin.equalsIgnoreCase(title)) {
@@ -273,12 +258,11 @@ public class GuiOpenManager {
 	}
 
 	public String isLanguageOpend(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getLanguageGUIConfig();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.LANGUAGE)) {
-				String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Name"));
+				String name = sp.getLanguage().getGUIMessage("Name");
 
 				if (name.equalsIgnoreCase(title)) {
 					return "FOUND";
@@ -290,15 +274,14 @@ public class GuiOpenManager {
 	}
 
 	public Job isConfirmGUI(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getConfirm();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
 			if (plugin.getGUI().getGUIS().get(sp.getUUIDAsString()).equals(GUIType.CONFIRM)) {
 
 				Job j = plugin.getGUI().getGUIsJobs().get(sp.getUUIDAsString());
-				String dis = j.getDisplay(sp.getUUIDAsString());
-				String named = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("AreYouSureGUI_Name"));
+				String dis = j.getDisplayOfJob(sp.getUUIDAsString());
+				String named = sp.getLanguage().getGUIMessage("AreYouSureGUI_Name");
 				String fin = plugin.getPluginManager().toHex(named.replaceAll("<job>", dis).replaceAll("&", "§"));
 
 				if (fin.equalsIgnoreCase(title)) {
@@ -311,8 +294,7 @@ public class GuiOpenManager {
 		return null;
 	}
 
-	public Job isLeaveConfirmGUI(Player player, String title) {
-		FileConfiguration cfg = plugin.getFileManager().getLeaveConfirmConfig();
+	public Job isLeaveConfirmGUI(Player player, String title) { 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (plugin.getGUI().getGUIS().containsKey(sp.getUUIDAsString())) {
 
@@ -320,8 +302,8 @@ public class GuiOpenManager {
 
 				Job j = plugin.getGUI().getGUIsJobs().get(sp.getUUIDAsString());
 
-				String dis = j.getDisplay(sp.getUUIDAsString());
-				String named = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("LeaveConfirm_Name"));
+				String dis = j.getDisplayOfJob(sp.getUUIDAsString());
+				String named = sp.getLanguage().getGUIMessage("LeaveConfirm_Name");
 				String fin = plugin.getPluginManager().toHex(named.replaceAll("<job>", dis).replaceAll("&", "§"));
 
 				if (title.equalsIgnoreCase(fin)) {

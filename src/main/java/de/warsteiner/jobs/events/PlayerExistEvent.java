@@ -112,18 +112,20 @@ public class PlayerExistEvent implements Listener {
 						if (!plugin.getPlayerOfflineAPI().isFirstPluginStart()) {
 							if (player.hasPermission("ultimatejobs.admin.first")) {
 								player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 2, 3);
-								new JsonMessage().append("§7\n§8[§9UltimateJobs§8] §7Welcome, §6" + name
-										+ "§7.\n §7Please Click here, to view the §afirst §7Steps of the Plugin!\n§7")
-										.setClickAsExecuteCmd("/jobsadmin first").save().send(player);
+								
+								plugin.getGUIAddonManager().createFirstStartMenu(player);
+								
+								UltimateJobs.getPlugin().getPlayerOfflineAPI().createFirstPluginStart(UltimateJobs.getPlugin().getPluginManager().getDateTodayFromCal());
+								
 							}
 						}
 
 						if (plugin.getWebManager().canUpdate) {
 							if (player.hasPermission("ultimatejobs.admin.update")) {
 								new JsonMessage().append(
-										"§7\n§8[§9UltimateJobs§8] §7Click to View a new §aUpdate§7! §7Current Version§8: §b"
+										"§8[§9UltimateJobs§8] §7Click to View a new §aUpdate§7! §7Current Version§8: §b"
 												+ plugin.getDescription().getVersion() + " §7new Version§8: §c"
-												+ plugin.getWebManager().newVersion + "\n§7")
+												+ plugin.getWebManager().newVersion + "")
 										.setClickAsExecuteCmd("/jobsadmin update").save().send(player);
 							}
 						}

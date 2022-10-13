@@ -16,13 +16,13 @@ public class LeaveSub extends SubCommand {
 	@Override
 	public String getName(UUID UUID) {
 		JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+UUID);
-		return  jb.getLanguage().getStringFromLanguage(UUID, "Commands.Leave.Usage");
+		return  jb.getLanguage().getMessage("Commands.Leave.Usage");
 	}
 
 	@Override
 	public String getDescription(UUID UUID) {
 		JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+UUID);
-		return  jb.getLanguage().getStringFromLanguage(UUID, "Commands.Leave.Description");
+		return  jb.getLanguage().getMessage("Commands.Leave.Description");
 	}
 
 	@Override
@@ -41,16 +41,16 @@ public class LeaveSub extends SubCommand {
 			if (jb.isInJob(job)) {
 				plugin.getAPI().playSound("COMMAND_LEAVE_SUCCESS", player);
 				jb.remCurrentJob(job);
-				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_leave_message").replaceAll("<job>",  plugin.getAPI().checkIfJobIsRealAndGet(d.toUpperCase(), player).getDisplay(""+UUID)));
+				player.sendMessage(jb.getLanguage().getMessage("command_leave_message").replaceAll("<job>",  plugin.getAPI().checkIfJobIsRealAndGet(d.toUpperCase(), player).getDisplayOfJob(""+UUID)));
 			} else {
-				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_leave_already"));
+				player.sendMessage(jb.getLanguage().getMessage( "command_leave_already"));
 				plugin.getAPI().playSound("COMMAND_LEAVE_ALREADY", player);
 			}
 
 		} else {
 			plugin.getAPI().playSound("COMMAND_USAGE", player);
 			player.sendMessage(
-					jb.getLanguage().getStringFromLanguage(UUID, "command_usage").replaceAll("<usage>", getUsage(UUID)));
+					jb.getLanguage().getMessage("command_usage").replaceAll("<usage>", getUsage(UUID)));
 		}
 	}
 
@@ -72,7 +72,7 @@ public class LeaveSub extends SubCommand {
 	@Override
 	public String getUsage(UUID UUID) {
 		JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+UUID);
-		return  jb.getLanguage().getStringFromLanguage(UUID, "Commands.Leave.UsageMessage");
+		return  jb.getLanguage().getMessage("Commands.Leave.UsageMessage");
 	}
 
 }

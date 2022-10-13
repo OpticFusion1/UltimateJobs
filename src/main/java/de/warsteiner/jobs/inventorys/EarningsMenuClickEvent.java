@@ -54,15 +54,12 @@ public class EarningsMenuClickEvent implements Listener {
 		String display = plugin.getPluginManager()
 				.toHex(e.getCurrentItem().getItemMeta().getDisplayName().replaceAll("&", "§"));
 		String title = plugin.getPluginManager().toHex(e.getView().getTitle().replaceAll("&", "§"));
-
-		String name = jb.getLanguage().getStringFromPath(p.getUniqueId(), cfg.getString("All_Earnings_Name"));
-
+ 
 		if (plugin.getGUIOpenManager().isEarningsALL(p, title) != null) {
 			plugin.getClickManager().executeCustomItem(null, display, p, "All_Earnings_Custom", cfg, null);
 
-			String next = jb.getLanguage().getStringFromPath(p.getUniqueId(), cfg.getString("PageItems.Next.Display"));
-			String pre = jb.getLanguage().getStringFromPath(p.getUniqueId(),
-					cfg.getString("PageItems.Previous.Display"));
+			String next = jb.getLanguage().getGUIMessage("All_Earnings_Custom.Next.Display");
+			String pre = jb.getLanguage().getGUIMessage("All_Earnings_Custom.Previous.Display");
 			 
 			int page = 1;
 			
@@ -83,8 +80,7 @@ public class EarningsMenuClickEvent implements Listener {
 					plugin.getAPI().playSound("EARNINGS_ALL_PAGE_LEVELS", p);
 
 				} else {
-					p.sendMessage(jb.getLanguage().getStringFromPath(p.getUniqueId(),
-							cfg.getString("PageItems.Next.NotFound")));
+					p.sendMessage(jb.getLanguage().getGUIMessage("Job_Earnings_Custom.Next.Message_NotFound"));
 					plugin.getAPI().playSound("EARNINGS_ALL_NO_NEXT", p);
 				}
 
@@ -94,8 +90,7 @@ public class EarningsMenuClickEvent implements Listener {
 					String mode = cfg.getString("PageItems.WhatHappensWhenFirstPageAlreardyReached").toUpperCase();
 
 					if (mode.equalsIgnoreCase("MESSAGE")) {
-						p.sendMessage(jb.getLanguage().getStringFromPath(p.getUniqueId(),
-								cfg.getString("PageItems.Previous.NotFound")));
+						p.sendMessage(jb.getLanguage().getGUIMessage("Job_Earnings_Custom.Previous.Message_NotFound"));
 					} else if (mode.equalsIgnoreCase("MAINGUI")) {
 						plugin.getGUI().createMainGUIOfJobs(p, UpdateTypes.REOPEN);
 					} else if (mode.equalsIgnoreCase("COMMAND")) {
@@ -124,9 +119,8 @@ public class EarningsMenuClickEvent implements Listener {
 
 			plugin.getClickManager().executeCustomItem(found, display, p, "Job_Earnings_Custom", cf, null);
 
-			String next = jb.getLanguage().getStringFromPath(p.getUniqueId(), cf.getString("PageItems.Next.Display"));
-			String pre = jb.getLanguage().getStringFromPath(p.getUniqueId(),
-					cf.getString("PageItems.Previous.Display"));
+			String next = jb.getLanguage().getGUIMessage("Job_Earnings_Custom.Next.Display");
+			String pre = jb.getLanguage().getGUIMessage("Job_Earnings_Custom.Previous.Display");
 		 
 			int page = 1;
 			
@@ -147,8 +141,7 @@ public class EarningsMenuClickEvent implements Listener {
 					plugin.getAPI().playSound("EARNINGS_JOB_PAGE_LEVELS", p);
 
 				} else {
-					p.sendMessage(jb.getLanguage().getStringFromPath(p.getUniqueId(),
-							cf.getString("PageItems.Next.NotFound")));
+					p.sendMessage(jb.getLanguage().getGUIMessage("Job_Earnings_Custom.Next.Message_NotFound"));
 					plugin.getAPI().playSound("EARNINGS_JOB_NO_NEXT", p);
 				}
 
@@ -158,8 +151,7 @@ public class EarningsMenuClickEvent implements Listener {
 					String mode = cfg.getString("PageItems.WhatHappensWhenFirstPageAlreardyReached").toUpperCase();
 
 					if (mode.equalsIgnoreCase("MESSAGE")) {
-						p.sendMessage(jb.getLanguage().getStringFromPath(p.getUniqueId(),
-								cf.getString("PageItems.Previous.NotFound")));
+						p.sendMessage(jb.getLanguage().getGUIMessage("Job_Earnings_Custom.Previous.Message_NotFound"));
 					} else if (mode.equalsIgnoreCase("MAINGUI")) {
 						plugin.getGUI().createMainGUIOfJobs(p, UpdateTypes.REOPEN);
 					} else if (mode.equalsIgnoreCase("COMMAND")) {

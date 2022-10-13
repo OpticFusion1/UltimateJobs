@@ -16,13 +16,13 @@ public class LimitSub extends SubCommand {
 	@Override
 	public String getName(UUID UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + UUID);
-		return jb.getLanguage().getStringFromLanguage(UUID, "Commands.Limit.Usage");
+		return jb.getLanguage().getMessage("Commands.Limit.Usage");
 	}
 
 	@Override
 	public String getDescription(UUID UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + UUID);
-		return jb.getLanguage().getStringFromLanguage(UUID, "Commands.Limit.Description");
+		return jb.getLanguage().getMessage("Commands.Limit.Description");
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class LimitSub extends SubCommand {
 
 			if (plugin.getPlayerAPI().getUUIDByName(pl.toUpperCase()) == null) {
 				plugin.getAPI().playSound("COMMAND_PLAYER_NOT_FOUND", player);
-				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_limit_not_found")
+				player.sendMessage(jb.getLanguage().getMessage("command_limit_not_found")
 						.replaceAll("<name>", args[1]));
 				return;
 			} else {
@@ -43,7 +43,7 @@ public class LimitSub extends SubCommand {
 				plugin.getAPI().playSound("COMMAND_LIMIT_OTHER_SUCCES", player);
 
 				int max = plugin.getPlayerAPI().getMaxJobs(uuid) + 1;
-				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_limit_other")
+				player.sendMessage(jb.getLanguage().getMessage("command_limit_other")
 						.replaceAll("<name>", args[1]).replaceAll("<max>", "" + max));
 				return;
 
@@ -52,11 +52,11 @@ public class LimitSub extends SubCommand {
 			int max = jb.getMaxJobs() + 1;
 			plugin.getAPI().playSound("COMMAND_LIMIT_SELF_SUCCES", player);
 			player.sendMessage(
-					jb.getLanguage().getStringFromLanguage(UUID, "command_limit_self").replaceAll("<max>", "" + max));
+					jb.getLanguage().getMessage("command_limit_self").replaceAll("<max>", "" + max));
 			return;
 		} else {
 			plugin.getAPI().playSound("COMMAND_USAGE", player);
-			player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_usage").replaceAll("<usage>",
+			player.sendMessage(jb.getLanguage().getMessage("command_usage").replaceAll("<usage>",
 					getUsage(UUID)));
 		}
 	}
@@ -79,7 +79,7 @@ public class LimitSub extends SubCommand {
 	@Override
 	public String getUsage(UUID UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + UUID);
-		return jb.getLanguage().getStringFromLanguage(UUID, "Commands.Limit.UsageMessage");
+		return jb.getLanguage().getMessage("Commands.Limit.UsageMessage");
 	}
 
 }

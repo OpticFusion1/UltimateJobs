@@ -17,9 +17,6 @@
 # Join our Discord -> https://dcto.mc-plugins.org
 # Visit out Website -> https://mc-plugins.org
 #
-
-#Name of the GUI 
-AreYouSureGUI_Name: "{language:AreYouSureGUI_Name}"
  
 #Size of the GUI
 AreYouSureGUI_Size: 3
@@ -31,25 +28,17 @@ AreYouSureItems:
     Icon: "RED_DYE"
     
     Show: true
-    
-    Display: "{language:AreYouSureItems.Button_NO.Display}"
-    
+ 
     Slot: 15
-    
-    Lore: "{language:AreYouSureItems.Button_NO.Lore}"
-
+   
   Button_YES:
   
     Icon: "GREEN_DYE"
     
     Show: true
-    
-    Display: "{language:AreYouSureItems.Button_YES.Display}"
-    
+ 
     Slot: 11
-    
-    Lore: "{language:AreYouSureItems.Button_YES.Lore}"
-
+ 
 #Custom Items Section
 AreYouSureGUI_Custom:
 
@@ -57,14 +46,10 @@ AreYouSureGUI_Custom:
     - "Back"
 
   Back:
-
-    Display: "{language:AreYouSureGUI_Custom.Back.Display}"
-
+ 
     ActionList:
       - "GUI:MAIN"
-
-    Lore: "{language:AreYouSureGUI_Custom.Back.Lore}"
-
+ 
     Material: "name;Mhf_ArrowLeft"
 
     Slot: 26

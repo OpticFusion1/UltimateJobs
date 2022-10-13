@@ -17,9 +17,6 @@
 # Join our Discord -> https://dcto.mc-plugins.org
 # Visit out Website -> https://mc-plugins.org
 #
-
-#Name of the GUI
-Main_Name: "{language:Main_Name}"
  
 #GUI Size
 Main_Size: 6
@@ -33,9 +30,7 @@ Main_Custom:
     - "Info"
 
   Close:
-
-    Display: "{language:Main_Custom.Close.Display}"
-
+ 
     ActionList:
       - "CLOSE"
 
@@ -44,27 +39,19 @@ Main_Custom:
     Slot: 50
 
   Leave:
-
-    Display: "{language:Main_Custom.Leave.Display}"
-
+ 
     ActionList:
       - "LEAVEALL"
-
-    Lore: "{language:Main_Custom.Leave.Lore}"
-
+ 
     Material: "BARRIER"
 
     Slot: 48
 
   Info:
-
-    Display: "{language:Main_Custom.Info.Display}"
-
+ 
     ActionList:
       - "NONE"
-
-    Lore: "{language:Main_Custom.Info.Lore}"
-
+ 
     Material: "url;http://textures.minecraft.net/texture/352723aa0637ea5204447be536151f529fe4906826d8c066c4dcc50079a64465"
 
     Slot: 4

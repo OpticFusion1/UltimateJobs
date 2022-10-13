@@ -15,13 +15,8 @@ public class JobID {
 	private double points;
 	private String icon;
 	private String modeldata;
-	
-	private HashMap<String, String> lang_display;
-	private HashMap<String, String> lang_rewards_display;
-	private HashMap<String, ArrayList<String>> lang_rewards_lore;
-	
-	public JobID(String id, String real, List<String> commandlist, int chance, double reward, double exp, double points, String icon, String modeldata
-			, HashMap<String, String> lang_display, HashMap<String, String> lang_rewards_display,HashMap<String, ArrayList<String>> lang_rewards_lore) {
+	 
+	public JobID(String id, String real, List<String> commandlist, int chance, double reward, double exp, double points, String icon, String modeldata) {
 		this.id = id;
 		this.commands = commandlist;
 		this.chance = chance;
@@ -31,23 +26,8 @@ public class JobID {
 		this.real = real;
 		this.icon = icon;
 		this.modeldata = modeldata;
-		this.lang_display = lang_display;
-		this.lang_rewards_display = lang_rewards_display;
-		this.lang_rewards_lore = lang_rewards_lore;
 	}
-	
-	public ArrayList<String> getRewardsLoreFromlanguage(Language lang) {
-		return this.lang_rewards_lore.get(lang.getID());
-	}
-	
-	public String getRewardsDisplayFromlanguage(Language lang) {
-		return this.lang_rewards_display.get(lang.getID());
-	}
-	
-	public String getDisplayFromlanguage(Language lang) {
-		return this.lang_display.get(lang.getID());
-	}
-	
+
 	public int getModelData() {
 		return Integer.valueOf(this.modeldata);
 	}

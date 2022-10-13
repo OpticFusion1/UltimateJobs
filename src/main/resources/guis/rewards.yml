@@ -17,9 +17,6 @@
 # Join our Discord -> https://dcto.mc-plugins.org
 # Visit out Website -> https://mc-plugins.org
 #
-
-#Name of the GUI 
-Rewards_Name: "{language:Rewards_Name}"
  
 #Size of the GUI
 Rewards_Size: 6
@@ -70,35 +67,23 @@ PageItems:
   WhatHappensWhenFirstPage_Command: "test command"
 
   Previous:
-  
-    Display: "{language:Rewards_Custom.Previous.Display}"
-    
+ 
     Material: "name;Mhf_ArrowLeft"
-    
-    NotFound: "{language:Rewards_Custom.Previous.Message_NotFound}"
-    
+ 
     Show: true
     
     ShowOnPageOne: true
-    
-    Lore: "{language:Rewards_Custom.Previous.Lore}"
-      
+ 
     Slot: 48
 
   Next:
-  
-    Display: "{language:Rewards_Custom.Next.Display}"
-    
+ 
     Material: "name;Mhf_ArrowRight"
-    
-    NotFound: "{language:Rewards_Custom.Next.Message_NotFound}"
-    
+ 
     Show: true
     
     ShowOnlyIfNextPageExist: false
-    
-    Lore: "{language:Rewards_Custom.Next.Lore}"
-      
+ 
     Slot: 50
 
 #Custom Items Section 
@@ -108,9 +93,7 @@ Rewards_Custom:
     - "Close" 
  
   Close:
-
-    Display: "{language:Rewards_Custom.Close.Display}"
-
+ 
     ActionList:
       - "CLOSE"
 

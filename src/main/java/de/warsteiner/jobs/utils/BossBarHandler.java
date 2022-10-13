@@ -34,8 +34,10 @@ public class BossBarHandler {
 	}
 
 	public static void removeBossBar(String ID) {
-		((BossBar) g.get(ID)).setVisible(false);
-		g.remove(ID);
+		if(g.containsKey(ID)) {
+			((BossBar) g.get(ID)).setVisible(false);
+			g.remove(ID);
+		}
 	}
 
 	public static void renameBossBar(String name, String ID) {

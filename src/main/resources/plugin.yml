@@ -4,8 +4,8 @@ name: UltimateJobs
 author: Warsteiner37
 api-version: 1.17
 depend: [Vault]
-softdepend: [WorldGuard, WorldEdit, PlaceHolderAPI, MythicMobs, ItemsAdder]
-description: Let Players work with this high quality Jobs Plugin!
+softdepend: [WorldGuard, WorldEdit, PlaceHolderAPI, MythicMobs, ItemsAdder, NoteBlockAPI]
+description: Let Players work with this Jobs Plugin!
 website: https://mc-plugins.org
 
 commands:

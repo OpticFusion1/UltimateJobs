@@ -19,13 +19,13 @@ public class LevelsSub extends SubCommand {
 	@Override
 	public String getName(UUID UUID) {
 		JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+UUID);
-		return  jb.getLanguage().getStringFromLanguage(UUID, "Commands.Levels.Usage");
+		return  jb.getLanguage().getMessage("Commands.Levels.Usage");
 	}
 
 	@Override
 	public String getDescription(UUID UUID) {
 		JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+UUID);
-		return  jb.getLanguage().getStringFromLanguage(UUID, "Commands.Levels.Description");
+		return  jb.getLanguage().getMessage("Commands.Levels.Description");
 	}
 
 	@Override
@@ -47,8 +47,8 @@ public class LevelsSub extends SubCommand {
 			
 			Job real = plugin.getAPI().checkIfJobIsRealWithResult(notreal.toUpperCase(), player);
 			
-			if(!jb.hasStatsOf(real.getConfigID())) {
-				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_levels_no_data_found"));
+			if(!jb.ownJob(real.getConfigID())) {
+				player.sendMessage(jb.getLanguage().getMessage("command_levels_no_data_found"));
 				plugin.getAPI().playSound("COMMAND_LEVELS_NOT_OWNED", player);
 				return;
 			}
@@ -64,7 +64,7 @@ public class LevelsSub extends SubCommand {
 				plugin.getGUIAddonManager().createLevelsGUI(player, UpdateTypes.OPEN,
 						plugin.getJobCache().get(size.get(0)));
 			} else {
-				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_levels_no_data_found"));
+				player.sendMessage(jb.getLanguage().getMessage("command_levels_no_data_found"));
 				plugin.getAPI().playSound("COMMAND_LEVELS_NOT_OWNED", player);
 				return;
 			}
@@ -78,7 +78,7 @@ public class LevelsSub extends SubCommand {
 		else {
 			plugin.getAPI().playSound("COMMAND_USAGE", player);
 			player.sendMessage(
-					jb.getLanguage().getStringFromLanguage(UUID, "command_usage").replaceAll("<usage>", getUsage(UUID)));
+					jb.getLanguage().getMessage("command_usage").replaceAll("<usage>", getUsage(UUID)));
 		}
 
 	}
@@ -101,7 +101,7 @@ public class LevelsSub extends SubCommand {
 	@Override
 	public String getUsage(UUID UUID) {
 		JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+UUID);
-		return  jb.getLanguage().getStringFromLanguage(UUID, "Commands.Levels.UsageMessage");
+		return  jb.getLanguage().getMessage("Commands.Levels.UsageMessage");
 	}
 
 }

@@ -55,14 +55,12 @@ public class AreYouSureMenuClickEvent implements Listener {
 			Job job = plugin.getGUIOpenManager().isConfirmGUI(p, e.getView().getTitle());
 			plugin.getClickManager().executeCustomItem(job, display, p, "AreYouSureGUI_Custom", config, null);
 
-			String name_yes = jb.getLanguage().getStringFromPath(p.getUniqueId(),
-					config.getString("AreYouSureItems.Button_YES.Display"));
-			String name_no = jb.getLanguage().getStringFromPath(p.getUniqueId(),
-					config.getString("AreYouSureItems.Button_NO.Display"));
+			String name_yes = jb.getLanguage().getGUIMessage("AreYouSureItems.Button_YES.Display");
+			String name_no = jb.getLanguage().getGUIMessage("AreYouSureItems.Button_NO.Display");
 
-			String yes = plugin.getPluginManager().toHex(name_yes).replaceAll("<job>", job.getDisplay(UUID))
+			String yes = plugin.getPluginManager().toHex(name_yes).replaceAll("<job>", job.getDisplayOfJob(UUID))
 					.replaceAll("&", "§");
-			String no = plugin.getPluginManager().toHex(name_no).replaceAll("<job>", job.getDisplay(UUID))
+			String no = plugin.getPluginManager().toHex(name_no).replaceAll("<job>", job.getDisplayOfJob(UUID))
 					.replaceAll("&", "§");
 
 			if (display.equalsIgnoreCase(yes)) {

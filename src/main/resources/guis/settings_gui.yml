@@ -17,9 +17,6 @@
 # Join our Discord -> https://dcto.mc-plugins.org
 # Visit out Website -> https://mc-plugins.org
 #
-
-#Name of the GUI
-Settings_Name: "{language:Settings_Name}"
  
 #Size of the GUI
 Settings_Size: 5
@@ -36,22 +33,16 @@ Settings_Custom:
     - "Skull"
 
   Skull:
-
-    Display: "{language:Settings_Custom.Skull.Display}"
-
+ 
     ActionList:
       - "NONE"
 
     Material: "name;<name>"
-    
-    Lore: "{language:Settings_Custom.Skull.Lore}"
-
+ 
     Slot: 22
 
   Close:
-
-    Display: "{language:Settings_Custom.Close.Display}"
-
+ 
     ActionList:
       - "CLOSE"
 
@@ -60,9 +51,7 @@ Settings_Custom:
     Slot: 40
 
   Leave:
-
-    Display: "{language:Settings_Custom.Leave.Display}"
-
+ 
     ActionList:
       - "LEAVE"
 
@@ -71,40 +60,28 @@ Settings_Custom:
     Slot: 41
 
   Earnings:
-
-    Display: "{language:Settings_Custom.Earnings.Display}"
-
+ 
     ActionList:
       - "GUI:EARNINGS_ALL"
  
-    Lore: "{language:Settings_Custom.Earnings.Lore}"
-
     Material: "EMERALD"
 
     Slot: 20
 
   MoneyList:
-
-    Display: "{language:Settings_Custom.MoneyList.Display}"
-
+ 
     ActionList:
       - "GUI:REWARDS"
-
-    Lore: "{language:Settings_Custom.MoneyList.Lore}"
-
+ 
     Material: "BOOK"
 
     Slot: 24
 
   Back:
-
-    Display: "{language:Settings_Custom.Back.Display}"
-
+ 
     ActionList:
       - "GUI:MAIN"
-
-    Lore: "{language:Settings_Custom.Back.Lore}"
-
+ 
     Material: "name;Mhf_ArrowLeft"
 
     Slot: 39

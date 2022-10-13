@@ -17,10 +17,7 @@
 # Join our Discord -> https://dcto.mc-plugins.org
 # Visit out Website -> https://mc-plugins.org
 #
-
-#Name of the GUI 
-Name: "{language:Name}"
- 
+  
 #Size of the GUI
 Size: 6
 
@@ -45,16 +42,12 @@ Custom:
     - "Info"
 
   Info:
-
-    Display: "{language:Custom.Info.Display}"
-
+ 
     ActionList:
       - "NONE"
 
     Material: "BEACON"
-    
-    Lore: "{language:Custom.Info.Lore}"
-
+ 
     Slot: 4
 
 #Placeholders of the GUI

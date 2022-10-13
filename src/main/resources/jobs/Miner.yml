@@ -74,30 +74,64 @@ LEVELS:
  
   1:
 
-    Money: 0
-    Icon: "COAL"
+    Money: 0 
+    Icon: "COAL" 
     Need: 0
     
   2:
 
-    Money: 250
-    Need: 150
-    Icon: "PAPER"
+    Money: 250 
+    Icon: "PAPER" 
+    Need: 150 
     EarnMore: 0.15
     
   3:
 
-    Money: 500
-    Icon: "PAPER"
-    Need: 500
+    Money: 500 
+    Icon: "PAPER" 
+    Need: 500 
     EarnMore: 0.25
     
   4:
 
-    Money: 1000
-    Icon: "EMERALD"
-    Need: 550
+    Money: 1000 
+    Icon: "PAPER" 
+    Need: 550 
     EarnMore: 0.30
 
-  
-  
+  5:
+
+    Money: 2000 
+    Icon: "PAPER" 
+    Need: 1000 
+    EarnMore: 0.30
+    
+  6:
+
+    Money: 2000 
+    Icon: "PAPER" 
+    Need: 2000 
+    EarnMore: 0.30
+    
+  7:
+
+    Money: 3000 
+    Icon: "PAPER" 
+    Need: 3000 
+    EarnMore: 0.30
+    
+  8:
+
+    Money: 4000 
+    Icon: "PAPER" 
+    Need: 8000 
+    EarnMore: 0.30
+    
+  9:
+
+    Money: 5000 
+    Icon: "IRON_PICKAXE" 
+    Need: 10000 
+    EarnMore: 0.30  
+    
+    PlayNBSSong: "plugins/UltimateJobs/addons/songs/Itsmylife.nbs"

@@ -16,13 +16,13 @@ public class PointsSub extends SubCommand {
 	@Override
 	public String getName(UUID UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + UUID);
-		return jb.getLanguage().getStringFromLanguage(UUID, "Commands.Points.Usage");
+		return jb.getLanguage().getMessage("Commands.Points.Usage");
 	}
 
 	@Override
 	public String getDescription(UUID UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + UUID);
-		return jb.getLanguage().getStringFromLanguage(UUID, "Commands.Points.Description");
+		return jb.getLanguage().getMessage("Commands.Points.Description");
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class PointsSub extends SubCommand {
 
 			if (plugin.getPlayerAPI().getUUIDByName(pl.toUpperCase()) == null) {
 				plugin.getAPI().playSound("COMMAND_PLAYER_NOT_FOUND", player);
-				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_points_not_found")
+				player.sendMessage(jb.getLanguage().getMessage("command_points_not_found")
 						.replaceAll("<name>", args[1]));
 				return;
 			} else {
@@ -44,7 +44,7 @@ public class PointsSub extends SubCommand {
 				plugin.getAPI().playSound("COMMAND_POINTS_OTHER_SUCCES", player);
 
 				double points = plugin.getPlayerAPI().getPoints(uuid);
-				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_points_other")
+				player.sendMessage(jb.getLanguage().getMessage("command_points_other")
 						.replaceAll("<points>", plugin.getAPI().Format(points)).replaceAll("<name>", args[1]));
 
 				return;
@@ -52,12 +52,12 @@ public class PointsSub extends SubCommand {
 			}
 		} else if (args.length == 1) {
 			plugin.getAPI().playSound("COMMAND_POINTS_SELF_SUCCES", player);
-			player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_points_self")
+			player.sendMessage(jb.getLanguage().getMessage("command_points_self")
 					.replaceAll("<points>", plugin.getAPI().Format(jb.getPoints())));
 			return;
 		} else {
 			plugin.getAPI().playSound("COMMAND_USAGE", player);
-			player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_usage").replaceAll("<usage>",
+			player.sendMessage(jb.getLanguage().getMessage("command_usage").replaceAll("<usage>",
 					getUsage(UUID)));
 		}
 	}
@@ -80,7 +80,7 @@ public class PointsSub extends SubCommand {
 	@Override
 	public String getUsage(UUID UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + UUID);
-		return jb.getLanguage().getStringFromLanguage(UUID, "Commands.Points.UsageMessage");
+		return jb.getLanguage().getMessage("Commands.Points.UsageMessage");
 	}
 
 }

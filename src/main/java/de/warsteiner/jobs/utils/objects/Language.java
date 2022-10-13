@@ -1,123 +1,133 @@
 package de.warsteiner.jobs.utils.objects;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.warsteiner.jobs.UltimateJobs;
- 
+
 public class Language {
-	
+
 	private String name;
-	private YamlConfiguration cfg;
 	private File file;
 	private String id;
 	private String icon;
 	private String display;
 	private int data;
-	
-	public Language(String name, YamlConfiguration cfg, File file, String id, String icon, String display, int data)  {
+
+	private HashMap<String, String> dm;
+	private HashMap<String, String> gm;
+	private HashMap<String, List<String>> gl;
+	private HashMap<String, List<String>> dl;
+	private HashMap<String, String> js;
+	private HashMap<String, List<String>> jl;
+
+	public Language(String name, File file, String id, String icon, String display, int data,
+			HashMap<String, String> dm, HashMap<String, List<String>> dl, HashMap<String, String> gm,
+			HashMap<String, List<String>> gl, HashMap<String, String> js,
+			HashMap<String, List<String>> jl) {
 		this.name = name;
-		this.cfg = cfg;
 		this.id = id;
 		this.file = file;
 		this.icon = icon;
 		this.display = display;
 		this.data = data;
+
+		this.dm = dm;
+		this.dl = dl;
+		this.gm = gm;
+		this.gl = gl;
+		this.js = js;
+		this.jl = jl;
 	}
 	
+	public String getPrefix() {
+		return dm.get("prefix");
+	}
+	
+
+	public String getGUIMessage(String path) {
+		if (!this.gm.containsKey(path)) {
+			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to get String " + path
+					+ " from language " + this.name + "!");
+			return null;
+		}
+		return UltimateJobs.getPlugin().getPluginManager().toHex(this.gm.get(path).replaceAll("<prefix>", ""+getPrefix()));
+	}
+
+	public List<String> getGUIList(String path) {
+		if (!this.gl.containsKey(path)) {
+			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to get Stringlist " + path
+					+ " from language " + this.name + "!");
+			return null;
+		}
+		return this.gl.get(path);
+	}
+
+	public String getJobMessage(String path) {
+		if (!this.js.containsKey(path)) {
+			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to get String " + path
+					+ " from language " + this.name + "!");
+			return null;
+		}
+		return UltimateJobs.getPlugin().getPluginManager().toHex(this.js.get(path).replaceAll("<prefix>", ""+getPrefix()));
+	}
+	
+	public List<String> getJobList(String path) {
+		if (!this.jl.containsKey(path)) {
+			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to get Stringlist " + path
+					+ " from language " + this.name + "!");
+			return null;
+		}
+		return this.jl.get(path);
+	}
+	
+	public HashMap<String, String> getMessageContentOfJobs() {
+		return this.js;
+	}
+	
+	public String getMessage(String path) {
+		if (!this.dm.containsKey(path)) {
+			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to get String " + path
+					+ " from language " + this.name + "!");
+			return null;
+		}
+		return UltimateJobs.getPlugin().getPluginManager().toHex(this.dm.get(path).replaceAll("<prefix>", ""+getPrefix()));
+	}
+
+	public List<String> getList(String path) {
+		if (!this.dl.containsKey(path)) {
+			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to get Stringlist " + path
+					+ " from language " + this.name + "!");
+			return null;
+		}
+		return this.dl.get(path);
+	}
+
 	public int getModelData() {
 		return data;
 	}
-	
+
 	public String getDisplay() {
 		return display;
 	}
-	
+
 	public String getIcon() {
 		return icon;
 	}
- 	
+
 	public String getID() {
 		return id;
 	}
-	
+
 	public File getFile() {
 		return file;
 	}
 
-	public YamlConfiguration getConfig() {
-		return cfg;
-	}
-	
-
-	public String getSimpleElement(UUID UUID, String path) {  
-		if(cfg.getString(path) == null) {
-			Bukkit.getConsoleSender().sendMessage("§4Missing Element from Path: "+path+" in Config "+name+" located in "+getFile().getPath());
-		}
-		return UltimateJobs.getPlugin().getPluginManager().toHex(cfg.getString(path)).replaceAll("<prefix>", getPrefix(UUID)).replaceAll("&", "§");
-
-	}
-
-	public String getElementFromCustomPath(UUID UUID, String what) {
- 
-		String found = null;
-
-		if (what.contains("}")) {
-			String[] got = what.split(":");
-
-			String path = got[1].replaceAll("}", " ").replaceAll(" ", "");
-
-			if (cfg.getString(path) == null) {
-				found = what;
-			} else {
-				found = cfg.getString(path);
-			}
-		} else {
-			found = what;
-		}
-		return UltimateJobs.getPlugin().getPluginManager().toHex(found).replaceAll("<prefix>", getPrefix(UUID)).replaceAll("&", "§");
-
-	}
-
-	public List<String> getCustomListedElementsFromPath(UUID UUID, String what) {
- 
-		List<String> found = null;
-
-		if (what.contains("}")) {
-			String[] got = what.split(":");
-
-			String path = got[1].replaceAll("}", " ").replaceAll(" ", "");
-
-			if (cfg.getStringList(path) == null) {
-				found = null;
-			} else {
-				found =cfg.getStringList(path);
-			}
-		} else {
-			found = null;
-		}
-		return found;
-
-	}
-
-	public List<String> getSimpleListedElements(UUID UUID, String path) {
- 
-		return cfg.getStringList(path);
-
-	}
-
-	public String getPrefix(UUID UUID) { 
-		String prefix = cfg.getString("prefix");
-		return UltimateJobs.getPlugin().getPluginManager().toHex(prefix).replaceAll("&", "§");
-
-	}
-	
 	public String getName() {
 		return name;
 	}
-	
+
 }

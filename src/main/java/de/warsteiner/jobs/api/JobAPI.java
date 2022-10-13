@@ -5,6 +5,7 @@ import de.warsteiner.jobs.api.plugins.WorldGuardManager;
 import de.warsteiner.jobs.manager.PluginManager;
 import de.warsteiner.jobs.utils.BossBarHandler;
 import de.warsteiner.jobs.utils.JobAction;
+import de.warsteiner.jobs.utils.objects.DataMode;
 import de.warsteiner.jobs.utils.objects.JobID;
 import de.warsteiner.jobs.utils.objects.JobLevel;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
@@ -14,6 +15,7 @@ import de.warsteiner.jobs.utils.objects.PluginColor;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -176,8 +178,10 @@ public class JobAPI {
 		if (isJobFromDisplayID(id, "" + player.getUniqueId()) != null) {
 			return true;
 		}
-		player.sendMessage(jb.getLanguage().getStringFromLanguage(player.getUniqueId(), "job_not_found")
-				.replaceAll("<job>", arg.toLowerCase()));
+		if (jb.getLanguage().getMessage("job_not_found") != null) {
+			player.sendMessage(jb.getLanguage().getMessage("job_not_found").replaceAll("<job>", arg.toLowerCase()));
+		}
+
 		return false;
 	}
 
@@ -190,8 +194,9 @@ public class JobAPI {
 		if (isJobFromDisplayID(id, "" + player.getUniqueId()) != null) {
 			return isJobFromDisplayID(id, "" + player.getUniqueId());
 		}
-		player.sendMessage(jb.getLanguage().getStringFromLanguage(player.getUniqueId(), "job_not_found")
-				.replaceAll("<job>", arg.toLowerCase()));
+		if (jb.getLanguage().getMessage("job_not_found") != null) {
+			player.sendMessage(jb.getLanguage().getMessage("job_not_found").replaceAll("<job>", arg.toLowerCase()));
+		}
 		return null;
 	}
 
@@ -205,8 +210,9 @@ public class JobAPI {
 		if (isJobFromDisplayID(id, "" + player.getUniqueId()) != null) {
 			return isJobFromDisplayID(id, "" + player.getUniqueId());
 		}
-		player.sendMessage(jb.getLanguage().getStringFromLanguage(player.getUniqueId(), "job_not_found")
-				.replaceAll("<job>", arg.toLowerCase()));
+		if (jb.getLanguage().getMessage("job_not_found") != null) {
+			player.sendMessage(jb.getLanguage().getMessage("job_not_found").replaceAll("<job>", arg.toLowerCase()));
+		}
 		return null;
 	}
 
@@ -220,7 +226,7 @@ public class JobAPI {
 				UUID UUID = p.getUniqueId();
 				double all_exp = pl.getStatsOf(job.getConfigID()).getExp();
 				int level = pl.getStatsOf(job.getConfigID()).getLevel();
-				String disofid = job.getDisplayOf(block, "" + UUID, ac);
+				String disofid = job.getDisplayOf(block, "" + UUID);
 				double need = plugin.getLevelAPI().getJobNeedExp(job, pl);
 
 				String prefix = null;
@@ -230,14 +236,15 @@ public class JobAPI {
 				} else {
 					prefix = "MaxEarningsReached";
 				}
-				String prt = pl.getLanguage().getStringFromLanguage(UUID, "prefix");
+				String prt = pl.getLanguage().getMessage("prefix");
 				if (prefix != null) {
 
 					Map<String, String> replacer = Map.ofEntries(entry("<amount>", "" + amount), entry("<prefix>", prt),
-							entry("<job>", job.getDisplay("" + UUID)), entry("<exp>", Format(all_exp)),
+							entry("<job>", job.getDisplayOfJob("" + UUID)), entry("<exp>", Format(all_exp)),
 							entry("<exp_gained>", Format(ep)),
 							entry("<exp_required>", Format(plugin.getLevelAPI().getJobNeedExp(job, pl))),
 							entry("<level_name>", job.getLevelDisplay(level, "" + UUID)),
+							entry("<rank_name>", job.getLevelRankDisplay(level, "" + UUID)),
 							entry("<level_int>", "" + level), entry("<id>", disofid),
 							entry("<action>", ac.toString().toLowerCase()), entry("<money>", Format(reward)));
 
@@ -250,25 +257,24 @@ public class JobAPI {
 								plugin.getLevelAPI().canLevelMore("" + UUID, job, level), need);
 						BarColor color = job.getBarColor();
 
-						String message = up.formatText(
-								pl.getLanguage().getStringFromLanguage(UUID, prefix + ".BossBar"), replacer, p);
+						String message = up.formatText(pl.getLanguage().getMessage(prefix + ".BossBar"), replacer, p);
 
-						if (!BossBarHandler.exist(p.getName())) {
-							BossBarHandler.createBar(p, message, color, p.getName(), use);
-						} else {
-							BossBarHandler.renameBossBar(message, p.getName());
-							BossBarHandler.recolorBossBar(color, p.getName());
-							BossBarHandler.updateProgress(use, p.getName());
+						if (message != null) {
+							if (!BossBarHandler.exist(p.getName())) {
+								BossBarHandler.createBar(p, message, color, p.getName(), use);
+							} else {
+								BossBarHandler.renameBossBar(message, p.getName());
+								BossBarHandler.recolorBossBar(color, p.getName());
+								BossBarHandler.updateProgress(use, p.getName());
+							}
 						}
 					}
 					if (plugin.getFileManager().getConfig().getBoolean(prefix + ".Enable_Message")) {
-						String message = up.formatText(
-								pl.getLanguage().getStringFromLanguage(UUID, prefix + ".Message"), replacer, p);
+						String message = up.formatText(pl.getLanguage().getMessage(prefix + ".Message"), replacer, p);
 						p.sendMessage(message);
 					}
 					if (plugin.getFileManager().getConfig().getBoolean(prefix + ".Enabled_Actionbar")) {
-						String message = up.formatText(
-								pl.getLanguage().getStringFromLanguage(UUID, prefix + ".Actionbar"), replacer, p);
+						String message = up.formatText(pl.getLanguage().getMessage(prefix + ".Actionbar"), replacer, p);
 						p.spigot().sendMessage(ChatMessageType.ACTION_BAR, (BaseComponent) new TextComponent(message));
 					}
 				}
@@ -280,9 +286,6 @@ public class JobAPI {
 	public void loadJobs(Logger logger) {
 		File dataFolder = new File(plugin.getFileManager().getConfig().getString("LoadJobsFrom"));
 		File[] files = dataFolder.listFiles();
-		
-		 HashMap<String, Language> languages = plugin.getLanguageAPI().getLanguages();
-			
 
 		plugin.getLoaded().clear();
 		plugin.getJobCache().clear();
@@ -291,24 +294,25 @@ public class JobAPI {
 			for (int i = 0; i < files.length; i++) {
 				String name = files[i].getName();
 				File file = files[i];
-				Bukkit.getConsoleSender().sendMessage("§aChecking File " + name + "...");
-				if (file.isFile()) { // cf.getDouble("LEVELS." + i + ".EarnMore"); cf.getDouble("MaxEarnings")
+				Bukkit.getConsoleSender()
+						.sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix() + "Checking Job File " + name + "...");
+				if (file.isFile()) {
 					YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 
+					Collection<String> fails = new ArrayList<String>();
+
 					if (!cfg.contains("ID")) {
-						Bukkit.getConsoleSender()
-								.sendMessage(PluginColor.FAILED.getPrefix() + "Failed to get Config Option *ID* for " + name);
-						return;
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.JOB_RELATED_ERROR.getPrefix() + "Failed to get String ID from Job " + name + "!");
+						fails.add("ID");
 					}
 
 					String id = cfg.getString("ID").toUpperCase();
 
-					Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded ID of Job " + id + "...");
-
 					if (!cfg.contains("Action")) {
-						Bukkit.getConsoleSender()
-								.sendMessage(PluginColor.FAILED.getPrefix() + "Failed to get Config Option *Action* for " + id);
-						return;
+						Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+								+ "Failed to get Stringlist Action from Job " + name + "!");
+						fails.add("Action");
 					}
 
 					List<String> actions = cfg.getStringList("Action");
@@ -316,99 +320,82 @@ public class JobAPI {
 					ArrayList<JobAction> realactions = new ArrayList<JobAction>();
 
 					actions.forEach((ac) -> {
-
-						if (JobAction.valueOf(ac) == null) {
-							Bukkit.getConsoleSender()
-									.sendMessage(PluginColor.FAILED.getPrefix() + "Failed to get Action *" + ac + "* from " + id);
-							return;
-						} else {
+						
+						try {
 							realactions.add(JobAction.valueOf(ac));
 
-							Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading Job, adding Action "
-									+ JobAction.valueOf(ac).toString());
-
+							Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix()
+									+ "Loading Job, adding Action " + JobAction.valueOf(ac).toString());
+						} catch (IllegalArgumentException ex) {
+							Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+									+ "Failed to get real Action from " + ac + " of Job " + name + "!");
+							fails.add("ActionNotFound");
 						}
-
+ 
 					});
 
 					if (!cfg.contains("Material")) {
-						Bukkit.getConsoleSender()
-								.sendMessage(PluginColor.FAILED.getPrefix() + "Failed to get Config Option *Material* for " + id);
-						return;
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.JOB_RELATED_ERROR.getPrefix() + "Failed to get String Material from Job " + name + "!");
+						fails.add("Material");
 					}
 
 					String icon = cfg.getString("Material");
-
-					ItemStack item = plugin.getItemAPI().createItem("Warsteiner37", icon);
-
-					Bukkit.getConsoleSender()
-							.sendMessage(PluginColor.INFO.getPrefix() + "Loaded Job Icon " + icon + " for " + id + "...");
-
+ 
 					String model = null;
 
 					if (!cfg.contains("CustomModelData")) {
 						Bukkit.getConsoleSender().sendMessage(
-								PluginColor.WARNING.getPrefix() + "Loading " + id + " without Item CustomModelData..."); 
+								PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading " + id + " without Item CustomModelData...");
 					} else {
 						model = cfg.getString("CustomModelData");
 
-						Bukkit.getConsoleSender().sendMessage(
-								PluginColor.INFO.getPrefix() + "Loaded Job Item CustomModelData " + model + " for " + id + "...");
+						Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix()
+								+ "Loaded Job Item CustomModelData " + model + " for " + id + "...");
 					}
 
 					if (!cfg.contains("Slot")) {
-						Bukkit.getConsoleSender()
-								.sendMessage(PluginColor.FAILED.getPrefix() + "Failed to get Config Option *Slot* for " + id);
-						return;
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.JOB_RELATED_ERROR.getPrefix() + "Failed to get int Slot from Job " + name + "!");
+						fails.add("Slot");
 					}
 
 					int slot = cfg.getInt("Slot");
 
-					Bukkit.getConsoleSender()
-							.sendMessage(PluginColor.INFO.getPrefix() + "Loaded Job Slot " + slot + " for " + id + "...");
-
 					if (!cfg.contains("Price")) {
-						Bukkit.getConsoleSender()
-								.sendMessage(PluginColor.FAILED.getPrefix() + "Failed to get Config Option *Price* for " + id);
-						return;
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.JOB_RELATED_ERROR.getPrefix() + "Failed to get double Price from Job " + name + "!");
+						fails.add("Price");
 					}
 
 					double price = cfg.getDouble("Price");
 
-					Bukkit.getConsoleSender()
-							.sendMessage(PluginColor.INFO.getPrefix() + "Loaded Job Price " + price + " for " + id + "...");
-
 					String permission = null;
-					String permlore = null;
-					String permmessage = null;
 
 					if (!cfg.contains("Permission")) {
-						Bukkit.getConsoleSender()
-								.sendMessage(PluginColor.WARNING.getPrefix() + "Loading " + id + " without Permission..."); 
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading " + id + " without Permission...");
 					} else {
 						permission = cfg.getString("Permission");
-						permlore = cfg.getString("PermLore");
-						permmessage = cfg.getString("PermMessage");
-
-						Bukkit.getConsoleSender().sendMessage(
-								PluginColor.INFO.getPrefix() + "Loaded Job with Permission " + permission + " for " + id + "...");
+						Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix()
+								+ "Loaded Job with Permission " + permission + " for " + id + "...");
 					}
 
 					if (!cfg.contains("Worlds")) {
-						Bukkit.getConsoleSender()
-								.sendMessage(PluginColor.FAILED.getPrefix() + "Failed to get Config Option *Worlds* for " + id);
-						return;
+						Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+								+ "Failed to get Stringlist Worlds from Job " + name + "!");
+						fails.add("Worlds");
 					}
 
 					List<String> worlds = cfg.getStringList("Worlds");
 
-					Bukkit.getConsoleSender().sendMessage(
-							PluginColor.INFO.getPrefix() + "Loaded Job Worlds " + worlds.toString() + " for " + id + "...");
+					Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix() + "Loaded Job Worlds "
+							+ worlds.toString() + " for " + id + "...");
 
 					if (!cfg.contains("ColorOfBossBar")) {
-						Bukkit.getConsoleSender().sendMessage(
-								PluginColor.FAILED.getPrefix() + "Failed to get Config Option *ColorOfBossBar* for " + id);
-						return;
+						Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+								+ "Failed to get String ColorOfBossBar from Job " + name + "!");
+						fails.add("ColorOfBossBar");
 					}
 
 					String bar = cfg.getString("ColorOfBossBar").toUpperCase();
@@ -417,283 +404,290 @@ public class JobAPI {
 					try {
 						color = BarColor.valueOf(bar.toUpperCase());
 					} catch (IllegalArgumentException ex) {
-						Bukkit.getConsoleSender()
-						.sendMessage(PluginColor.FAILED.getPrefix() + "Failed to get real BossBarColor for " + id);
-						return;
+						Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+								+ "Failed to get real BarColor from " + bar + " of Job " + name + "!");
+						fails.add("BarColor");
 					}
-					 
-					Bukkit.getConsoleSender()
-							.sendMessage(PluginColor.INFO.getPrefix() + "Loaded Job BossBarColor " + bar + " for " + id + "...");
 
 					String bypassperm = null;
 
 					if (!cfg.contains("BypassPermission")) {
-						Bukkit.getConsoleSender()
-								.sendMessage(PluginColor.WARNING.getPrefix() + "Loading " + id + " without Bypass Permission..."); 
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading " + id + " without Bypass Permission...");
 					} else {
 						bypassperm = cfg.getString("BypassPermission");
 
-						Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Job with Bypass Permission "
-								+ permission + " for " + id + "...");
+						Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix()
+								+ "Loaded Job with Bypass Permission " + permission + " for " + id + "...");
 					}
 
 					double max = 0;
 
 					if (!cfg.contains("MaxEarnings")) {
-						Bukkit.getConsoleSender()
-								.sendMessage(PluginColor.WARNING.getPrefix() + "Loading " + id + " without max Earnings..."); 
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading " + id + " without max Earnings...");
 					} else {
 						max = cfg.getDouble("MaxEarnings");
 
-						Bukkit.getConsoleSender().sendMessage(
-								PluginColor.INFO.getPrefix() + "Loaded Job with max Earnings " + max + " for " + id + "...");
+						Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix()
+								+ "Loaded Job with max Earnings " + max + " for " + id + "...");
 					}
 
 					List<String> customs = null;
 
 					if (!cfg.contains("Items")) {
-						Bukkit.getConsoleSender()
-								.sendMessage(PluginColor.WARNING.getPrefix() + "Loading " + id + " without Required Items..."); 
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading " + id + " without Required Items...");
 					} else {
 						customs = cfg.getStringList("Items");
 
-						Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Job withRequired Items "
-								+ customs.toString() + " for " + id + "...");
+						Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix()
+								+ "Loaded Job withRequired Items " + customs.toString() + " for " + id + "...");
 					}
-					
+
 					HashMap<Integer, JobLevel> levels = new HashMap<Integer, JobLevel>();
-					
+
 					for (int i2 = 1; i2 != 999; i2++) {
-						 
-						if(cfg.contains("LEVELS."+i2+".Icon")) {
-							
-							Bukkit.getConsoleSender()
-							.sendMessage(PluginColor.WARNING.getPrefix() + "Checking "+id+" for Level "+i2+"...");
-							
-							String level_icon = cfg.getString("LEVELS."+i2+".Icon");
-							
+
+						if (cfg.contains("LEVELS." + i2 + ".Icon")) {
+
+							Bukkit.getConsoleSender().sendMessage(
+									PluginColor.JOB_RELATED_WARNING.getPrefix() + "Checking " + id + " for Level " + i2 + "...");
+
+							String level_icon = cfg.getString("LEVELS." + i2 + ".Icon");
+
 							double money = 0;
-							
-							if (!cfg.contains("LEVELS."+i2+".Money")) {
-								Bukkit.getConsoleSender()
-										.sendMessage(PluginColor.WARNING.getPrefix() + "Loading Level "+i2+" for "+id+" without Vault Reward..."); 
+
+							if (!cfg.contains("LEVELS." + i2 + ".Money")) {
+								Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading Level "
+										+ i2 + " for " + id + " without Vault Reward...");
 							} else {
-								money = cfg.getDouble("LEVELS."+i2+".Icon");
+								money = cfg.getDouble("LEVELS." + i2 + ".Icon");
 
-								Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Vault Reward for Level "+i2+" in "+id);
+								Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix()
+										+ "Loaded Vault Reward for Level " + i2 + " in " + id);
 							}
-							
 
-							if (!cfg.contains("LEVELS."+i2+".Need")) {
-								Bukkit.getConsoleSender().sendMessage(
-										PluginColor.FAILED.getPrefix() + "Failed to get Config Option for Level "+i2+" *Need* for Job " + id);
-								return;
+							if (!cfg.contains("LEVELS." + i2 + ".Need")) {
+								Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+										+ "Failed to get double Need for Level " + i2 + " from Job " + name + "!");
+								fails.add("MissingNeed");
 							}
-							
-							double need = cfg.getDouble("LEVELS."+i2+".Need");
-							
-							
+
+							double need = cfg.getDouble("LEVELS." + i2 + ".Need");
+
 							double multi = 0;
-							
-							if (!cfg.contains("LEVELS."+i2+".EarnMore")) {
-								Bukkit.getConsoleSender()
-										.sendMessage(PluginColor.WARNING.getPrefix() + "Loading Level "+i2+" for "+id+" without Level Multiplier..."); 
-							} else {
-								multi = cfg.getDouble("LEVELS."+i2+".EarnMore");
 
-								Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Reward Multiplier for Level "+i2+" in "+id);
+							if (!cfg.contains("LEVELS." + i2 + ".EarnMore")) {
+								Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading Level "
+										+ i2 + " for " + id + " without Level Multiplier...");
+							} else {
+								multi = cfg.getDouble("LEVELS." + i2 + ".EarnMore");
+
+								Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix()
+										+ "Loaded Reward Multiplier for Level " + i2 + " in " + id);
 							}
-							
+
 							List<String> commands = null;
-							
-							if (!cfg.contains("LEVELS."+i2+".Commands")) {
-								Bukkit.getConsoleSender()
-										.sendMessage(PluginColor.WARNING.getPrefix() + "Loading Level "+i2+" for "+id+" without Level Commands..."); 
-							} else {
-								commands = cfg.getStringList("LEVELS."+i2+".Commands");
 
-								Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Level Commands for Level "+i2+" in "+id);
+							if (!cfg.contains("LEVELS." + i2 + ".Commands")) {
+								Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading Level "
+										+ i2 + " for " + id + " without Level Commands...");
+							} else {
+								commands = cfg.getStringList("LEVELS." + i2 + ".Commands");
+
+								Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix()
+										+ "Loaded Level Commands for Level " + i2 + " in " + id);
 							}
-							
+
 							String md = null;
-							
-							if (!cfg.contains("LEVELS."+i2+".CustomModelData")) {
-								Bukkit.getConsoleSender()
-										.sendMessage(PluginColor.WARNING.getPrefix() + "Loading Level "+i2+" for "+id+" without Icon CustomModelData..."); 
-							} else {
-								md = cfg.getString("LEVELS."+i2+".CustomModelData");
 
-								Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Level Icon CustomModelData for Level "+i2+" in "+id);
+							if (!cfg.contains("LEVELS." + i2 + ".CustomModelData")) {
+								Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading Level "
+										+ i2 + " for " + id + " without Icon CustomModelData...");
+							} else {
+								md = cfg.getString("LEVELS." + i2 + ".CustomModelData");
+
+								Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix()
+										+ "Loaded Level Icon CustomModelData for Level " + i2 + " in " + id);
 							}
 							
-							//public JobLevel(int level, double ep, double mu, ArrayList<String> commands, double reward, y String icon, String md) {
-							JobLevel joblevel = new JobLevel(i2, need, multi, commands, money, level_icon, md);
-							
+							String song = null;
+
+							if (!cfg.contains("LEVELS." + i2 + ".PlayNBSSong")) {
+								Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading Level "
+										+ i2 + " for " + id + " without NBS Song...");
+							} else {
+								song = cfg.getString("LEVELS." + i2 + ".PlayNBSSong");
+
+								Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix()
+										+ "Loaded Level Song "+song+" for Level " + i2 + " in " + id);
+							}
+ 
+							JobLevel joblevel = new JobLevel(i2, need, multi, commands, money, level_icon, md, song);
+
 							levels.put(i2, joblevel);
 						}
-						
-					}
-					
-					HashMap<JobAction, HashMap<String, JobID>> ids = new HashMap<JobAction, HashMap<String, JobID>>();
-					
-					realactions.forEach((ac) -> {
-						
-						List<String> items = cfg.getStringList("IDS."+ac.toString()+".List");
-						
-						HashMap<String, JobID> current = new HashMap<String, JobID>();
-						 
-						items.forEach((notreal) -> {
-							
-							if(!cfg.contains("IDS."+ac.toString()+"."+notreal+".Chance")) {
-								Bukkit.getConsoleSender()
-								.sendMessage(PluginColor.WARNING.getPrefix() + "Failed to find Option *Chance* from ID "+notreal+" in Job "+id); 
-								return;
-							} else {
-								
-								int chance = cfg.getInt("IDS."+ac.toString()+"."+notreal+".Chance");
-							
-								if(!cfg.contains("IDS."+ac.toString()+"."+notreal+".ID")) {
-									Bukkit.getConsoleSender()
-									.sendMessage(PluginColor.WARNING.getPrefix() + "Failed to find Option *Real ID* from ID "+notreal+" in Job "+id); 
-									return;
-								}
-								
-								String blockid = cfg.getString("IDS."+ac.toString()+"."+notreal+".ID");
-								
-								if(!cfg.contains("IDS."+ac.toString()+"."+notreal+".Money")) {
-									Bukkit.getConsoleSender()
-									.sendMessage(PluginColor.WARNING.getPrefix() + "Failed to find Option *Money* from ID "+notreal+" in Job "+id); 
-									return;
-								}
-								
-								double money = cfg.getDouble("IDS."+ac.toString()+"."+notreal+".Money");
-								
-								if(!cfg.contains("IDS."+ac.toString()+"."+notreal+".Exp")) {
-									Bukkit.getConsoleSender()
-									.sendMessage(PluginColor.WARNING.getPrefix() + "Failed to find Option *Exp* from ID "+notreal+" in Job "+id); 
-									return;
-								}
-								
-								double exp = cfg.getDouble("IDS."+ac.toString()+"."+notreal+".Exp");
-								
-								if(!cfg.contains("IDS."+ac.toString()+"."+notreal+".Points")) {
-									Bukkit.getConsoleSender()
-									.sendMessage(PluginColor.WARNING.getPrefix() + "Failed to find Option *Points* from ID "+notreal+" in Job "+id); 
-									return;
-								}
-								
-								double points = cfg.getDouble("IDS."+ac.toString()+"."+notreal+".Points");
-								
-								
-								List<String> commandlist = null;
-								
-								if (!cfg.contains("IDS."+ac.toString()+"."+notreal+".Commands")) {
-									Bukkit.getConsoleSender()
-											.sendMessage(PluginColor.WARNING.getPrefix() + "Loading ID "+notreal+" for "+id+" without Commands..."); 
-								} else {
-									commandlist = cfg.getStringList("IDS."+ac.toString()+"."+notreal+".Commands");
 
-									Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading ID "+notreal+" for "+id+" with Commands...");
-								}
-								
-								if(!cfg.contains("IDS."+ac.toString()+"."+notreal+".RewardsGUI.Icon")) {
+					}
+
+					HashMap<JobAction, HashMap<String, JobID>> ids = new HashMap<JobAction, HashMap<String, JobID>>();
+
+					realactions.forEach((ac) -> {
+
+						List<String> items = cfg.getStringList("IDS." + ac.toString() + ".List");
+
+						HashMap<String, JobID> current = new HashMap<String, JobID>();
+
+						items.forEach((notreal) -> {
+
+							if (!cfg.contains("IDS." + ac.toString() + "." + notreal + ".Chance")) {
+								Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+										+ "Failed to get double Chance from ID " + notreal + " for Job " + name + "!");
+								fails.add("ChanceOf." + notreal);
+							} else {
+
+								int chance = cfg.getInt("IDS." + ac.toString() + "." + notreal + ".Chance");
+
+								if (!cfg.contains("IDS." + ac.toString() + "." + notreal + ".ID")) {
 									Bukkit.getConsoleSender()
-									.sendMessage(PluginColor.WARNING.getPrefix() + "Failed to find Option *RewardsGUI.Icon* from ID "+notreal+" in Job "+id); 
-									return;
+											.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+													+ "Failed to get String ID (real id of the item) from ID " + notreal
+													+ " for Job " + name + "!");
+									fails.add("ID." + notreal);
 								}
-								
-								String iconreward = cfg.getString("IDS."+ac.toString()+"."+notreal+".RewardsGUI.Icon");
-								
-								
-								String iconmodeldata = null;
-								
-								if(!cfg.contains("IDS."+ac.toString()+"."+notreal+".RewardsGUI.CustomModelData")) {
+
+								String blockid = cfg.getString("IDS." + ac.toString() + "." + notreal + ".ID");
+
+								if (!cfg.contains("IDS." + ac.toString() + "." + notreal + ".Money")) {
 									Bukkit.getConsoleSender()
-									.sendMessage(PluginColor.WARNING.getPrefix() + "Loading ID "+notreal+" for "+id+" without CustomModelData..."); 
+											.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+													+ "Failed to get double Money from ID " + notreal + " for Job "
+													+ name + "!");
+									fails.add("Money." + notreal);
+								}
+								  
+								double money = cfg.getDouble("IDS." + ac.toString() + "." + notreal + ".Money");
+
+								if (!cfg.contains("IDS." + ac.toString() + "." + notreal + ".Exp")) {
+									Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+											+ "Failed to get double Exp from ID " + notreal + " for Job " + name + "!");
+									fails.add("Exp." + notreal);
+								}
+
+								double exp = cfg.getDouble("IDS." + ac.toString() + "." + notreal + ".Exp");
+
+								if (!cfg.contains("IDS." + ac.toString() + "." + notreal + ".Points")) {
+									Bukkit.getConsoleSender()
+											.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+													+ "Failed to get double Points from ID " + notreal + " for Job "
+													+ name + "!");
+									fails.add("Points." + notreal);
+								}
+
+								double points = cfg.getDouble("IDS." + ac.toString() + "." + notreal + ".Points");
+
+								List<String> commandlist = null;
+
+								if (!cfg.contains("IDS." + ac.toString() + "." + notreal + ".Commands")) {
+									Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix() + "Loading ID "
+											+ notreal + " for " + id + " without Commands...");
 								} else {
-									iconmodeldata = cfg.getString("IDS."+ac.toString()+"."+notreal+".RewardsGUI.Icon");
-									Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading ID "+notreal+" for "+id+" with CustomModelData...");
+									commandlist = cfg
+											.getStringList("IDS." + ac.toString() + "." + notreal + ".Commands");
+
+									Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix() + "Loading ID "
+											+ notreal + " for " + id + " with Commands...");
 								}
-								
-								HashMap<String, String> lang_display  = new HashMap<String, String>();
-							 
-								 HashMap<String, String> lang_rewards_display = new HashMap<String, String>();
-								 HashMap<String, ArrayList<String>> lang_rewards_lore = new HashMap<String,  ArrayList<String>>();
-								 
-							 
-								 languages.forEach((lang, tp) -> {
-									 
-									 YamlConfiguration lcfg = tp.getConfig();
-								
-									 if(!lcfg.contains("Jobs."+id+".IDS."+notreal+".Display")) {
-											Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.prefix+"§cFailed to find language option *Display* for item "+notreal+" for job "+id);
-											return;
-									 }
-									 
-									 lang_display.put(tp.getName(), lcfg.getString("Jobs."+id+".IDS."+notreal+".Display"));
-									 
-								 });
-								 
-								 //public JobID(String id, String real, ArrayList<String> commands, int chance, double reward, double exp, double points, String icon, String modeldata) {
-								JobID jobid = new JobID(notreal, blockid, commandlist, chance, money, exp, points, iconreward, iconmodeldata, lang_display, lang_rewards_display, lang_rewards_lore);
-								
+
+								if (!cfg.contains("IDS." + ac.toString() + "." + notreal + ".RewardsGUI.Icon")) {
+									Bukkit.getConsoleSender()
+											.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+													+ "Failed to get String RewardsGUI.Icon from ID " + notreal
+													+ " for Job " + name + "!");
+									fails.add("RewardsGUI.Icon." + notreal);
+								}
+
+								String iconreward = cfg
+										.getString("IDS." + ac.toString() + "." + notreal + ".RewardsGUI.Icon");
+
+								String iconmodeldata = null;
+
+								if (!cfg.contains(
+										"IDS." + ac.toString() + "." + notreal + ".RewardsGUI.CustomModelData")) {
+									Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
+											+ "Loading ID " + notreal + " for " + id + " without CustomModelData...");
+								} else {
+									iconmodeldata = cfg
+											.getString("IDS." + ac.toString() + "." + notreal + ".RewardsGUI.Icon");
+									Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_INFO.getPrefix() + "Loading ID "
+											+ notreal + " for " + id + " with CustomModelData...");
+								}
+
+								JobID jobid = new JobID(notreal, blockid, commandlist, chance, money, exp, points,
+										iconreward, iconmodeldata);
+
 								current.put(notreal, jobid);
 							}
-							
+
 						});
-						
+
 						ids.put(ac, current);
-						
+
 					});
-					
+
 					HashMap<String, Boolean> options = new HashMap<String, Boolean>();
-					HashMap<String, String> options_messages = new HashMap<String, String>();
-					
-					if(cfg.contains("CheckIfThereAreOtherCanesAbove")) {
-						
+
+					if (cfg.contains("CheckIfThereAreOtherCanesAbove")) {
+
 						boolean value = cfg.getBoolean("CheckIfThereAreOtherCanesAbove");
-						
+
 						options.put("CheckIfThereAreOtherCanesAbove", value);
-						
-					} else if(cfg.contains("GetMoneyOnlyWhenFullyGrown")) {
-						
+
+					} else if (cfg.contains("GetMoneyOnlyWhenFullyGrown")) {
+
 						boolean value = cfg.getBoolean("GetMoneyOnlyWhenFullyGrown");
-						
+
 						options.put("GetMoneyOnlyWhenFullyGrown", value);
-						
-					} else if(cfg.contains("CannotLeaveJob")) {
-						
+
+					} else if (cfg.contains("CannotLeaveJob")) {
+
 						boolean value = cfg.getBoolean("CannotLeaveJob");
-						
+
 						options.put("CannotLeaveJob", value);
-						options_messages.put("CannotLeaveJobMessage", cfg.getString("CannotLeaveJobMessage"));
 					}
- 
-					
+
 					ArrayList<String> quit = new ArrayList<String>();
 					ArrayList<String> join = new ArrayList<String>();
-					
-					if(cfg.contains("Commands.Quit")) {
-						quit = (ArrayList<String>)cfg.getStringList("Commands.Quit");
+
+					if (cfg.contains("Commands.Quit")) {
+						quit = (ArrayList<String>) cfg.getStringList("Commands.Quit");
 					}
-					
-					if(cfg.contains("Commands.Join")) {
+
+					if (cfg.contains("Commands.Join")) {
 						join = (ArrayList<String>) cfg.getStringList("Commands.Join");
 					}
 
-					Job job = new Job(id, realactions, icon, slot, price, permission, permlore, permmessage,
+					if(fails.size() == 0) {
+						Job job = new Job(id, realactions, icon, slot, price, permission,
 
-							worlds, model, color, levels, bypassperm, max, ids, customs,
-							
-							options, options_messages,
-							quit, join);
+								worlds, model, color, levels, bypassperm, max, ids, customs,
 
-					plugin.getLoaded().add(job.getConfigID());
-					plugin.getJobCache().put(job.getConfigID(), job);
-					Bukkit.getConsoleSender()
-							.sendMessage(PluginColor.INFO.prefix+"§aLoaded Job " + job.getConfigID() + " from File " + name + "!");
+								options, quit, join);
+
+						plugin.getLoaded().add(job.getConfigID());
+						plugin.getJobCache().put(job.getConfigID(), job);
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.JOB_LOADED.prefix + "§aLoaded Job " + job.getConfigID() + " from File " + name + "!");
+					} else {
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.JOB_RELATED_ERROR.prefix + "Failed to load Job "+name+" from file "+file+". Failed with "+fails.size()+" Issues.");
+						plugin.printFailed();
+					}
+
 				} else {
-					Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.prefix+"§cFound File in Jobs Folder which isnt a real Job! -> "+file);
+					Bukkit.getConsoleSender().sendMessage(
+							PluginColor.JOB_RELATED_ERROR.prefix + "§cFound File in Jobs Folder which isnt a real Job! -> " + file);
 				}
 			}
 		}
@@ -703,17 +697,14 @@ public class JobAPI {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 		if (player.hasPermission("ultimatejobs." + text) || player.hasPermission("ultimatejobs.admin.all"))
 			return true;
-		player.sendMessage(jb.getLanguage().getStringFromLanguage(player.getUniqueId(), "noperm"));
+		if (jb.getLanguage().getMessage("noperm") != null) {
+			player.sendMessage(jb.getLanguage().getMessage("noperm"));
+		}
 		return false;
 	}
 
 	public List<String> canGetJobWithSubOptions(Player player, Job job) {
 		String UUID = "" + player.getUniqueId();
-		// if (job.hasNotQuestCon() == true &&
-		// plugin.getPluginManager().isInstalled("NotQuests")
-		// && !plugin.getNotQuestManager().canHaveJob(player, job)) {
-		// return job.getNotQuestConLore(UUID);
-		// }
 
 		return null;
 	}

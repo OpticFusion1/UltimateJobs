@@ -59,7 +59,7 @@ public class ClickAtLanguageGUI implements Listener {
 				if (lang.getName().equalsIgnoreCase(
 						plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId()).getLanguage().getName())) {
 					player.sendMessage(
-							pp.getLanguage().getStringFromLanguage(player.getUniqueId(), "LanguageChoosenMessage"));
+							pp.getLanguage().getMessage("LanguageChoosenMessage"));
 					plugin.getAPI().playSound("LANGUAGE_ALREADY", player);
 				} else {
 
@@ -77,7 +77,7 @@ public class ClickAtLanguageGUI implements Listener {
 					plugin.getPlayerAPI().updateSettingData(pp.getUUIDAsString(), "LANG", lang.getName());
 					
 					player.sendMessage(
-							pp.getLanguage().getStringFromLanguage(player.getUniqueId(), "LanguageChangedMessage")
+							pp.getLanguage().getMessage("LanguageChangedMessage")
 									.replaceAll("<lang>", lang.getID().toLowerCase()));
 					plugin.getAPI().playSound("LANGUAGE_UPDATED", player);
 					plugin.getGUI().openLanguageMenu(player, UpdateTypes.REOPEN);

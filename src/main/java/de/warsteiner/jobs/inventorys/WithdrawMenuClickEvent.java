@@ -42,8 +42,8 @@ public class WithdrawMenuClickEvent implements Listener {
 		if (e.getCurrentItem().getItemMeta().getDisplayName() == null) {
 			return;
 		}
-		
-		if(!plugin.getPlayerAPI().existInCacheByUUID(""+e.getWhoClicked().getUniqueId())) {
+
+		if (!plugin.getPlayerAPI().existInCacheByUUID("" + e.getWhoClicked().getUniqueId())) {
 			e.getWhoClicked().sendMessage("§cError while executing the Jobs ClickEvent. (Player not found)");
 			return;
 		}
@@ -55,8 +55,6 @@ public class WithdrawMenuClickEvent implements Listener {
 
 		JobsPlayer jb = plugin.getPlayerAPI().getRealJobPlayer(p.getUniqueId());
 
-		YamlConfiguration lg = jb.getLanguage().getConfig();
-
 		String display = plugin.getPluginManager()
 				.toHex(e.getCurrentItem().getItemMeta().getDisplayName().replaceAll("&", "§"));
 		String title = plugin.getPluginManager().toHex(e.getView().getTitle().replaceAll("&", "§"));
@@ -65,11 +63,13 @@ public class WithdrawMenuClickEvent implements Listener {
 
 			plugin.getClickManager().executeCustomItem(null, display, p, "ConfirmWithdraw_Custom", config_2, null);
 
-			String dis_1 = plugin.getPluginManager().toHex(jb.getLanguage().getStringFromPath(jb.getUUID(),
-					config_2.getString("ConfirmWithdrawItems.Button_YES.Display"))).replaceAll("&", "§");
+			String dis_1 = plugin.getPluginManager()
+					.toHex(jb.getLanguage().getGUIMessage("ConfirmWithdrawItems.Button_YES.Display"))
+					.replaceAll("&", "§");
 
-			String dis_2 = plugin.getPluginManager().toHex(jb.getLanguage().getStringFromPath(jb.getUUID(),
-					config_2.getString("ConfirmWithdrawItems.Button_NO.Display"))).replaceAll("&", "§");
+			String dis_2 = plugin.getPluginManager()
+					.toHex(jb.getLanguage().getGUIMessage("ConfirmWithdrawItems.Button_NO.Display"))
+					.replaceAll("&", "§");
 
 			if (display.equalsIgnoreCase(dis_1)) {
 
@@ -109,8 +109,7 @@ public class WithdrawMenuClickEvent implements Listener {
 					}
 
 					if (plugin.getFileManager().getConfig().getBoolean("SendMessageOnSuccess")) {
-						p.sendMessage(jb.getLanguage()
-								.getStringFromLanguage(p.getUniqueId(), "Withdraw_Custom.CollectButton.WithdrawMessage")
+						p.sendMessage(jb.getLanguage().getGUIMessage("Withdraw_Custom.CollectButton.WithdrawMessage")
 								.replaceAll("<amount>", plugin.getAPI().Format(d)));
 					}
 
@@ -126,7 +125,7 @@ public class WithdrawMenuClickEvent implements Listener {
 		} else if (plugin.getGUIOpenManager().isWithdrawMenu(p, title) != null) {
 			plugin.getClickManager().executeCustomItem(null, display, p, "Withdraw_Custom", config, null);
 
-			String dis1 = lg.getString("Withdraw_Custom.CollectButton.Display");
+			String dis1 = jb.getLanguage().getGUIMessage("Withdraw_Custom.CollectButton.Display");
 
 			if (display.equalsIgnoreCase(plugin.getPluginManager().toHex(dis1))) {
 
@@ -173,10 +172,9 @@ public class WithdrawMenuClickEvent implements Listener {
 							}
 
 							if (plugin.getFileManager().getConfig().getBoolean("SendMessageOnSuccess")) {
-								p.sendMessage(jb.getLanguage()
-										.getStringFromLanguage(p.getUniqueId(),
-												"Withdraw_Custom.CollectButton.WithdrawMessage")
-										.replaceAll("<amount>", plugin.getAPI().Format(d)));
+								p.sendMessage(
+										jb.getLanguage().getGUIMessage("Withdraw_Custom.CollectButton.WithdrawMessage")
+												.replaceAll("<amount>", plugin.getAPI().Format(d)));
 							}
 
 							plugin.getAPI().playSound("WITHDRAW_SUCCESS", p);
@@ -185,8 +183,7 @@ public class WithdrawMenuClickEvent implements Listener {
 
 				} else {
 					plugin.getAPI().playSound("WITHDRAW_REFUSED", p);
-					p.sendMessage(jb.getLanguage().getStringFromLanguage(p.getUniqueId(),
-							"Withdraw_Custom.CollectButton.CantMessage"));
+					p.sendMessage(jb.getLanguage().getGUIMessage("Withdraw_Custom.CollectButton.CantMessage"));
 				}
 
 			}

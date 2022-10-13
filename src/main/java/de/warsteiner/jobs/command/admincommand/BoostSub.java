@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,9 +16,11 @@ import de.warsteiner.jobs.api.Job;
 import de.warsteiner.jobs.command.AdminCommand;
 import de.warsteiner.jobs.utils.JsonMessage;
 import de.warsteiner.jobs.utils.admincommand.AdminSubCommand;
+import de.warsteiner.jobs.utils.objects.DataMode;
 import de.warsteiner.jobs.utils.objects.JobsMultiplier;
 import de.warsteiner.jobs.utils.objects.MultiplierType;
-import de.warsteiner.jobs.utils.objects.MultiplierWeight; 
+import de.warsteiner.jobs.utils.objects.MultiplierWeight;
+import de.warsteiner.jobs.utils.objects.PluginColor; 
 
 public class BoostSub extends AdminSubCommand {
 	
@@ -161,13 +164,17 @@ public class BoostSub extends AdminSubCommand {
 				return;
 			}
 			
-			String type = args[4];
+			String boost = args[4];
 			
-			if(MultiplierType.valueOf(type.toUpperCase()) == null) {
-				sender.sendMessage(AdminCommand.prefix + "Cannot find type: "+type);
+			MultiplierType tp;
+			
+			try {
+				tp = MultiplierType.valueOf(boost.toUpperCase());
+			} catch (IllegalArgumentException ex) {
+				sender.sendMessage(AdminCommand.prefix + "Failed to find Boost MultiplierType: "+boost);
 				return;
 			}
-			
+		 
 			String u = args[5].toLowerCase();
 			
 			String until = "X";
@@ -208,9 +215,13 @@ public class BoostSub extends AdminSubCommand {
 		 
 			 
 			String weight = args[6];
+		 
+			MultiplierWeight we;
 			
-			if(MultiplierWeight.valueOf(weight.toUpperCase())==null) {
-				sender.sendMessage(AdminCommand.prefix + "Cannot find weight: "+weight);
+			try {
+				we = MultiplierWeight.valueOf(weight.toUpperCase());
+			} catch (IllegalArgumentException ex) {
+				sender.sendMessage(AdminCommand.prefix + "Failed to find Boost MultiplierWeight: "+weight);
 				return;
 			}
 			
@@ -233,7 +244,7 @@ public class BoostSub extends AdminSubCommand {
 				realjob = "NONE";
 			}
 			
-			JobsMultiplier n = new JobsMultiplier(named, "ultimatejobs", MultiplierType.valueOf(type.toUpperCase()), until, MultiplierWeight.valueOf(weight.toUpperCase()), Double.valueOf(value), realjob);
+			JobsMultiplier n = new JobsMultiplier(named, "ultimatejobs", MultiplierType.valueOf(boost.toUpperCase()), until, MultiplierWeight.valueOf(weight.toUpperCase()), Double.valueOf(value), realjob);
 			
 			plugin.getPlayerAPI().addMultiplier(uuid, n);
 			

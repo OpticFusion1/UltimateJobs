@@ -37,9 +37,6 @@ DisplayMode: "CURRENT"
 #| |              | || |              | || |              | || |              | || |              | |
 #| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
 # '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
-
-#Name of the GUI
-Other_Name: "{language:Other_Name}"
  
 #Size of the GUI
 Other_Size: 5
@@ -50,22 +47,14 @@ Other_Slots:
   - "23"
   - "24"
   
-Other_Mot_Found_Item:
+Other_Not_Found_Item:
 
   Icon: "RED_DYE"
-  
-  Display: "{language:Other_Custom.NotFound.Display}"
-  
-  Lore: "{language:Other_Custom.NotFound.Lore}"
-
+ 
 Other_Skull:
-
-  Display: "{language:Other_Custom.Skull.Display}"
  
   Material: "name;<name>"
-    
-  Lore: "{language:Other_Custom.Skull.Lore}"
-
+ 
   Slot: 20
 
 #Custom Items Section
@@ -75,9 +64,7 @@ Other_Custom:
     - "Close" 
  
   Close:
-
-    Display: "{language:Other_Custom.Close.Display}"
-
+ 
     ActionList:
       - "CLOSE"
 
@@ -123,11 +110,7 @@ Other_Place:
 #| |              | || |              | || |              | || |              | |
 #| '--------------' || '--------------' || '--------------' || '--------------' |
 # '----------------'  '----------------'  '----------------'  '----------------'
-
-Self_Name: "{language:Self_Name}"
-
-Self_ID: "gui_stats_self"
-
+ 
 Self_Size: 5
 
 #where are the jobs displayed?
@@ -136,22 +119,14 @@ Self_Slots:
   - "23"
   - "24"
   
-Self_Mot_Found_Item:
+Self_Not_Found_Item:
 
   Icon: "RED_DYE"
-  
-  Display: "{language:Self_Custom.NotFound.Display}"
-  
-  Lore: "{language:Self_Custom.NotFound.Lore}"
-
+ 
 Self_Skull:
-
-  Display: "{language:Self_Custom.Skull.Display}"
  
   Material: "name;<name>"
-    
-  Lore: "{language:Self_Custom.Skull.Lore}"
-
+ 
   Slot: 20
 
 Self_Custom:
@@ -160,9 +135,7 @@ Self_Custom:
     - "Close" 
  
   Close:
-
-    Display: "{language:Self_Custom.Close.Display}"
-
+ 
     ActionList:
       - "CLOSE"
 

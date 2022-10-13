@@ -18,74 +18,19 @@
 # Visit out Website -> https://mc-plugins.org
 #
 
-EnabledRankingPerJob: true
+EnabledGlobalRanking: true
 
 EnchantOwnSkullInRanking: true
-
-#Name of the GUI 
-PerJobRanking_Name: "{language:PerJobRanking_Name}"
  
 #Size of the GUI
-Size: 6
+Size: 5
 
-Categories:
- 
-  # "TODAY"
-  # "BLOCKS"
-  # "LEVEL"
-
-  PlayerDefaultCat: "TODAY"
-  
-  CatSlot: 45
-  
-  EnabledCategorieItem: true
-  
-  #
-  # remove or add categories which you want to use in the GUI.
-  #
-  
-  List: 
-    - "TODAY"
-    - "BLOCKS"
-    - "LEVEL"
- 
-  Earnings_Today:
- 
-    Display: "{language:RankingCategories.Today.Display}"
-    
-    Lore: "{language:RankingCategories.Today.Lore}"
-  
-    Material: "EMERALD"
-  
-  #
-  # this categorie means, all destroyed blocks, killed mobs, farmed items etc.
-  #
-  Destroyed_Blocks:
- 
-    Display: "{language:RankingCategories.Blocks.Display}"
-    
-    Lore: "{language:RankingCategories.Blocks.Lore}"
-    
-    Material: "IRON_PICKAXE"
-  
-  Level: 
- 
-    Display: "{language:RankingCategories.Level.Display}"
-    
-    Lore: "{language:RankingCategories.Level.Lore}"
-    
-    Material: "GOLD_INGOT"
-
-PerJobRankingl_Items:
+Global_RankingItems:
 
   OwnSkullItem:
   
     Enabled: true
-    
-    Display: "{language:PerJobRanking.OwnSkull.Display}"
  
-    Lore: "{language:PerJobRanking.OwnSkull.Lore}"
-    
     Slot: 36
 
   NoneFound:
@@ -100,71 +45,53 @@ PerJobRankingl_Items:
     - "3"
 
   3:
-
-    Display: "{language:PerJobRanking.3.Display}"
  
     #when false, you need do define the Icon on "Material:"
     UseSkullAsMaterial: true
  
     Material: "BARRIER"
 
-    Slot: 32
+    Slot: 23
 
   2:
-
-    Display: "{language:PerJobRanking.2.Display}"
  
     #when false, you need do define the Icon on "Material:"
     UseSkullAsMaterial: true
  
     Material: "BARRIER"
 
-    Slot: 30
+    Slot: 21
  
   1:
-
-    Display: "{language:PerJobRanking.1.Display}"
  
     #when false, you need do define the Icon on "Material:"
     UseSkullAsMaterial: true
  
     Material: "BARRIER"
 
-    Slot: 22
+    Slot: 13
  
 #Custom Items Section 
-PerJobRanking_Custom:
+Global_Custom:
 
   List:
     - "Close" 
  
   Close:
-
-    Display: "{language:PerJobRanking_Custom.Close.Display}"
-
+ 
     ActionList:
       - "CLOSE"
 
     Material: "url;http://textures.minecraft.net/texture/afd2400002ad9fbbbd0066941eb5b1a384ab9b0e48a178ee96e4d129a5208654"
 
-    Slot: 49
+    Slot: 40
 
 #PlaceHolders of the GUI 
-PerJobRanking_Place: 
-  - "BLACK_STAINED_GLASS_PANE:0:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:1:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:2:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:3:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:4:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:5:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:6:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:7:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:8:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:45:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:46:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:47:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:48:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:50:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:51:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:52:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:53:&8-/-" 
+Global_Place: 
+  - "BLACK_STAINED_GLASS_PANE:37:&8-/-"
+  - "BLACK_STAINED_GLASS_PANE:38:&8-/-"
+  - "BLACK_STAINED_GLASS_PANE:39:&8-/-"
+  - "BLACK_STAINED_GLASS_PANE:41:&8-/-"
+  - "BLACK_STAINED_GLASS_PANE:42:&8-/-"
+  - "BLACK_STAINED_GLASS_PANE:43:&8-/-"
+  - "BLACK_STAINED_GLASS_PANE:44:&8-/-" 

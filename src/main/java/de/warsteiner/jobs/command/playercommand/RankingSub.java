@@ -18,13 +18,13 @@ public class RankingSub extends SubCommand {
 	@Override
 	public String getName(UUID UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + UUID);
-		return jb.getLanguage().getStringFromLanguage(UUID, "Commands.Ranking.Usage");
+		return jb.getLanguage().getMessage("Commands.Ranking.Usage");
 	}
 
 	@Override
 	public String getDescription(UUID UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + UUID);
-		return jb.getLanguage().getStringFromLanguage(UUID, "Commands.Ranking.Description");
+		return jb.getLanguage().getMessage("Commands.Ranking.Description");
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class RankingSub extends SubCommand {
 
 			} else {
 				plugin.getAPI().playSound("COMMAND_USAGE", player);
-				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_usage").replaceAll("<usage>",
+				player.sendMessage(jb.getLanguage().getMessage("command_usage").replaceAll("<usage>",
 						getUsage(UUID)));
 			}
 
@@ -59,13 +59,13 @@ public class RankingSub extends SubCommand {
 
 			} else {
 				plugin.getAPI().playSound("COMMAND_USAGE", player);
-				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_usage").replaceAll("<usage>",
+				player.sendMessage(jb.getLanguage().getMessage("command_usage").replaceAll("<usage>",
 						getUsage(UUID)));
 			}
 
 		} else {
 			plugin.getAPI().playSound("COMMAND_USAGE", player);
-			player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_usage").replaceAll("<usage>",
+			player.sendMessage(jb.getLanguage().getMessage("command_usage").replaceAll("<usage>",
 					getUsage(UUID)));
 		}
 	}
@@ -88,7 +88,7 @@ public class RankingSub extends SubCommand {
 	@Override
 	public String getUsage(UUID UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + UUID);
-		return jb.getLanguage().getStringFromLanguage(UUID, "Commands.Ranking.UsageMessage");
+		return jb.getLanguage().getMessage("Commands.Ranking.UsageMessage");
 	}
 
 }

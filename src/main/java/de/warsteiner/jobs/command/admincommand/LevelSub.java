@@ -83,7 +83,7 @@ public class LevelSub extends AdminSubCommand {
 							plugin.getPlayerAPI().updateLevelOf(uuid, j, Integer.valueOf(value));
 
 							sender.sendMessage(AdminCommand.prefix + "Set §c" + player + "'s §7level in Job §a" + j.getConfigID()
-							+ " §7to §6"+value+". §8(§cOffline§8)");
+							+ " §7to §6"+value+".");
 							if(sender instanceof Player) {
 								Player player3 = (Player) sender;
 								player3.playSound(player3.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 3);

@@ -62,13 +62,13 @@
 			<scope>provided</scope>
 		</dependency>
 
-	
-	<dependency>
-   <groupId>com.zaxxer</groupId>
-   <artifactId>HikariCP</artifactId>
-   <version>5.0.1</version>
-</dependency>
-	
+
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>5.0.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.mojang</groupId>
 			<artifactId>authlib</artifactId>
@@ -114,6 +114,13 @@
 			<groupId>com.github.MilkBowl</groupId>
 			<artifactId>VaultAPI</artifactId>
 			<version>1.7</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.koca2000</groupId>
+			<artifactId>NoteBlockAPI</artifactId>
+			<version>1.6.1</version>
 			<scope>provided</scope>
 		</dependency>
 

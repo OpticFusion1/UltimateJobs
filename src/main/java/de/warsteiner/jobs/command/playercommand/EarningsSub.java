@@ -18,13 +18,13 @@ public class EarningsSub extends SubCommand {
 	@Override
 	public String getName(UUID UUID) {
 		JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+UUID);
-		return  jb.getLanguage().getStringFromLanguage(UUID, "Commands.Earnings.Usage");
+		return  jb.getLanguage().getMessage("Commands.Earnings.Usage");
 	}
 
 	@Override
 	public String getDescription(UUID UUID) {
 		JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+UUID);
-		return  jb.getLanguage().getStringFromLanguage(UUID, "Commands.Earnings.Description");
+		return  jb.getLanguage().getMessage("Commands.Earnings.Description");
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class EarningsSub extends SubCommand {
 			} else {
 				plugin.getAPI().playSound("COMMAND_USAGE", player);
 				player.sendMessage(
-						jb.getLanguage().getStringFromLanguage(UUID, "command_usage").replaceAll("<usage>", getUsage(UUID)));
+						jb.getLanguage().getMessage( "command_usage").replaceAll("<usage>", getUsage(UUID)));
 			}
 
 			return;
@@ -66,7 +66,7 @@ public class EarningsSub extends SubCommand {
 		else {
 			plugin.getAPI().playSound("COMMAND_USAGE", player);
 			player.sendMessage(
-					jb.getLanguage().getStringFromLanguage(UUID, "command_usage").replaceAll("<usage>", getUsage(UUID)));
+					jb.getLanguage().getMessage("command_usage").replaceAll("<usage>", getUsage(UUID)));
 		}
 
 	}
@@ -89,7 +89,7 @@ public class EarningsSub extends SubCommand {
 	@Override
 	public String getUsage(UUID UUID) {
 		JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+UUID);
-		return  jb.getLanguage().getStringFromLanguage(UUID, "Commands.Earnings.UsageMessage");
+		return  jb.getLanguage().getMessage("Commands.Earnings.UsageMessage");
 	}
 
 }

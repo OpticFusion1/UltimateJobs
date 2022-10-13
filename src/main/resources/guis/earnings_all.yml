@@ -41,10 +41,7 @@ HideWhenEarningsIsZero: true
 # 30 means, the last 30 days from the current date
 #
 HowManyDays: 30
-
-#Name of the GUI
-All_Earnings_Name: "{language:All_Earnings_Name}"
-
+ 
 #Size of the GUI
 All_Earnings_Size: 6
 
@@ -120,35 +117,23 @@ PageItems:
   WhatHappensWhenFirstPage_Command: "test command"
 
   Previous:
-  
-    Display: "{language:All_Earnings_Custom.Previous.Display}"
-    
+ 
     Material: "name;Mhf_ArrowLeft"
-    
-    NotFound: "{language:All_Earnings_Custom.Previous.Message_NotFound}"
-    
+ 
     Show: true
     
     ShowOnPageOne: true
-    
-    Lore: "{language:All_Earnings_Custom.Previous.Lore}"
-      
+ 
     Slot: 48
 
   Next:
-  
-    Display: "{language:All_Earnings_Custom.Next.Display}"
-    
+ 
     Material: "name;Mhf_ArrowRight"
-    
-    NotFound: "{language:All_Earnings_Custom.Next.Message_NotFound}"
-    
+ 
     Show: true
     
     ShowOnlyIfNextPageExist: false
-    
-    Lore: "{language:All_Earnings_Custom.Next.Lore}"
-      
+ 
     Slot: 50
 
 #Custom Items Section 
@@ -158,9 +143,7 @@ All_Earnings_Custom:
     - "Close" 
  
   Close:
-
-    Display: "{language:All_Earnings_Custom.Close.Display}"
-
+ 
     ActionList:
       - "CLOSE"
 

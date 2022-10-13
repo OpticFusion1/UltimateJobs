@@ -263,6 +263,7 @@ public class JobWorkManager {
 		if (block.hasMetadata("placed-by-player")) {
 			return;
 		}
+	
 		if (event.isCancelled()) {
 			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
 				
@@ -270,11 +271,11 @@ public class JobWorkManager {
 			}
 			return;
 		}
-
+	
 		UUID UUID = event.getPlayer().getUniqueId();
 
 		if (getJobOnWork("" + UUID, JobAction.BREAK, "" + type) != null) {
-
+	
 			Job job = getJobOnWork("" + UUID, JobAction.BREAK, "" + type);
 
 			finalWork("" + type, UUID, JobAction.BREAK, "break-action", 1, event.getBlock(), null, true, true, false,
@@ -657,12 +658,13 @@ public class JobWorkManager {
 							}
 						}
 					}
-
+				
 					if (api.canReward(job, iD, ac)) {
-
+				
 						String usedid = job.getNotRealIDByRealOne(real.toUpperCase(), ac);
 						
 						if(usedid != null) {
+						
 							boolean can = api.checkforDailyMaxEarnings(PUID, job);
 
 							String date = plugin.getDate();

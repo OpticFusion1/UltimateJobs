@@ -18,13 +18,13 @@ public class WithdrawSub extends SubCommand {
 	@Override
 	public String getName(UUID UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + UUID);
-		return jb.getLanguage().getStringFromLanguage(UUID, "Commands.Withdraw.Usage");
+		return jb.getLanguage().getMessage("Commands.Withdraw.Usage");
 	}
 
 	@Override
 	public String getDescription(UUID UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + UUID);
-		return jb.getLanguage().getStringFromLanguage(UUID, "Commands.Withdraw.Description");
+		return jb.getLanguage().getMessage("Commands.Withdraw.Description");
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class WithdrawSub extends SubCommand {
 
 		} else {
 			plugin.getAPI().playSound("COMMAND_USAGE", player);
-			player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_usage").replaceAll("<usage>",
+			player.sendMessage(jb.getLanguage().getMessage("command_usage").replaceAll("<usage>",
 					getUsage(UUID)));
 		}
 	}
@@ -65,7 +65,7 @@ public class WithdrawSub extends SubCommand {
 	@Override
 	public String getUsage(UUID UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + UUID);
-		return jb.getLanguage().getStringFromLanguage(UUID, "Commands.Withdraw.UsageMessage");
+		return jb.getLanguage().getMessage("Commands.Withdraw.UsageMessage");
 	}
 
 }

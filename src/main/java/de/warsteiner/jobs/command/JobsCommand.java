@@ -3,6 +3,7 @@ package de.warsteiner.jobs.command;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.manager.GuiManager;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
+import de.warsteiner.jobs.utils.objects.PluginColor;
 import de.warsteiner.jobs.utils.objects.UpdateTypes;
 import de.warsteiner.jobs.utils.playercommand.SubCommand;
 
@@ -31,7 +33,7 @@ public class JobsCommand implements CommandExecutor {
 			String UUID = ""+player.getUniqueId();
 			
 			if(!plugin.getPlayerAPI().existInCacheByUUID(UUID)) {
-				player.sendMessage("§cError while executing the Jobs Command. (Player not found)");
+				Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Seems like a player was not found... ("+UUID+")");
 				return true;
 			}
 			
@@ -65,7 +67,7 @@ public class JobsCommand implements CommandExecutor {
 				String ar = args[0].toLowerCase();
 
 				if (find(ar, jb.getUUID()) == null) {
-					player.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "command_notfound").replaceAll("<cmd>", ar));
+					player.sendMessage(jb.getLanguage().getMessage("command_notfound").replaceAll("<cmd>", ar));
 					return true;
 				} else {
 
@@ -74,7 +76,7 @@ public class JobsCommand implements CommandExecutor {
 					if(cmd.isEnabled()) {
 						cmd.perform(player, args, jb);
 					} else {
-						player.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "command_notfound").replaceAll("<cmd>", ar));
+						player.sendMessage(jb.getLanguage().getMessage("command_notfound").replaceAll("<cmd>", ar));
 						return true;
 					}
 

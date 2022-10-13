@@ -97,7 +97,7 @@ public class JobsPlayer {
 	public boolean hasStatsOf(String job) {
 		return stats.get(job) != null;
 	}
-	
+ 
 	public JobStats getStatsOf(String job) {
 		
 		JobStats used = null;
@@ -138,21 +138,7 @@ public class JobsPlayer {
 	public HashMap<String, JobStats> getStatsList() {
 		return stats;
 	}
-	
-	public YamlConfiguration getLanguageConfig() {
-		
-		Language used2 = null;
-		
-		if(!UltimateJobs.getPlugin().getFileManager().getLanguageConfig().getBoolean("EnabledLanguages")) {
-			String used =UltimateJobs.getPlugin().getFileManager().getLanguageConfig().getString("UseLanguageWhenDisabled");
-			used2 = UltimateJobs.getPlugin().getLanguageAPI().getLanguages().get(used);
-		} else {
-			used2 = lang;
-		}
-		
-		return used2.getConfig();
-	}
-	
+ 
 	public Language getLanguage() {
 		
 		if(!UltimateJobs.getPlugin().getFileManager().getLanguageConfig().getBoolean("EnabledLanguages")) {

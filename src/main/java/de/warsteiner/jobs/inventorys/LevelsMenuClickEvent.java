@@ -60,9 +60,8 @@ public class LevelsMenuClickEvent implements Listener {
 
 			plugin.getClickManager().executeCustomItem(j, display, p, "Levels_Custom", cfg, null);
 
-			String next = jb.getLanguage().getStringFromPath(p.getUniqueId(), cfg.getString("PageItems.Next.Display"));
-			String pre = jb.getLanguage().getStringFromPath(p.getUniqueId(),
-					cfg.getString("PageItems.Previous.Display"));
+			String next = jb.getLanguage().getGUIMessage("Levels_Custom.Next.Display");
+			String pre = jb.getLanguage().getGUIMessage("Levels_Custom.Previous.Display");
 			
 			int page = 1;
 			
@@ -81,8 +80,7 @@ public class LevelsMenuClickEvent implements Listener {
 					plugin.getAPI().playSound("NEW_PAGE_LEVELS", p);
 
 				} else {
-					p.sendMessage(jb.getLanguage().getStringFromPath(p.getUniqueId(),
-							cfg.getString("PageItems.Next.NotFound")));
+					p.sendMessage(jb.getLanguage().getGUIMessage("Levels_Custom.Next.Message_NotFound"));
 					plugin.getAPI().playSound("LEVELS_NO_NEXT", p);
 				}
 
@@ -92,8 +90,7 @@ public class LevelsMenuClickEvent implements Listener {
 					String mode = cfg.getString("PageItems.WhatHappensWhenFirstPageAlreardyReached").toUpperCase();
 
 					if (mode.equalsIgnoreCase("MESSAGE")) {
-						p.sendMessage(jb.getLanguage().getStringFromPath(p.getUniqueId(),
-								cfg.getString("PageItems.Previous.NotFound")));
+						p.sendMessage(jb.getLanguage().getGUIMessage("Levels_Custom.Previous.Message_NotFound"));
 					} else if (mode.equalsIgnoreCase("MAINGUI")) {
 						plugin.getGUI().createMainGUIOfJobs(p, UpdateTypes.REOPEN);
 					} else if (mode.equalsIgnoreCase("COMMAND")) {

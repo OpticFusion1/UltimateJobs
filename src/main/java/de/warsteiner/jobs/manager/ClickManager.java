@@ -125,11 +125,9 @@ public class ClickManager {
 
 								if (job.getOptionValue("CannotLeaveJob")) {
 									api.playSound("CANNOT_LEAVE_JOB", player);  
-									if (job.getOptionMessageOf("CannotLeaveJobMessage") != null) {
-										player.sendMessage(jb.getLanguage()
-												.getStringFromPath(jb.getUUID(),
-														job.getOptionMessageOf("CannotLeaveJobMessage"))
-												.replaceAll("<job>", job.getDisplay("" + player.getUniqueId())));
+									if (jb.getLanguage().getMessage("CannotLeaveJobMessage") != null) {
+										player.sendMessage(jb.getLanguage().getMessage("CannotLeaveJobMessage")
+												.replaceAll("<job>", job.getDisplayOfJob("" + player.getUniqueId())));
 									}
 								} else {
 									api.playSound("LEAVE_SINGLE", player);
@@ -145,8 +143,8 @@ public class ClickManager {
 
 									if (plugin.getFileManager().getConfig().getBoolean("SendMessageOnLeave")) {
 										player.sendMessage(jb.getLanguage()
-												.getStringFromLanguage(jb.getUUID(), "Other.Left_Job")
-												.replaceAll("<job>", job.getDisplay("" + player.getUniqueId())));
+												.getMessage("Other.Left_Job")
+												.replaceAll("<job>", job.getDisplayOfJob("" + player.getUniqueId())));
 									}
 								}
 
@@ -178,14 +176,13 @@ public class ClickManager {
 								api.playSound("LEAVE_ALL", player);
 
 								player.sendMessage(
-										jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Leave_All"));
+										jb.getLanguage().getMessage("Other.Leave_All"));
 
-								gui.UpdateMainInventoryItems(player, jb.getLanguage().getStringFromPath(jb.getUUID(),
-										plugin.getFileManager().getGUI().getString("Main_Name")));
+								gui.UpdateMainInventoryItems(player, jb.getLanguage().getGUIMessage("Main_Name"));
 
 							} else {
 								player.sendMessage(
-										jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Already_Left_All")
+										jb.getLanguage().getMessage("Other.Already_Left_All")
 												.replaceAll("<job>", display));
 							}
 						}
@@ -205,7 +202,7 @@ public class ClickManager {
 
 				if (plugin.getFileManager().getConfig().getBoolean("SendResetMessage")) {
 					player.sendMessage(
-							jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Withdraw_Reset_Salary_Message"));
+							jb.getLanguage().getMessage("Withdraw_Reset_Salary_Message"));
 				}
 
 			} else if (plugin.getFileManager().getConfig().getBoolean("RemovePercentOnJobLeave")) {
@@ -220,7 +217,7 @@ public class ClickManager {
 
 				if (plugin.getFileManager().getConfig().getBoolean("SendRemovePercentMessage")) {
 					player.sendMessage(jb.getLanguage()
-							.getStringFromLanguage(jb.getUUID(), "Withdraw_Remove_Percent_Of_Salary_Message")
+							.getMessage("Withdraw_Remove_Percent_Of_Salary_Message")
 							.replaceAll("<amount>", plugin.getAPI().Format(removed)));
 
 				}
@@ -258,8 +255,8 @@ public class ClickManager {
 			}.runTaskLater(plugin, 1);
  
 			player.sendMessage(plugin.getPluginManager()
-					.toHex(jb.getLanguage().getStringFromLanguage(player.getUniqueId(), "Other.Joined")
-							.replaceAll("<job>", j.getDisplay("" + player.getUniqueId()))));
+					.toHex(jb.getLanguage().getMessage("Other.Joined")
+							.replaceAll("<job>", j.getDisplayOfJob("" + player.getUniqueId()))));
 		}
 
 	}
@@ -306,8 +303,7 @@ public class ClickManager {
 		}
 	}
 
-	public void executeJobClickEvent(String display, Player player) {
-		FileConfiguration cfg = plugin.getFileManager().getGUI();
+	public void executeJobClickEvent(String display, Player player) { 
 		List<String> jobs = plugin.getLoaded();
 		String UUID = "" + player.getUniqueId();
 
@@ -316,11 +312,11 @@ public class ClickManager {
 
 		for (int i = 0; i <= jobs.size() - 1; i++) {
 			Job j = plugin.getJobCache().get(jobs.get(i));
-			String dis = j.getDisplay(UUID);
+			String dis = j.getDisplayOfJob(UUID);
 			if (display.equalsIgnoreCase(dis)) {
 				String job = j.getConfigID();
 
-				String name = jb.getLanguage().getStringFromPath(jb.getUUID(), cfg.getString("Main_Name"));
+				String name = jb.getLanguage().getGUIMessage("Main_Name");
 				if (api.canBuyWithoutPermissions(player, j)) {
 
 					List<String> d = api.canGetJobWithSubOptions(player, j);
@@ -338,8 +334,8 @@ public class ClickManager {
 									return;
 								} else {
 									player.sendMessage(
-											jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Full")
-													.replaceAll("<job>", j.getDisplay(UUID)));
+											jb.getLanguage().getMessage("Other.Full")
+													.replaceAll("<job>", j.getDisplayOfJob(UUID)));
 									return;
 								}
 
@@ -365,14 +361,14 @@ public class ClickManager {
 
 							} else {
 								player.sendMessage(
-										jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Not_Enough_Money")
-												.replaceAll("<job>", j.getDisplay(UUID)));
+										jb.getLanguage().getMessage("Other.Not_Enough_Money")
+												.replaceAll("<job>", j.getDisplayOfJob(UUID)));
 								return;
 							}
 						}
 					}
 				} else {
-					player.sendMessage(j.getPermMessage(UUID).replaceAll("<job>", j.getDisplay(UUID)));
+					player.sendMessage(j.getPermMessage(UUID).replaceAll("<job>", j.getDisplayOfJob(UUID)));
 					return;
 
 				}
@@ -381,8 +377,7 @@ public class ClickManager {
 		}
 	}
 
-	public void buy(double money, Player player, JobsPlayer jb, Job job) {
-		FileConfiguration cfg = plugin.getFileManager().getGUI();
+	public void buy(double money, Player player, JobsPlayer jb, Job job) { 
 		plugin.getEco().withdrawPlayer(player, money);
 
 		jb.addOwnedJob(job.getConfigID());
@@ -391,22 +386,21 @@ public class ClickManager {
 
 		String title = player.getOpenInventory().getTitle();
 
-		if (title.equalsIgnoreCase(plugin.getPluginManager().toHex(cfg.getString("Main_Name")).replaceAll("&", "§"))) {
+		if (title.equalsIgnoreCase(jb.getLanguage().getGUIMessage("Main_Name"))) {
 			gui.UpdateMainInventoryItems(player, title);
 		} else {
 			gui.createMainGUIOfJobs(player, UpdateTypes.REOPEN);
 		}
 
-		player.sendMessage(jb.getLanguage().getStringFromLanguage(player.getUniqueId(), "Other.Bought_Job")
-				.replaceAll("<job>", job.getDisplay("" + player.getUniqueId())));
+		player.sendMessage(jb.getLanguage().getMessage("Other.Bought_Job")
+				.replaceAll("<job>", job.getDisplayOfJob("" + player.getUniqueId())));
 	}
 
 	public String isCustomItem(String display, String path, FileConfiguration config, String UUID) {
 		List<String> custom_items = config.getStringList(path + ".List");
 		JobsPlayer jb = plugin.getPlayerAPI().getRealJobPlayer(UUID);
 		for (String b : custom_items) {
-			String real = jb.getLanguage().getStringFromPath(jb.getUUID(),
-					config.getString(path + "." + b + ".Display"));
+			String real = jb.getLanguage().getGUIMessage(path + "." + b + ".Display");
 			String dis = plugin.getPluginManager().toHex(real.replaceAll("&", "§"));
 			if (display.equalsIgnoreCase(dis))
 				return b;

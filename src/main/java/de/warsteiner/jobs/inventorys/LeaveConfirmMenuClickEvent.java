@@ -43,64 +43,63 @@ public class LeaveConfirmMenuClickEvent implements Listener {
 		if (e.getCurrentItem().getItemMeta().getDisplayName() == null) {
 			return;
 		}
-		
-		if(!plugin.getPlayerAPI().existInCacheByUUID(""+e.getWhoClicked().getUniqueId())) {
+
+		if (!plugin.getPlayerAPI().existInCacheByUUID("" + e.getWhoClicked().getUniqueId())) {
 			e.getWhoClicked().sendMessage("§cError while executing the Jobs ClickEvent. (Player not found)");
 			return;
 		}
- 
+
 		FileConfiguration config_2 = plugin.getFileManager().getLeaveConfirmConfig();
 
 		Player p = (Player) e.getWhoClicked();
 
 		JobsPlayer jb = plugin.getPlayerAPI().getRealJobPlayer(p.getUniqueId());
- 
+
 		String display = plugin.getPluginManager()
 				.toHex(e.getCurrentItem().getItemMeta().getDisplayName().replaceAll("&", "§"));
 		String title = plugin.getPluginManager().toHex(e.getView().getTitle().replaceAll("&", "§"));
 
 		if (plugin.getGUIOpenManager().isLeaveConfirmGUI(p, title) != null) {
-			
-			Job job =plugin.getGUIOpenManager().isLeaveConfirmGUI(p, title);
+
+			Job job = plugin.getGUIOpenManager().isLeaveConfirmGUI(p, title);
 
 			plugin.getClickManager().executeCustomItem(null, display, p, "LeaveConfirm_Custom", config_2, null);
 
-			String dis_1 = plugin.getPluginManager().toHex(jb.getLanguage().getStringFromPath(jb.getUUID(),
-					config_2.getString("LeaveConfirmItems.Button_YES.Display"))).replaceAll("<job>", job.getDisplay(jb.getUUIDAsString())).replaceAll("&", "§");
+			String dis_1 = plugin.getPluginManager()
+					.toHex(jb.getLanguage().getGUIMessage("LeaveConfirm.Button_YES.Display"))
+					.replaceAll("<job>", job.getDisplayOfJob(jb.getUUIDAsString())).replaceAll("&", "§");
 
-			String dis_2 = plugin.getPluginManager().toHex(jb.getLanguage().getStringFromPath(jb.getUUID(),
-					config_2.getString("LeaveConfirmItems.Button_NO.Display"))).replaceAll("<job>", job.getDisplay(jb.getUUIDAsString())).replaceAll("&", "§");
+			String dis_2 = plugin.getPluginManager()
+					.toHex(jb.getLanguage().getGUIMessage("LeaveConfirm.Button_NO.Display"))
+					.replaceAll("<job>", job.getDisplayOfJob(jb.getUUIDAsString())).replaceAll("&", "§");
 
 			if (display.equalsIgnoreCase(dis_1)) {
 
 				if (job.getOptionValue("CannotLeaveJob")) {
 					plugin.getAPI().playSound("CANNOT_LEAVE_JOB", p);
-					if (job.getOptionMessageOf("CannotLeaveJobMessage") != null) {
-						p.sendMessage(jb.getLanguage()
-								.getStringFromPath(jb.getUUID(),
-										job.getOptionMessageOf("CannotLeaveJobMessage"))
-								.replaceAll("<job>", job.getDisplay("" + p.getUniqueId())));
+					if (jb.getLanguage().getMessage("CannotLeaveJobMessage") != null) {
+						p.sendMessage(jb.getLanguage().getMessage("CannotLeaveJobMessage").replaceAll("<job>",
+								job.getDisplayOfJob("" + p.getUniqueId())));
 					}
 				} else {
 					plugin.getAPI().playSound("LEAVE_SINGLE", p);
 					plugin.getClickManager().updateSalaryOnLeave(p, jb);
-					
+
 					PlayerQuitJobEvent event = new PlayerQuitJobEvent(p, jb, job);
-					
+
 					plugin.getClickManager().OptionalJobQuit(event);
-					
+
 					jb.remCurrentJob(job.getConfigID());
 
 					plugin.getGUI().createMainGUIOfJobs(p, UpdateTypes.REOPEN);
 
-					if(plugin.getFileManager().getConfig().getBoolean("SendMessageOnLeave") ) {
-						p.sendMessage(jb.getLanguage().getStringFromLanguage(jb.getUUID(), "Other.Left_Job")
-								.replaceAll("<job>", job.getDisplay("" + p.getUniqueId()))); 
+					if (plugin.getFileManager().getConfig().getBoolean("SendMessageOnLeave")) {
+						p.sendMessage(jb.getLanguage().getMessage("Other.Left_Job").replaceAll("<job>",
+								job.getDisplayOfJob("" + p.getUniqueId())));
+					}
+
 				}
-				
-			 
-				}
-				 
+
 			} else if (display.equalsIgnoreCase(dis_2)) {
 				plugin.getGUI().createSettingsGUI(p, job, UpdateTypes.REOPEN);
 				plugin.getAPI().playSound("LEAVE_JOB_CANCEL_PROGRESS", p);

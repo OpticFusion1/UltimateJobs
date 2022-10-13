@@ -132,13 +132,23 @@ public class PlayerAPI {
 			return getRealJobPlayer(ID).getPlayerSettings().get(type.toUpperCase());
 		} else {
 			return plugin.getPlayerOfflineAPI().getSettingsOfPlayer(ID).get(type.toUpperCase());
-		}
+		} 
 	}
 
 	public Integer getPageData(String ID, String type) {
 		if (existInCacheByUUID(ID)) {
+			
+			if(!getRealJobPlayer(ID).getPlayerSettings().containsKey(type)) {
+				return 1;
+			}
+			
 			return Integer.valueOf(getRealJobPlayer(ID).getPlayerSettings().get(type.toUpperCase()));
 		} else {
+			
+			if(!plugin.getPlayerOfflineAPI().existSettingData(ID, type)) {
+				return 1;
+			}
+			
 			return Integer.valueOf(plugin.getPlayerOfflineAPI().getSettingsOfPlayer(ID).get(type.toUpperCase()));
 		}
 	}
@@ -202,7 +212,7 @@ public class PlayerAPI {
 	}
 
 	public void calculateRanking() {
-		FileConfiguration cfg = plugin.getFileManager().getConfig();
+		FileConfiguration cfg = plugin.getLocalFileManager().getConfig();
 		if (cfg.getBoolean("CalculateRanking")) {
 
 			int every = cfg.getInt("CalculateRankingEvery");
@@ -226,7 +236,7 @@ public class PlayerAPI {
 
 									List<String> players = plugin.getPlayerOfflineAPI().getUltimatePlayers();
 
-									if (plugin.getFileManager().getRankingGlobalConfig()
+									if (plugin.getLocalFileManager().getRankingGlobalConfig()
 											.getBoolean("EnabledGlobalRanking")) {
 
 										Map<String, Double> map = new HashMap<String, Double>();
@@ -258,7 +268,7 @@ public class PlayerAPI {
 										}
 									}
 
-									if (plugin.getFileManager().getRankingPerJobConfig()
+									if (plugin.getLocalFileManager().getRankingPerJobConfig()
 											.getBoolean("EnabledRankingPerJob")) {
 
 										ArrayList<String> alljobs = plugin.getLoaded();
@@ -298,12 +308,14 @@ public class PlayerAPI {
 											}
 
 											if (ma.size() != 0) {
+												
 												Map<Double, String> c = ma.entrySet().stream()
 														.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
 														.collect(
 																Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
 																		(e1, e2) -> e1, LinkedHashMap::new));
 
+										 
 												c.forEach((points, player) -> {
 													int rank = today.size() + 1;
 													today.put(rank, player);

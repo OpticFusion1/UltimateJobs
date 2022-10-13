@@ -16,13 +16,13 @@ public class LeaveAllSub extends SubCommand {
 	@Override
 	public String getName(UUID UUID) {
 		JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+UUID);
-		return  jb.getLanguage().getStringFromLanguage(UUID, "Commands.LeaveALL.Usage");
+		return  jb.getLanguage().getMessage("Commands.LeaveALL.Usage");
 	}
 
 	@Override
 	public String getDescription(UUID UUID) {
 		JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+UUID);
-		return  jb.getLanguage().getStringFromLanguage(UUID, "Commands.LeaveALL.Description");
+		return  jb.getLanguage().getMessage("Commands.LeaveALL.Description");
 	}
 
 	@Override
@@ -32,16 +32,16 @@ public class LeaveAllSub extends SubCommand {
 		if (args.length == 1) {
 			if (jb.getCurrentJobs() != null) {
 				jb.updateCurrentJobs(null);
-				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_leaveall_message"));
+				player.sendMessage(jb.getLanguage().getMessage("command_leaveall_message"));
 				plugin.getAPI().playSound("COMMAND_LEAVEALL_SUCCESS", player);
 			} else {
 				plugin.getAPI().playSound("COMMAND_LEAVEALL_NO_JOBS", player);
-				player.sendMessage(jb.getLanguage().getStringFromLanguage(UUID, "command_leaveall_already"));
+				player.sendMessage(jb.getLanguage().getMessage("command_leaveall_already"));
 			}
 		} else {
 			plugin.getAPI().playSound("COMMAND_USAGE", player);
 			player.sendMessage(
-					jb.getLanguage().getStringFromLanguage(UUID, "command_usage").replaceAll("<usage>", getUsage(UUID)));
+					jb.getLanguage().getMessage("command_usage").replaceAll("<usage>", getUsage(UUID)));
 		}
 	}
 
@@ -63,7 +63,7 @@ public class LeaveAllSub extends SubCommand {
 	@Override
 	public String getUsage(UUID UUID) {
 		 JobsPlayer jb =UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(""+UUID);
-		return  jb.getLanguage().getStringFromLanguage(UUID, "Commands.LeaveALL.UsageMessage");
+		return  jb.getLanguage().getMessage("Commands.LeaveALL.UsageMessage");
 	}
 
 }

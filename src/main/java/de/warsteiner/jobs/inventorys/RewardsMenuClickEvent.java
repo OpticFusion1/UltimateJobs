@@ -59,9 +59,8 @@ public class RewardsMenuClickEvent implements Listener {
 
 			plugin.getClickManager().executeCustomItem(j, display, p, "Rewards_Custom", cfg, null);
 
-			String next = jb.getLanguage().getStringFromPath(p.getUniqueId(), cfg.getString("PageItems.Next.Display"));
-			String pre = jb.getLanguage().getStringFromPath(p.getUniqueId(),
-					cfg.getString("PageItems.Previous.Display"));
+			String next = jb.getLanguage().getGUIMessage("Rewards_Custom.Next.Display");
+			String pre = jb.getLanguage().getGUIMessage("Rewards_Custom.Previous.Display");
 			
 			int page = 1;
 			
@@ -80,8 +79,7 @@ public class RewardsMenuClickEvent implements Listener {
 					plugin.getAPI().playSound("NEW_PAGE_REWARDS", p);
 
 				} else {
-					p.sendMessage(jb.getLanguage().getStringFromPath(p.getUniqueId(),
-							cfg.getString("PageItems.Next.NotFound")));
+					p.sendMessage(jb.getLanguage().getGUIMessage("Rewards_Custom.Next.Message_NotFound"));
 					plugin.getAPI().playSound("REWARDS_NO_NEXT", p);
 				}
 
@@ -91,8 +89,7 @@ public class RewardsMenuClickEvent implements Listener {
 					String mode = cfg.getString("PageItems.WhatHappensWhenFirstPageAlreardyReached").toUpperCase();
 
 					if (mode.equalsIgnoreCase("MESSAGE")) {
-						p.sendMessage(jb.getLanguage().getStringFromPath(p.getUniqueId(),
-								cfg.getString("PageItems.Previous.NotFound")));
+						p.sendMessage(jb.getLanguage().getGUIMessage("Rewards_Custom.Previous.Message_NotFound"));
 					} else if (mode.equalsIgnoreCase("MAINGUI")) {
 						plugin.getGUI().createMainGUIOfJobs(p, UpdateTypes.REOPEN);
 					} else if (mode.equalsIgnoreCase("COMMAND")) {

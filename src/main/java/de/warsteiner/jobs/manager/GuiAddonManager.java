@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor; 
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -26,7 +27,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.api.Job;
-import de.warsteiner.jobs.api.JobAPI; 
+import de.warsteiner.jobs.api.JobAPI;
 import de.warsteiner.jobs.utils.JobAction;
 import de.warsteiner.jobs.utils.objects.GUIType;
 import de.warsteiner.jobs.utils.objects.JobStats;
@@ -72,17 +73,6 @@ public class GuiAddonManager {
 								.onClick(BookUtil.ClickAction.openUrl("https://dto.mc-plugins.org"))
 								.color(ChatColor.BLUE).build())
 
-						.build(),
-
-				new BookUtil.PageBuilder()
-						.add("§bFinish Setup\n§7\n§8Click the Button below, to finish the UltimateJobs Setup!\n§7\n")
-
-						.add("§c> Thank you for your Support! If you want, leave a Review on the Plugin's Post! :) <")
-						.newLine().newLine().newLine()
-						.add(BookUtil.TextBuilder.of("Finish")
-								.onHover(BookUtil.HoverAction.showText("Finish UltimateJobs Setup"))
-								.onClick(BookUtil.ClickAction.runCommand("/jobsadmin first finish"))
-								.color(ChatColor.LIGHT_PURPLE).build())
 						.build()
 
 		)
@@ -362,8 +352,8 @@ public class GuiAddonManager {
 
 		int size = cfg.getInt("Size");
 
-		String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("PerJobRanking_Name"))
-				.replaceAll("<job>", job.getDisplay(UUID));
+		String name = sp.getLanguage().getGUIMessage("PerJobRanking_Name").replaceAll("<job>",
+				job.getDisplayOfJob(UUID));
 
 		plugin.getGUI().openInventory(player, size, name, GUIType.JOB_RANKING, null, job);
 
@@ -382,7 +372,7 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "PerJobRanking_Custom.",
 						cfg.getStringList("PerJobRanking_Custom.List"), name, cfg, null);
 				setJobRankingItems(inv_view, cfg, player, job);
-				
+
 				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
@@ -401,7 +391,7 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "PerJobRanking_Custom.",
 								cfg.getStringList("PerJobRanking_Custom.List"), name, cfg, null);
 						setJobRankingItems(inv, cfg, player, job);
-						
+
 						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
@@ -413,9 +403,10 @@ public class GuiAddonManager {
 
 		String MyUUID = "" + pl.getUniqueId();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(MyUUID);
- 
+
 		if (!plugin.getPlayerAPI().existSettingData(MyUUID, "RANKING")) {
-			 plugin.getPlayerAPI().createSettingData(MyUUID, "RANKING", cf.getString("Categories.PlayerDefaultCat").toUpperCase());
+			plugin.getPlayerAPI().createSettingData(MyUUID, "RANKING",
+					cf.getString("Categories.PlayerDefaultCat").toUpperCase());
 		}
 
 		String current = plugin.getPlayerAPI().getSettingData(MyUUID, "RANKING");
@@ -433,22 +424,20 @@ public class GuiAddonManager {
 			if (current.equalsIgnoreCase("TODAY")) {
 
 				icon = cf.getString("Categories.Earnings_Today.Material");
-				display = sp.getLanguage().getStringFromPath(sp.getUUID(),
-						cf.getString("Categories.Earnings_Today.Display"));
-				lore = sp.getLanguage().getListFromPath(sp.getUUID(), cf.getString("Categories.Earnings_Today.Lore"));
+				display = sp.getLanguage().getGUIMessage("RankingCategories.Today.Display");
+				lore = sp.getLanguage().getGUIList("RankingCategories.Today.Lore");
 
 			} else if (current.equalsIgnoreCase("BLOCKS")) {
 
 				icon = cf.getString("Categories.Destroyed_Blocks.Material");
-				display = sp.getLanguage().getStringFromPath(sp.getUUID(),
-						cf.getString("Categories.Destroyed_Blocks.Display"));
-				lore = sp.getLanguage().getListFromPath(sp.getUUID(), cf.getString("Categories.Destroyed_Blocks.Lore"));
+				display = sp.getLanguage().getGUIMessage("RankingCategories.Blocks.Display");
+				lore = sp.getLanguage().getGUIList("RankingCategories.Blocks.Lore");
 
 			} else if (current.equalsIgnoreCase("LEVEL")) {
 
 				icon = cf.getString("Categories.Level.Material");
-				display = sp.getLanguage().getStringFromPath(sp.getUUID(), cf.getString("Categories.Level.Display"));
-				lore = sp.getLanguage().getListFromPath(sp.getUUID(), cf.getString("Categories.Level.Lore"));
+				display = sp.getLanguage().getGUIMessage("RankingCategories.Level.Display");
+				lore = sp.getLanguage().getGUIList("RankingCategories.Level.Lore");
 
 			}
 
@@ -482,7 +471,7 @@ public class GuiAddonManager {
 		}
 
 		List<String> howmany = plugin.getFileManager().getRankingPerJobConfig()
-				.getStringList("PerJobRankingl_Items.List");
+				.getStringList("PerJobRanking_Items.List");
 
 		for (int i = 0; i != howmany.size(); i++) {
 
@@ -490,21 +479,21 @@ public class GuiAddonManager {
 
 			int slot = 999;
 
-			if (cf.contains("PerJobRankingl_Items." + rank + ".Slot")) {
-				slot = cf.getInt("PerJobRankingl_Items." + rank + ".Slot");
+			if (cf.contains("PerJobRanking_Items." + rank + ".Slot")) {
+				slot = cf.getInt("PerJobRanking_Items." + rank + ".Slot");
 			}
 
 			if (slot != 999) {
 
 				ItemStack it = plugin.getItemAPI().createItem(pl.getName(),
-						cf.getString("PerJobRankingl_Items.NoneFound.Material"));
+						cf.getString("PerJobRanking_Items.NoneFound.Material"));
 				ItemMeta meta = it.getItemMeta();
 
-				if (cf.contains("PerJobRankingl_Items.NoneFound.CustomModelData")) {
-					meta.setCustomModelData(cf.getInt("PerJobRankingl_Items.NoneFound.CustomModelData"));
+				if (cf.contains("PerJobRanking_Items.NoneFound.CustomModelData")) {
+					meta.setCustomModelData(cf.getInt("PerJobRanking_Items.NoneFound.CustomModelData"));
 				}
 
-				String dis = cf.getString("PerJobRankingl_Items.NoneFound.Display").replaceAll("<rank>", "" + rank);
+				String dis = cf.getString("PerJobRanking_Items.NoneFound.Display").replaceAll("<rank>", "" + rank);
 
 				meta.setDisplayName(plugin.getPluginManager().toHex(dis).replaceAll("&", "§"));
 
@@ -517,14 +506,15 @@ public class GuiAddonManager {
 
 		if (current.equalsIgnoreCase("TODAY")) {
 
-			if (!plugin.getPlayerAPI().today_ranked.isEmpty() && plugin.getPlayerAPI().today_ranked.containsKey(job.getConfigID())) {
+			if (!plugin.getPlayerAPI().today_ranked.isEmpty()
+					&& plugin.getPlayerAPI().today_ranked.containsKey(job.getConfigID())) {
 				if (!plugin.getPlayerAPI().today_ranked.get(job.getConfigID()).isEmpty()) {
 					plugin.getPlayerAPI().today_ranked.get(job.getConfigID()).forEach((rank, id) -> {
 
 						int slot = 999;
 
-						if (cf.contains("PerJobRankingl_Items." + rank + ".Slot")) {
-							slot = cf.getInt("PerJobRankingl_Items." + rank + ".Slot");
+						if (cf.contains("PerJobRanking_Items." + rank + ".Slot")) {
+							slot = cf.getInt("PerJobRanking_Items." + rank + ".Slot");
 						}
 
 						if (slot != 999) {
@@ -533,36 +523,34 @@ public class GuiAddonManager {
 
 								UUID ID = UUID.fromString(id.toString());
 
-								String name =  plugin.getPlayerAPI().getDisplayByUUID("" + ID);
+								String name = plugin.getPlayerAPI().getDisplayByUUID("" + ID);
 
 								String icon = null;
 
-								if (cf.getBoolean("PerJobRankingl_Items." + rank + ".UseSkullAsMaterial")) {
+								if (cf.getBoolean("PerJobRanking_Items." + rank + ".UseSkullAsMaterial")) {
 									icon = "name;<name>";
 								} else {
-									icon = cf.getString("PerJobRankingl_Items." + rank + ".Material");
+									icon = cf.getString("PerJobRanking_Items." + rank + ".Material");
 								}
 
 								if (icon != null) {
 									ItemStack it = plugin.getItemAPI().createItem(name, icon);
 									ItemMeta meta = it.getItemMeta();
 
-									if (cf.contains("PerJobRankingl_Items." + rank + ".CustomModelData")) {
+									if (cf.contains("PerJobRanking_Items." + rank + ".CustomModelData")) {
 										meta.setCustomModelData(
-												cf.getInt("PerJobRankingl_Items." + rank + ".CustomModelData"));
+												cf.getInt("PerJobRanking_Items." + rank + ".CustomModelData"));
 									}
 
-									String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-											cf.getString("PerJobRankingl_Items." + rank + ".Display"));
+									String dis = sp.getLanguage().getGUIMessage("PerJobRanking." + rank + ".Display");
 
-									List<String> lore = sp.getLanguage().getListFromLanguage(sp.getUUID(),
-											"PerJobRanking.LoreForRanks.Today");
+									List<String> lore = sp.getLanguage().getGUIList("PerJobRanking.LoreForRanks.Today");
 
 									ArrayList<String> old = new ArrayList<String>();
 
 									for (String b : lore) {
 										old.add(plugin.getPluginManager().toHex(b)
-												.replaceAll("<job>", job.getDisplay(MyUUID))
+												.replaceAll("<job>", job.getDisplayOfJob(MyUUID))
 												.replaceAll("<earnings>",
 														plugin.getAPI().Format(
 																plugin.getPlayerAPI().getEarningsOfToday("" + ID, job)))
@@ -594,14 +582,15 @@ public class GuiAddonManager {
 
 		} else if (current.equalsIgnoreCase("BLOCKS")) {
 
-			if (!plugin.getPlayerAPI().blocks_ranked.isEmpty() && plugin.getPlayerAPI().blocks_ranked.containsKey(job.getConfigID())) {
+			if (!plugin.getPlayerAPI().blocks_ranked.isEmpty()
+					&& plugin.getPlayerAPI().blocks_ranked.containsKey(job.getConfigID())) {
 				if (!plugin.getPlayerAPI().blocks_ranked.get(job.getConfigID()).isEmpty()) {
 					plugin.getPlayerAPI().blocks_ranked.get(job.getConfigID()).forEach((rank, id) -> {
 
 						int slot = 999;
 
-						if (cf.contains("PerJobRankingl_Items." + rank + ".Slot")) {
-							slot = cf.getInt("PerJobRankingl_Items." + rank + ".Slot");
+						if (cf.contains("PerJobRanking_Items." + rank + ".Slot")) {
+							slot = cf.getInt("PerJobRanking_Items." + rank + ".Slot");
 						}
 
 						if (slot != 999) {
@@ -610,39 +599,37 @@ public class GuiAddonManager {
 
 								UUID ID = UUID.fromString(id.toString());
 
-								String name =  plugin.getPlayerAPI().getDisplayByUUID("" + ID);
+								String name = plugin.getPlayerAPI().getDisplayByUUID("" + ID);
 
 								String icon = null;
 
-								if (cf.getBoolean("PerJobRankingl_Items." + rank + ".UseSkullAsMaterial")) {
+								if (cf.getBoolean("PerJobRanking_Items." + rank + ".UseSkullAsMaterial")) {
 									icon = "name;<name>";
 								} else {
-									icon = cf.getString("PerJobRankingl_Items." + rank + ".Material");
+									icon = cf.getString("PerJobRanking_Items." + rank + ".Material");
 								}
 
 								if (icon != null) {
 									ItemStack it = plugin.getItemAPI().createItem(name, icon);
 									ItemMeta meta = it.getItemMeta();
 
-									if (cf.contains("PerJobRankingl_Items." + rank + ".CustomModelData")) {
+									if (cf.contains("PerJobRanking_Items." + rank + ".CustomModelData")) {
 										meta.setCustomModelData(
-												cf.getInt("PerJobRankingl_Items." + rank + ".CustomModelData"));
+												cf.getInt("PerJobRanking_Items." + rank + ".CustomModelData"));
 									}
 
-									String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-											cf.getString("PerJobRankingl_Items." + rank + ".Display"));
+									String dis = sp.getLanguage().getGUIMessage("PerJobRanking." + rank + ".Display");
 
-									List<String> lore = sp.getLanguage().getListFromLanguage(sp.getUUID(),
-											"PerJobRanking.LoreForRanks.Blocks");
+									List<String> lore = sp.getLanguage()
+											.getGUIList("PerJobRanking.LoreForRanks.Blocks");
 
 									ArrayList<String> old = new ArrayList<String>();
 
 									for (String b : lore) {
 										old.add(plugin.getPluginManager().toHex(b)
-												.replaceAll("<job>", job.getDisplay(MyUUID))
-												.replaceAll("<times>",
-														plugin.getAPI().Format(
-																plugin.getPlayerAPI().getBrokenTimes("" + ID, job)))
+												.replaceAll("<job>", job.getDisplayOfJob(MyUUID)).replaceAll("<times>",
+
+														"" + plugin.getPlayerAPI().getBrokenTimes("" + ID, job))
 												.replaceAll("<rank>", "" + rank).replaceAll("<name>", name));
 									}
 
@@ -671,14 +658,15 @@ public class GuiAddonManager {
 
 		} else if (current.equalsIgnoreCase("LEVEL")) {
 
-			if (!plugin.getPlayerAPI().level_ranked.isEmpty() && plugin.getPlayerAPI().level_ranked.containsKey(job.getConfigID())) {
+			if (!plugin.getPlayerAPI().level_ranked.isEmpty()
+					&& plugin.getPlayerAPI().level_ranked.containsKey(job.getConfigID())) {
 				if (!plugin.getPlayerAPI().level_ranked.get(job.getConfigID()).isEmpty()) {
 					plugin.getPlayerAPI().level_ranked.get(job.getConfigID()).forEach((rank, id) -> {
 
 						int slot = 999;
 
-						if (cf.contains("PerJobRankingl_Items." + rank + ".Slot")) {
-							slot = cf.getInt("PerJobRankingl_Items." + rank + ".Slot");
+						if (cf.contains("PerJobRanking_Items." + rank + ".Slot")) {
+							slot = cf.getInt("PerJobRanking_Items." + rank + ".Slot");
 						}
 
 						if (slot != 999) {
@@ -687,36 +675,36 @@ public class GuiAddonManager {
 
 								UUID ID = UUID.fromString(id.toString());
 
-								String name =   plugin.getPlayerAPI().getDisplayByUUID("" + ID);
+								String name = plugin.getPlayerAPI().getDisplayByUUID("" + ID);
 
 								String icon = null;
 
-								if (cf.getBoolean("PerJobRankingl_Items." + rank + ".UseSkullAsMaterial")) {
+								if (cf.getBoolean("PerJobRanking_Items." + rank + ".UseSkullAsMaterial")) {
 									icon = "name;<name>";
 								} else {
-									icon = cf.getString("PerJobRankingl_Items." + rank + ".Material");
+									icon = cf.getString("PerJobRanking_Items." + rank + ".Material");
 								}
 
 								if (icon != null) {
 									ItemStack it = plugin.getItemAPI().createItem(name, icon);
 									ItemMeta meta = it.getItemMeta();
 
-									if (cf.contains("PerJobRankingl_Items." + rank + ".CustomModelData")) {
+									if (cf.contains("PerJobRanking_Items." + rank + ".CustomModelData")) {
 										meta.setCustomModelData(
-												cf.getInt("PerJobRankingl_Items." + rank + ".CustomModelData"));
+												cf.getInt("PerJobRanking_Items." + rank + ".CustomModelData"));
 									}
-							 
-									String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-											cf.getString("PerJobRankingl_Items." + rank + ".Display"));
 
-									List<String> lore = sp.getLanguage().getListFromLanguage(sp.getUUID(),
-											"PerJobRanking.LoreForRanks.Level");
+									String dis = sp.getLanguage().getGUIMessage("PerJobRanking." + rank + ".Display");
+
+									List<String> lore = sp.getLanguage().getGUIList("PerJobRanking.LoreForRanks.Level");
 
 									ArrayList<String> old = new ArrayList<String>();
 
 									for (String b : lore) {
 										old.add(plugin.getPluginManager().toHex(b)
-												.replaceAll("<job>", job.getDisplay(MyUUID)).replaceAll("<level>",	"" + plugin.getPlayerAPI().getLevelOF("" + ID, job))
+												.replaceAll("<job>", job.getDisplayOfJob(MyUUID))
+												.replaceAll("<level>",
+														"" + plugin.getPlayerAPI().getLevelOF("" + ID, job))
 												.replaceAll("<rank>", "" + rank).replaceAll("<name>", name));
 									}
 
@@ -754,7 +742,7 @@ public class GuiAddonManager {
 
 		int size = cfg.getInt("Size");
 
-		String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("GlobalRanking_Name"));
+		String name = sp.getLanguage().getGUIMessage("Global_Name");
 
 		plugin.getGUI().openInventory(player, size, name, GUIType.GLOBAL_RANKING, null, null);
 
@@ -773,7 +761,7 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Global_Custom.",
 						cfg.getStringList("Global_Custom.List"), name, cfg, null);
 				setGlobalRankingItems(inv_view, cfg, player);
-				
+
 				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
@@ -797,10 +785,8 @@ public class GuiAddonManager {
 				meta.setCustomModelData(cf.getInt("Global_RankingItems.OwnSkullItem.CustomModelData"));
 			}
 
-			String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-					cf.getString("Global_RankingItems.OwnSkullItem.Display"));
-			List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-					cf.getString("Global_RankingItems.OwnSkullItem.Lore"));
+			String dis = sp.getLanguage().getGUIMessage("Global_RankingItems.OwnSkull.Display");
+			List<String> lore = sp.getLanguage().getGUIList("Global_RankingItems.OwnSkull.Lore");
 
 			ArrayList<String> old = new ArrayList<String>();
 
@@ -870,7 +856,7 @@ public class GuiAddonManager {
 					}
 
 					double points = plugin.getPlayerAPI().getPoints(rank_uuid);
-					String name =  plugin.getPlayerAPI().getDisplayByUUID(rank_uuid);
+					String name = plugin.getPlayerAPI().getDisplayByUUID(rank_uuid);
 
 					if (name != null) {
 						ItemStack it = plugin.getItemAPI().createItem(name, icon);
@@ -880,10 +866,8 @@ public class GuiAddonManager {
 							meta.setCustomModelData(cf.getInt("Global_RankingItems." + r + ".CustomModelData"));
 						}
 
-						String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-								cf.getString("Global_RankingItems." + r + ".Display"));
-						List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-								cf.getString("Global_RankingItems." + r + ".Lore"));
+						String dis = sp.getLanguage().getGUIMessage("Global_RankingItems." + r + ".Display");
+						List<String> lore = sp.getLanguage().getGUIList("Global_RankingItems." + r + ".Lore");
 
 						ArrayList<String> old = new ArrayList<String>();
 
@@ -919,8 +903,8 @@ public class GuiAddonManager {
 		FileConfiguration cfg = plugin.getFileManager().getEarningsJobConfig();
 		String UUID = "" + player.getUniqueId();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(UUID);
-		String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Job_Earnings_Name"))
-				.replaceAll("<job>", job.getDisplay("" + player.getUniqueId()));
+		String name = sp.getLanguage().getGUIMessage("Job_Earnings_Name").replaceAll("<job>",
+				job.getDisplayOfJob("" + player.getUniqueId()));
 		int size = cfg.getInt("Job_Earnings_Size");
 
 		plugin.getGUI().openInventory(player, size, name, GUIType.EARNINGS_JOB, null, job);
@@ -940,7 +924,7 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Job_Earnings_Custom.",
 						cfg.getStringList("Job_Earnings_Custom.List"), name, cfg, job);
 				setEarningsItems_Single(inv_view, cfg, player, job);
-				
+
 				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
@@ -958,7 +942,7 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "Job_Earnings_Custom.",
 								cfg.getStringList("Job_Earnings_Custom.List"), name, cfg, job);
 						setEarningsItems_Single(inv, cfg, player, job);
-						
+
 						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
@@ -969,10 +953,10 @@ public class GuiAddonManager {
 	public void setEarningsItems_Single(InventoryView inv, FileConfiguration cf, Player pl, Job job) {
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + pl.getUniqueId());
-		
+
 		int page = 1;
-		
-		if(plugin.getPlayerAPI().existSettingData(sp.getUUIDAsString(), "EARNINGS_" + job.getConfigID())) {
+
+		if (plugin.getPlayerAPI().existSettingData(sp.getUUIDAsString(), "EARNINGS_" + job.getConfigID())) {
 			page = plugin.getPlayerAPI().getPageData(sp.getUUIDAsString(), "EARNINGS_" + job.getConfigID());
 		}
 
@@ -1016,10 +1000,8 @@ public class GuiAddonManager {
 
 						String date = l2.get(i3);
 
-						String dis = sp.getLanguage().getStringFromLanguage(pl.getUniqueId(),
-								"Job_Earnings_Items.Display");
-						List<String> lore = sp.getLanguage().getListFromLanguage(pl.getUniqueId(),
-								"Job_Earnings_Items.Lore");
+						String dis = sp.getLanguage().getGUIMessage("Job_Earnings_Items.Display");
+						List<String> lore = sp.getLanguage().getGUIList("Job_Earnings_Items.Lore");
 
 						String ic = cf.getString("Job_Earnings_Items.Icon");
 
@@ -1027,7 +1009,7 @@ public class GuiAddonManager {
 						ItemMeta meta = it.getItemMeta();
 
 						meta.setDisplayName(dis.replaceAll("<date>", date).replaceAll("<job>",
-								job.getDisplay("" + pl.getUniqueId())));
+								job.getDisplayOfJob("" + pl.getUniqueId())));
 
 						ArrayList<String> l = new ArrayList<String>();
 
@@ -1035,7 +1017,7 @@ public class GuiAddonManager {
 
 						for (String b : lore) {
 							l.add(plugin.getPluginManager().toHex(b).replaceAll("<date>", date)
-									.replaceAll("<job>", job.getDisplay("" + pl.getUniqueId()))
+									.replaceAll("<job>", job.getDisplayOfJob("" + pl.getUniqueId()))
 									.replaceAll("<money>", plugin.getAPI().Format(er)));
 						}
 
@@ -1111,10 +1093,8 @@ public class GuiAddonManager {
 
 				if (show) {
 					String icon = cf.getString("PageItems.Previous.Material");
-					String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-							cf.getString("PageItems.Previous.Display"));
-					List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-							cf.getString("PageItems.Previous.Lore"));
+					String dis = sp.getLanguage().getGUIMessage("Job_Earnings_Custom.Previous.Display");
+					List<String> lore = sp.getLanguage().getGUIList("Job_Earnings_Custom.Previous.Lore");
 					int slot = cf.getInt("PageItems.Previous.Slot");
 
 					ItemStack it = plugin.getItemAPI().createItem(pl.getName(), icon);
@@ -1149,10 +1129,8 @@ public class GuiAddonManager {
 
 				if (show) {
 					String icon = cf.getString("PageItems.Next.Material");
-					String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-							cf.getString("PageItems.Next.Display"));
-					List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-							cf.getString("PageItems.Next.Lore"));
+					String dis = sp.getLanguage().getGUIMessage("Job_Earnings_Custom.Next.Display");
+					List<String> lore = sp.getLanguage().getGUIList("Job_Earnings_Custom.Next.Lore");
 					int slot = cf.getInt("PageItems.Next.Slot");
 
 					ItemStack it = plugin.getItemAPI().createItem(pl.getName(), icon);
@@ -1188,7 +1166,7 @@ public class GuiAddonManager {
 		FileConfiguration cfg = plugin.getFileManager().getEarningsAllConfig();
 		String UUID = "" + player.getUniqueId();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(UUID);
-		String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("All_Earnings_Name"));
+		String name = sp.getLanguage().getGUIMessage("All_Earnings_Name");
 		int size = cfg.getInt("All_Earnings_Size");
 
 		plugin.getGUI().openInventory(player, size, name, GUIType.EARNINGS_ALL, null, null);
@@ -1212,7 +1190,7 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "All_Earnings_Custom.",
 								cfg.getStringList("All_Earnings_Custom.List"), name, cfg, null);
 						setEarningsItems_ALL(inv_view, cfg, player);
-						
+
 						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
@@ -1232,7 +1210,7 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "All_Earnings_Custom.",
 								cfg.getStringList("All_Earnings_Custom.List"), name, cfg, null);
 						setEarningsItems_ALL(inv, cfg, player);
-						
+
 						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
@@ -1243,10 +1221,10 @@ public class GuiAddonManager {
 	public void setEarningsItems_ALL(InventoryView inv, FileConfiguration cf, Player pl) {
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + pl.getUniqueId());
-		 
+
 		int page = 1;
-		
-		if(plugin.getPlayerAPI().existSettingData(sp.getUUIDAsString(), "EARNINGS_ALL")) {
+
+		if (plugin.getPlayerAPI().existSettingData(sp.getUUIDAsString(), "EARNINGS_ALL")) {
 			page = plugin.getPlayerAPI().getPageData(sp.getUUIDAsString(), "EARNINGS_ALL");
 		}
 
@@ -1289,9 +1267,8 @@ public class GuiAddonManager {
 
 					String date = l2.get(i3);
 
-					String dis = sp.getLanguage().getStringFromLanguage(pl.getUniqueId(), "All_Earnings_Items.Display");
-					List<String> lore = sp.getLanguage().getListFromLanguage(pl.getUniqueId(),
-							"All_Earnings_Items.Lore");
+					String dis = sp.getLanguage().getGUIMessage("All_Earnings_Items.Display");
+					List<String> lore = sp.getLanguage().getGUIList("All_Earnings_Items.Lore");
 
 					String ic = cf.getString("All_Earnings_Items.Icon");
 
@@ -1362,10 +1339,8 @@ public class GuiAddonManager {
 
 				if (show) {
 					String icon = cf.getString("PageItems.Previous.Material");
-					String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-							cf.getString("PageItems.Previous.Display"));
-					List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-							cf.getString("PageItems.Previous.Lore"));
+					String dis = sp.getLanguage().getGUIMessage("All_Earnings_Custom.Previous.Display");
+					List<String> lore = sp.getLanguage().getGUIList("All_Earnings_Custom.Previous.Lore");
 					int slot = cf.getInt("PageItems.Previous.Slot");
 
 					ItemStack it = plugin.getItemAPI().createItem(pl.getName(), icon);
@@ -1400,10 +1375,8 @@ public class GuiAddonManager {
 
 				if (show) {
 					String icon = cf.getString("PageItems.Next.Material");
-					String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-							cf.getString("PageItems.Next.Display"));
-					List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-							cf.getString("PageItems.Next.Lore"));
+					String dis = sp.getLanguage().getGUIMessage("All_Earnings_Custom.Next.Display");
+					List<String> lore = sp.getLanguage().getGUIList("All_Earnings_Custom.Next.Lore");
 					int slot = cf.getInt("PageItems.Next.Slot");
 
 					ItemStack it = plugin.getItemAPI().createItem(pl.getName(), icon);
@@ -1558,8 +1531,8 @@ public class GuiAddonManager {
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 
-		String name = sp.getLanguage().getStringFromPath(player.getUniqueId(),
-				cfg.getString("LeaveConfirm_Name").replaceAll("<job>", job.getDisplay(sp.getUUIDAsString())));
+		String name = sp.getLanguage().getGUIMessage("LeaveConfirm_Name").replaceAll("<job>",
+				job.getDisplayOfJob(sp.getUUIDAsString()));
 		int size = cfg.getInt("LeaveConfirm_Size");
 
 		plugin.getGUI().openInventory(player, size, name, GUIType.CONFIRM_LEAVE, null, job);
@@ -1578,7 +1551,7 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "LeaveConfirm_Custom.",
 						cfg.getStringList("LeaveConfirm_Custom.List"), name, cfg, null);
 				setLeaveConfirmItems(player, name, inv_view, job);
-				
+
 				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
@@ -1596,25 +1569,24 @@ public class GuiAddonManager {
 				ItemStack item = plugin.getItemAPI().createItem(player,
 						cfg.getString("LeaveConfirmItems.Button_YES.Icon"));
 
-				String dis = plugin.getPluginManager().toHex(sp.getLanguage().getStringFromPath(sp.getUUID(),
-						cfg.getString("LeaveConfirmItems.Button_YES.Display"))).replaceAll("&", "§");
+				String dis = plugin.getPluginManager()
+						.toHex(sp.getLanguage().getGUIMessage("LeaveConfirm.Button_YES.Display")).replaceAll("&", "§");
 				int slot = cfg.getInt("LeaveConfirmItems.Button_YES.Slot");
-				List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-						cfg.getString("LeaveConfirmItems.Button_YES.Lore"));
+				List<String> lore = sp.getLanguage().getGUIList("LeaveConfirm.Button_YES.Lore");
 				ArrayList<String> l = new ArrayList<String>();
 
 				ItemMeta meta = item.getItemMeta();
 
 				for (String line : lore) {
 					l.add(plugin.getPluginManager().toHex(line)
-							.replaceAll("<job>", job.getDisplay(sp.getUUIDAsString())).replaceAll("&", "§"));
+							.replaceAll("<job>", job.getDisplayOfJob(sp.getUUIDAsString())).replaceAll("&", "§"));
 				}
 
 				if (cfg.contains("LeaveConfirmItems.Button_YES.CustomModelData")) {
 					meta.setCustomModelData(cfg.getInt("LeaveConfirmItems.Button_YES.CustomModelData"));
 				}
 
-				meta.setDisplayName(dis.replaceAll("<job>", job.getDisplay(sp.getUUIDAsString())));
+				meta.setDisplayName(dis.replaceAll("<job>", job.getDisplayOfJob(sp.getUUIDAsString())));
 
 				meta.setLore(l);
 
@@ -1630,25 +1602,24 @@ public class GuiAddonManager {
 				ItemStack item = plugin.getItemAPI().createItem(player,
 						cfg.getString("LeaveConfirmItems.Button_NO.Icon"));
 
-				String dis = plugin.getPluginManager().toHex(sp.getLanguage().getStringFromPath(sp.getUUID(),
-						cfg.getString("LeaveConfirmItems.Button_NO.Display"))).replaceAll("&", "§");
+				String dis = plugin.getPluginManager()
+						.toHex(sp.getLanguage().getGUIMessage("LeaveConfirm.Button_NO.Display")).replaceAll("&", "§");
 				int slot = cfg.getInt("LeaveConfirmItems.Button_NO.Slot");
-				List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-						cfg.getString("LeaveConfirmItems.Button_NO.Lore"));
+				List<String> lore = sp.getLanguage().getGUIList("LeaveConfirm.Button_NO.Lore");
 				ArrayList<String> l = new ArrayList<String>();
 
 				ItemMeta meta = item.getItemMeta();
 
 				for (String line : lore) {
 					l.add(plugin.getPluginManager().toHex(line)
-							.replaceAll("<job>", job.getDisplay(sp.getUUIDAsString())).replaceAll("&", "§"));
+							.replaceAll("<job>", job.getDisplayOfJob(sp.getUUIDAsString())).replaceAll("&", "§"));
 				}
 
 				if (cfg.contains("LeaveConfirmItems.Button_NO.CustomModelData")) {
 					meta.setCustomModelData(cfg.getInt("LeaveConfirmItems.Button_NO.CustomModelData"));
 				}
 
-				meta.setDisplayName(dis.replaceAll("<job>", job.getDisplay(sp.getUUIDAsString())));
+				meta.setDisplayName(dis.replaceAll("<job>", job.getDisplayOfJob(sp.getUUIDAsString())));
 
 				meta.setLore(l);
 
@@ -1665,7 +1636,7 @@ public class GuiAddonManager {
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 
-		String name = sp.getLanguage().getStringFromPath(player.getUniqueId(), cfg.getString("ConfirmWithdraw_Name"));
+		String name = sp.getLanguage().getGUIMessage("ConfirmWithdraw_Name");
 		int size = cfg.getInt("ConfirmWithdraw_Size");
 
 		plugin.getGUI().openInventory(player, size, name, GUIType.CONFIRM_WITHDRAW, null, null);
@@ -1684,7 +1655,7 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "ConfirmWithdraw_Custom.",
 						cfg.getStringList("ConfirmWithdraw_Custom.List"), name, cfg, null);
 				setWithdrawConfigItems(player, name, inv_view);
-				
+
 				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
@@ -1702,11 +1673,11 @@ public class GuiAddonManager {
 				ItemStack item = plugin.getItemAPI().createItem(player,
 						cfg.getString("ConfirmWithdrawItems.Button_YES.Icon"));
 
-				String dis = plugin.getPluginManager().toHex(sp.getLanguage().getStringFromPath(sp.getUUID(),
-						cfg.getString("ConfirmWithdrawItems.Button_YES.Display"))).replaceAll("&", "§");
+				String dis = plugin.getPluginManager()
+						.toHex(sp.getLanguage().getGUIMessage("ConfirmWithdrawItems.Button_YES.Display"))
+						.replaceAll("&", "§");
 				int slot = cfg.getInt("ConfirmWithdrawItems.Button_YES.Slot");
-				List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-						cfg.getString("ConfirmWithdrawItems.Button_YES.Lore"));
+				List<String> lore = sp.getLanguage().getGUIList("ConfirmWithdrawItems.Button_YES.Lore");
 				ArrayList<String> l = new ArrayList<String>();
 
 				ItemMeta meta = item.getItemMeta();
@@ -1735,11 +1706,11 @@ public class GuiAddonManager {
 				ItemStack item = plugin.getItemAPI().createItem(player,
 						cfg.getString("ConfirmWithdrawItems.Button_NO.Icon"));
 
-				String dis = plugin.getPluginManager().toHex(sp.getLanguage().getStringFromPath(sp.getUUID(),
-						cfg.getString("ConfirmWithdrawItems.Button_NO.Display"))).replaceAll("&", "§");
+				String dis = plugin.getPluginManager()
+						.toHex(sp.getLanguage().getGUIMessage("ConfirmWithdrawItems.Button_NO.Display"))
+						.replaceAll("&", "§");
 				int slot = cfg.getInt("ConfirmWithdrawItems.Button_NO.Slot");
-				List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-						cfg.getString("ConfirmWithdrawItems.Button_NO.Lore"));
+				List<String> lore = sp.getLanguage().getGUIList("ConfirmWithdrawItems.Button_NO.Lore");
 				ArrayList<String> l = new ArrayList<String>();
 
 				ItemMeta meta = item.getItemMeta();
@@ -1768,7 +1739,7 @@ public class GuiAddonManager {
 		FileConfiguration cfg = plugin.getFileManager().getWithdrawConfig();
 		String UUID = "" + player.getUniqueId();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(UUID);
-		String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Withdraw_Name"));
+		String name = sp.getLanguage().getGUIMessage("Withdraw_Name");
 		int size = cfg.getInt("Withdraw_Size");
 
 		plugin.getGUI().openInventory(player, size, name, GUIType.WITHDRAW, null, null);
@@ -1788,7 +1759,7 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Withdraw_Custom.",
 						cfg.getStringList("Withdraw_Custom.List"), name, cfg, null);
 				setWithdrawItems(inv_view, player, sp);
-				
+
 				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
@@ -1806,7 +1777,7 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "Withdraw_Custom.",
 								cfg.getStringList("Withdraw_Custom.List"), name, cfg, null);
 						setWithdrawItems(inv, player, jb);
-						
+
 						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
@@ -1817,7 +1788,6 @@ public class GuiAddonManager {
 	public void setWithdrawItems(InventoryView inv, Player player, JobsPlayer jb) {
 
 		FileConfiguration cfg = plugin.getFileManager().getWithdrawConfig();
-		YamlConfiguration lg = jb.getLanguage().getConfig();
 
 		if (jb.getSalary() == 0) {
 
@@ -1827,7 +1797,7 @@ public class GuiAddonManager {
 
 					String icon = cfg.getString("Withdraw_Items.NoSalaryToCollect.Material");
 					int slot = cfg.getInt("Withdraw_Items.NoSalaryToCollect.Slot");
-					String dis = lg.getString("Withdraw_Custom.NoSalaryToCollect.Display");
+					String dis = jb.getLanguage().getGUIMessage("Withdraw_Custom.NoSalaryToCollect.Display");
 
 					ItemStack it = plugin.getItemAPI().createItem(player.getName(), icon);
 					ItemMeta meta = it.getItemMeta();
@@ -1840,7 +1810,7 @@ public class GuiAddonManager {
 
 					if (cfg.getBoolean("Withdraw_Items.NoSalaryToCollect.ShowLore")) {
 
-						List<String> lore = lg.getStringList("Withdraw_Custom.NoSalaryToCollect.Lore");
+						List<String> lore = jb.getLanguage().getGUIList("Withdraw_Custom.NoSalaryToCollect.Lore");
 
 						ArrayList<String> l = new ArrayList<String>();
 
@@ -1868,7 +1838,7 @@ public class GuiAddonManager {
 
 					String icon = cfg.getString("Withdraw_Items.Info.Material");
 					int slot = cfg.getInt("Withdraw_Items.Info.Slot");
-					String dis = lg.getString("Withdraw_Custom.Info.Display");
+					String dis = jb.getLanguage().getGUIMessage("Withdraw_Custom.Info.Display");
 
 					ItemStack it = plugin.getItemAPI().createItem(player.getName(), icon);
 					ItemMeta meta = it.getItemMeta();
@@ -1881,7 +1851,7 @@ public class GuiAddonManager {
 
 					if (cfg.getBoolean("Withdraw_Items.Info.ShowLore")) {
 
-						List<String> lore = lg.getStringList("Withdraw_Custom.Info.Lore");
+						List<String> lore = jb.getLanguage().getGUIList("Withdraw_Custom.Info.Lore");
 
 						ArrayList<String> l = new ArrayList<String>();
 
@@ -1908,7 +1878,7 @@ public class GuiAddonManager {
 
 					String icon = cfg.getString("Withdraw_Items.CollectButton.Material");
 					int slot = cfg.getInt("Withdraw_Items.CollectButton.Slot");
-					String dis = lg.getString("Withdraw_Custom.CollectButton.Display");
+					String dis = jb.getLanguage().getGUIMessage("Withdraw_Custom.CollectButton.Display");
 
 					ItemStack it = plugin.getItemAPI().createItem(player.getName(), icon);
 					ItemMeta meta = it.getItemMeta();
@@ -1921,8 +1891,10 @@ public class GuiAddonManager {
 
 					if (cfg.getBoolean("Withdraw_Items.CollectButton.ShowLore")) {
 
-						List<String> lore1 = lg.getStringList("Withdraw_Custom.CollectButton.LoreCanCollect");
-						List<String> lore2 = lg.getStringList("Withdraw_Custom.CollectButton.LoreCantCollect");
+						List<String> lore1 = jb.getLanguage()
+								.getGUIList("Withdraw_Custom.CollectButton.LoreCanCollect");
+						List<String> lore2 = jb.getLanguage()
+								.getGUIList("Withdraw_Custom.CollectButton.LoreCantCollect");
 
 						ArrayList<String> l = new ArrayList<String>();
 
@@ -1962,8 +1934,7 @@ public class GuiAddonManager {
 		FileConfiguration cfg = plugin.getFileManager().getLevelGUIConfig();
 		String UUID = "" + player.getUniqueId();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(UUID);
-		String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Levels_Name")).replaceAll("<job>",
-				job.getDisplay(UUID));
+		String name = sp.getLanguage().getGUIMessage("Levels_Name").replaceAll("<job>", job.getDisplayOfJob(UUID));
 		int size = cfg.getInt("Levels_Size");
 
 		plugin.getGUI().openInventory(player, size, name, GUIType.LEVELS, null, job);
@@ -1983,7 +1954,7 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Levels_Custom.",
 						cfg.getStringList("Levels_Custom.List"), name, cfg, null);
 				setLevelsItems(inv_view, name, cfg, player, job);
-				
+
 				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
@@ -2001,7 +1972,7 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "Levels_Custom.",
 								cfg.getStringList("Levels_Custom.List"), name, cfg, null);
 						setLevelsItems(inv, name, cfg, player, job);
-						
+
 						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
@@ -2012,10 +1983,10 @@ public class GuiAddonManager {
 	public void setLevelsItems(InventoryView inv, String name, FileConfiguration cf, Player pl, Job job) {
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + pl.getUniqueId());
-		 
+
 		int page = 1;
-		
-		if(plugin.getPlayerAPI().existSettingData(sp.getUUIDAsString(), "LEVELS_" + job.getConfigID())) {
+
+		if (plugin.getPlayerAPI().existSettingData(sp.getUUIDAsString(), "LEVELS_" + job.getConfigID())) {
 			page = plugin.getPlayerAPI().getPageData(sp.getUUIDAsString(), "LEVELS_" + job.getConfigID());
 		}
 
@@ -2049,84 +2020,98 @@ public class GuiAddonManager {
 
 						if (job.getIconOfLevel(lvl) != null) {
 
-							ArrayList<String> lore = new ArrayList<String>();
+							if (job.getLevelDisplay(lvl, "" + pl.getUniqueId()) != null) {
+								ArrayList<String> lore = new ArrayList<String>();
 
-							JobStats stats = sp.getStatsOf(job.getConfigID());
+								JobStats stats = sp.getStatsOf(job.getConfigID());
 
-							String ic = null;
-							int SPLEVEL = stats.getLevel();
+								String ic = null;
+								int SPLEVEL = stats.getLevel();
 
-							boolean is = SPLEVEL + 1 == lvl;
+								boolean is = SPLEVEL + 1 == lvl;
 
-							int iii = 0;
+								int iii = 0;
 
-							if (!cf.getBoolean("Options.UseLevelIconsOrCustom")) {
+								if (!cf.getBoolean("Options.UseLevelIconsOrCustom")) {
+
+									if (is) {
+										iii = cf.getInt("Options.Icons.CurrentlyWorkingOnOption.CustomModelData");
+										ic = cf.getString("Options.Icons.CurrentlyWorkingOn");
+									} else if (SPLEVEL >= lvl) {
+										iii = cf.getInt("Options.Icons.ReachedOption.CustomModelData");
+										ic = cf.getString("Options.Icons.Reached");
+									} else {
+										iii = cf.getInt("Options.Icons.NotReachedOption.CustomModelData");
+										ic = cf.getString("Options.Icons.NotReached");
+									}
+								} else {
+									ic = job.getIconOfLevel(lvl);
+									iii = job.getModelData();
+								}
+
+								String dis = job.getLevelDisplay(lvl, "" + pl.getUniqueId()).replaceAll("&", "§");
+								
+								String prefix = null;
 
 								if (is) {
-									iii = cf.getInt("Options.Icons.CurrentlyWorkingOnOption.CustomModelData");
-									ic = cf.getString("Options.Icons.CurrentlyWorkingOn");
+									prefix = "Currently";
 								} else if (SPLEVEL >= lvl) {
-									iii = cf.getInt("Options.Icons.ReachedOption.CustomModelData");
-									ic = cf.getString("Options.Icons.Reached");
+									prefix = "Reached";
 								} else {
-									iii = cf.getInt("Options.Icons.NotReachedOption.CustomModelData");
-									ic = cf.getString("Options.Icons.NotReached");
+									prefix = "Locked";
 								}
-							} else {
-								ic = job.getIconOfLevel(lvl);
-								iii = job.getModelData();
-							}
-
-							ItemStack it = plugin.getItemAPI().createItem(pl.getName(), ic);
-							ItemMeta meta = it.getItemMeta();
-
-							meta.setCustomModelData(iii);
-
-							meta.setDisplayName(plugin.getPluginManager()
-									.toHex(job.getLevelDisplay(lvl, "" + pl.getUniqueId())).replaceAll("&", "§"));
-
-							if (SPLEVEL >= lvl) {
-								if (cf.getBoolean("Options.EnchantedWhenReached")) {
-									meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, false);
+								
+								double exp2 = sp.getStatsOf(job.getConfigID()).getExp();
+								double need = plugin.getLevelAPI().getJobNeedExpWithOutPlayer(job, lvl);
+								 
+								double calc = need - exp2;
+								
+								double more = job.getMultiOfLevel(lvl);
+								
+								if (job.getLevelLore(lvl, "" + pl.getUniqueId()) != null) {
+									for (String line : job.getLevelLore(lvl, "" + pl.getUniqueId())) {
+										lore.add(plugin.getPluginManager().toHex(line).replaceAll("<more>", ""+more));
+									}
+								} 
+								
+								List<String> l1 = sp.getLanguage().getGUIList("Rewards_Item_Lores." + prefix);
+								
+								for (String line : l1) {
+									lore.add(plugin.getPluginManager().toHex(line).replaceAll("<exp>",
+											plugin.getAPI().Format(calc)).replaceAll("<more>", ""+more));
 								}
-							}
+								
+								ItemStack it = plugin.getItemAPI().createItem(pl.getName(), ic);
+								ItemMeta meta = it.getItemMeta();
 
-							if (job.getLevelLore(lvl, "" + pl.getUniqueId()) != null) {
-								for (String line : job.getLevelLore(lvl, "" + pl.getUniqueId())) {
-									lore.add(plugin.getPluginManager().toHex(line));
+								meta.setCustomModelData(iii);
+
+								meta.setDisplayName(dis);
+
+								if (SPLEVEL >= lvl) {
+									if (cf.getBoolean("Options.EnchantedWhenReached")) {
+										meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, false);
+									}
 								}
+
+							 
+
+								 
+
+							 
+
+							 
+
+								it.setAmount(lvl);
+
+								meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
+								meta.setLore(lore);
+
+								it.setItemMeta(meta);
+
+								inv.setItem(slot, it);
 							}
-
-							String prefix = null;
-
-							if (is) {
-								prefix = "Currently";
-							} else if (SPLEVEL >= lvl) {
-								prefix = "Reached";
-							} else {
-								prefix = "Locked";
-							}
-
-							double exp2 = sp.getStatsOf(job.getConfigID()).getExp();
-							double need = plugin.getLevelAPI().getJobNeedExpWithOutPlayer(job, lvl);
-
-							double calc = need - exp2;
-
-							for (String line : sp.getLanguage().getListFromLanguage(pl.getUniqueId(),
-									"Rewards_Item_Lores." + prefix)) {
-								lore.add(plugin.getPluginManager().toHex(line).replaceAll("<exp>",
-										plugin.getAPI().Format(calc)));
-							}
-
-							it.setAmount(lvl);
-
-							meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-
-							meta.setLore(lore);
-
-							it.setItemMeta(meta);
-
-							inv.setItem(slot, it);
 						}
 					}
 				}
@@ -2152,10 +2137,8 @@ public class GuiAddonManager {
 
 				if (show) {
 					String icon = cf.getString("PageItems.Previous.Material");
-					String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-							cf.getString("PageItems.Previous.Display"));
-					List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-							cf.getString("PageItems.Previous.Lore"));
+					String dis = sp.getLanguage().getGUIMessage("Levels_Custom.Previous.Display");
+					List<String> lore = sp.getLanguage().getGUIList("Levels_Custom.Previous.Lore");
 					int slot = cf.getInt("PageItems.Previous.Slot");
 
 					ItemStack it = plugin.getItemAPI().createItem(pl.getName(), icon);
@@ -2190,10 +2173,8 @@ public class GuiAddonManager {
 
 				if (show) {
 					String icon = cf.getString("PageItems.Next.Material");
-					String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-							cf.getString("PageItems.Next.Display"));
-					List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-							cf.getString("PageItems.Next.Lore"));
+					String dis = sp.getLanguage().getGUIMessage("Levels_Custom.Next.Display");
+					List<String> lore = sp.getLanguage().getGUIList("Levels_Custom.Next.Lore");
 					int slot = cf.getInt("PageItems.Next.Slot");
 
 					ItemStack it = plugin.getItemAPI().createItem(pl.getName(), icon);
@@ -2229,8 +2210,7 @@ public class GuiAddonManager {
 		FileConfiguration cfg = plugin.getFileManager().getRewardsConfig();
 		String UUID = "" + player.getUniqueId();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(UUID);
-		String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Rewards_Name"))
-				.replaceAll("<job>", job.getDisplay(UUID));
+		String name = sp.getLanguage().getGUIMessage("Rewards_Name").replaceAll("<job>", job.getDisplayOfJob(UUID));
 		int size = cfg.getInt("Rewards_Size");
 
 		plugin.getGUI().openInventory(player, size, name, GUIType.REWARDS, null, job);
@@ -2250,7 +2230,7 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Rewards_Custom.",
 						cfg.getStringList("Rewards_Custom.List"), name, cfg, null);
 				setRewardsItems(inv_view, name, cfg, player, job);
-				
+
 				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
@@ -2268,7 +2248,7 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "Rewards_Custom.",
 								cfg.getStringList("Rewards_Custom.List"), name, cfg, null);
 						setRewardsItems(inv, name, cfg, player, job);
-						
+
 						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
@@ -2279,12 +2259,12 @@ public class GuiAddonManager {
 	public void setRewardsItems(InventoryView inv, String name, FileConfiguration cf, Player pl, Job job) {
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + pl.getUniqueId());
- 
+
 		int page = 1;
-		
-		if(plugin.getPlayerAPI().existSettingData(sp.getUUIDAsString(),  "REWARDS_" + job.getConfigID())) {
-			page = plugin.getPlayerAPI().getPageData(sp.getUUIDAsString(),  "REWARDS_" + job.getConfigID());
-		}	
+
+		if (plugin.getPlayerAPI().existSettingData(sp.getUUIDAsString(), "REWARDS_" + job.getConfigID())) {
+			page = plugin.getPlayerAPI().getPageData(sp.getUUIDAsString(), "REWARDS_" + job.getConfigID());
+		}
 
 		List<String> slots = cf.getStringList("Rewards_Slots");
 		int pageLength = slots.size();
@@ -2311,10 +2291,8 @@ public class GuiAddonManager {
 
 				if (show) {
 					String icon = cf.getString("PageItems.Previous.Material");
-					String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-							cf.getString("PageItems.Previous.Display"));
-					List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-							cf.getString("PageItems.Previous.Lore"));
+					String dis = sp.getLanguage().getGUIMessage("Rewards_Custom.Previous.Display");
+					List<String> lore = sp.getLanguage().getGUIList("Rewards_Custom.Previous.Lore");
 					int slot = cf.getInt("PageItems.Previous.Slot");
 
 					ItemStack it = plugin.getItemAPI().createItem(pl.getName(), icon);
@@ -2349,10 +2327,8 @@ public class GuiAddonManager {
 
 				if (show) {
 					String icon = cf.getString("PageItems.Next.Material");
-					String dis = sp.getLanguage().getStringFromPath(sp.getUUID(),
-							cf.getString("PageItems.Next.Display"));
-					List<String> lore = sp.getLanguage().getListFromPath(sp.getUUID(),
-							cf.getString("PageItems.Next.Lore"));
+					String dis = sp.getLanguage().getGUIMessage("Rewards_Custom.Next.Display");
+					List<String> lore = sp.getLanguage().getGUIList("Rewards_Custom.Next.Lore");
 					int slot = cf.getInt("PageItems.Next.Slot");
 
 					ItemStack it = plugin.getItemAPI().createItem(pl.getName(), icon);
@@ -2405,14 +2381,16 @@ public class GuiAddonManager {
 			for (int i3 = 0; i3 < itemslist.size(); i3++) {
 
 				String type = itemslist.get(i3);
-		 
+
 				JobAction real = job.getActionofID(type);
-			 
+
 				String icon = job.getIconOfID(type);
-				String display = sp.getLanguage().getConfig()
-						.getString("Jobs." + job.getConfigID() + ".IDS." + type + ".Rewards.Display");
- 
-			 
+				String display = sp.getLanguage()
+						.getJobMessage("Jobs." + job.getConfigID() + ".IDS." + type + ".Rewards.Display");
+				
+				List<String> lore = sp.getLanguage()
+						.getJobList("Jobs." + job.getConfigID() + ".IDS." + type + ".Rewards.Lore");
+
 				ItemStack i2 = plugin.getItemAPI().createItem(pl, icon);
 				ItemMeta m = i2.getItemMeta();
 
@@ -2425,7 +2403,6 @@ public class GuiAddonManager {
 				String used = null;
 
 				if (display == null) {
-					Bukkit.getConsoleSender().sendMessage("§4Missing Display-Name on RewardsGUI from ID " + type);
 					used = "§cNot Found";
 				} else {
 					used = display;
@@ -2434,29 +2411,33 @@ public class GuiAddonManager {
 				m.setDisplayName(plugin.getPluginManager().toHex(used).replaceAll("&", "§"));
 
 				double fromfile = job.getRewardOf(type, real);
-				double reward = plugin.getPlayerAPI().getRealCalculatedAmountOfMoney(""+pl.getUniqueId(), job, fromfile);
+				double reward = plugin.getPlayerAPI().getRealCalculatedAmountOfMoney("" + pl.getUniqueId(), job,
+						fromfile);
 				int chance = job.getChanceOf(type, real);
 				double points = job.getPointsOf(type, real);
 				double exp = job.getExpOf(type, real);
-				double ep = plugin.getPlayerAPI().getRealCalculatedAmountOfExp(""+pl.getUniqueId(), job, exp);
+				double ep = plugin.getPlayerAPI().getRealCalculatedAmountOfExp("" + pl.getUniqueId(), job, exp);
 
+				 
+				
 				int brokentimes = 0;
 				double ear = 0.0;
-				
-				if(sp.getOwnJobs().contains(job.getConfigID())) {
-			 
-					 brokentimes = plugin.getPlayerAPI().getBrokenTimesOfID("" + pl.getUniqueId(), job, type,
+				int level = 1;
+
+				if (sp.getOwnJobs().contains(job.getConfigID())) {
+
+					brokentimes = plugin.getPlayerAPI().getBrokenTimesOfID("" + pl.getUniqueId(), job, type,
 							real.toString());
-					 ear = plugin.getPlayerAPI().getEarnedFrom("" + pl.getUniqueId(), job, type, real.toString());
+					ear = plugin.getPlayerAPI().getEarnedFrom("" + pl.getUniqueId(), job, type, real.toString());
+					level = plugin.getPlayerAPI().getLevelOF(""+pl.getUniqueId(), job);
 				}
 
-				for (String line : sp.getLanguage().getListFromLanguage(sp.getUUID(),
-						"Jobs." + job.getConfigID() + ".IDS." + type + ".Rewards.Lore")) {
+				for (String line : lore) {
 					l.add(plugin.getPluginManager().toHex(line).replaceAll("<exp>", plugin.getAPI().Format(ep))
-							.replaceAll("<points>", "" + points).replaceAll("<earned>", plugin.getAPI().Format(ear))
+							.replaceAll("<more>", ""+job.getMultiOfLevel(level)).replaceAll("<points>", "" + points).replaceAll("<earned>", plugin.getAPI().Format(ear))
 							.replaceAll("<action>", real.toString().toLowerCase()).replaceAll("<chance>", "" + chance)
-							.replaceAll("<times>", "" + brokentimes).replaceAll("<money>", plugin.getAPI().Format(reward))
-							.replaceAll("&", "§"));
+							.replaceAll("<times>", "" + brokentimes)
+							.replaceAll("<money>", plugin.getAPI().Format(reward)).replaceAll("&", "§"));
 				}
 
 				m.setLore(l);
@@ -2474,7 +2455,7 @@ public class GuiAddonManager {
 		FileConfiguration cfg = plugin.getFileManager().getStatsConfig();
 		String UUID = "" + player.getUniqueId();
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer(UUID);
-		String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Self_Name"));
+		String name = sp.getLanguage().getGUIMessage("Self_Name");
 		int size = cfg.getInt("Self_Size");
 
 		plugin.getGUI().openInventory(player, size, name, GUIType.STATS_SELF, null, null);
@@ -2494,7 +2475,7 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Self_Custom.",
 						cfg.getStringList("Self_Custom.List"), name, cfg, null);
 				setStatsItems(inv_view, name, cfg, UUID, player.getName(), player, "Self");
-				
+
 				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
@@ -2512,7 +2493,7 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "Self_Custom.",
 								cfg.getStringList("Self_Custom.List"), name, cfg, null);
 						setStatsItems(inv, name, cfg, "" + player.getUniqueId(), player.getName(), player, "Self");
-						
+
 						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
@@ -2524,8 +2505,7 @@ public class GuiAddonManager {
 		FileConfiguration cfg = plugin.getFileManager().getStatsConfig();
 
 		JobsPlayer sp = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
-		String name = sp.getLanguage().getStringFromPath(sp.getUUID(), cfg.getString("Other_Name")).replaceAll("<name>",
-				named);
+		String name = sp.getLanguage().getGUIMessage("Other_Name").replaceAll("<name>", named);
 		int size = cfg.getInt("Other_Size");
 
 		plugin.getGUI().openInventory(player, size, name, GUIType.STATS_OTHER, named, null);
@@ -2545,7 +2525,7 @@ public class GuiAddonManager {
 				plugin.getGUI().setCustomitems(player, player.getName(), inv_view, "Other_Custom.",
 						cfg.getStringList("Other_Custom.List"), name, cfg, null);
 				setStatsItems(inv_view, name, cfg, ud, named, player, "Other");
-				
+
 				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
@@ -2565,7 +2545,7 @@ public class GuiAddonManager {
 						plugin.getGUI().setCustomitems(player, player.getName(), inv, "Other_Custom.",
 								cfg.getStringList("Other_Custom.List"), name, cfg, null);
 						setStatsItems(inv, name, cfg, ud, name, player, "Other");
-						
+
 						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
@@ -2584,11 +2564,11 @@ public class GuiAddonManager {
 		if (title.equalsIgnoreCase(need)) {
 
 			// informations
-			
+
 			String mode = plugin.getFileManager().getStatsConfig().getString("DisplayMode").toUpperCase();
-			
+
 			ArrayList<String> li = null;
-			
+
 			if (mode.equalsIgnoreCase("CURRENT")) {
 				li = plugin.getPlayerAPI().getCurrentJobs(WATCHUUID);
 			} else if (mode.equalsIgnoreCase("OWNED")) {
@@ -2597,14 +2577,12 @@ public class GuiAddonManager {
 
 			double points = plugin.getPlayerAPI().getPoints(WATCHUUID);
 			int max = plugin.getPlayerAPI().getMaxJobs(WATCHUUID);
-			 
+
 			if (cf.getString(prefix + "_Skull.Material") != null) {
 				String skull_item = cf.getString(prefix + "_Skull.Material");
-				String skull_display = sp.getLanguage().getStringFromPath(pl.getUniqueId(),
-						cf.getString(prefix + "_Skull.Display"));
+				String skull_display = sp.getLanguage().getGUIMessage(prefix + "_Custom.Skull.Display");
 				int skull_slot = cf.getInt(prefix + "_Skull.Slot");
-				List<String> skull_lore = sp.getLanguage().getListFromPath(pl.getUniqueId(),
-						cf.getString(prefix + "_Skull.Lore"));
+				List<String> skull_lore = sp.getLanguage().getGUIList(prefix + "_Custom.Skull.Lore");
 
 				ItemStack skull = plugin.getItemAPI().createItem(NAME, skull_item);
 				ItemMeta m = skull.getItemMeta();
@@ -2641,56 +2619,58 @@ public class GuiAddonManager {
 
 				if (i >= li.size()) {
 
-					String error_item = cf.getString(prefix + "_Mot_Found_Item.Icon");
-					String error_display = sp.getLanguage().getStringFromPath(pl.getUniqueId(),
-							cf.getString(prefix + "_Mot_Found_Item.Display"));
-					List<String> errorl_lore = sp.getLanguage().getListFromPath(pl.getUniqueId(),
-							cf.getString(prefix + "_Mot_Found_Item.Lore"));
+					String error_item = cf.getString(prefix + "_Not_Found_Item.Icon");
 
-					ItemStack error = plugin.getItemAPI().createItem(pl, error_item);
-					ItemMeta m = error.getItemMeta();
+					if (error_item != null) {
+						String error_display = sp.getLanguage().getGUIMessage(prefix + "_Custom.NotFound.Display");
+						List<String> errorl_lore = sp.getLanguage().getGUIList(prefix + "_Custom.NotFound.Lore");
 
-					if (cf.contains(prefix + "_Mot_Found_Item.CustomModelData")) {
-						m.setCustomModelData(cf.getInt(prefix + "_Mot_Found_Item.CustomModelData"));
+						ItemStack error = plugin.getItemAPI().createItem(pl, error_item);
+						ItemMeta m = error.getItemMeta();
+
+						if (cf.contains(prefix + "_Not_Found_Item.CustomModelData")) {
+							m.setCustomModelData(cf.getInt(prefix + "_Not_Found_Item.CustomModelData"));
+						}
+
+						ArrayList<String> l = new ArrayList<String>();
+
+						for (String b : errorl_lore) {
+							l.add(plugin.getPluginManager().toHex(b).replaceAll("&", "§"));
+						}
+
+						m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+						m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
+						m.setLore(l);
+
+						m.setDisplayName(plugin.getPluginManager().toHex(error_display).replaceAll("<name>", NAME)
+								.replaceAll("&", "§"));
+
+						error.setItemMeta(m);
+
+						inv.setItem(Integer.valueOf(slots.get(i)), error);
 					}
-
-					ArrayList<String> l = new ArrayList<String>();
-
-					for (String b : errorl_lore) {
-						l.add(plugin.getPluginManager().toHex(b).replaceAll("&", "§"));
-					}
-
-					m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-					m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-
-					m.setLore(l);
-
-					m.setDisplayName(plugin.getPluginManager().toHex(error_display).replaceAll("<name>", NAME)
-							.replaceAll("&", "§"));
-
-					error.setItemMeta(m);
-
-					inv.setItem(Integer.valueOf(slots.get(i)), error);
 
 				} else {
 
-					Job job = plugin.getJobCache().get(li.get(i)); 
+					Job job = plugin.getJobCache().get(li.get(i));
 					// loading stats
 
 					int level = plugin.getPlayerAPI().getLevelOF(WATCHUUID, job);
-					double exp =  plugin.getPlayerAPI().getExpOf(WATCHUUID, job);;
+					double exp = plugin.getPlayerAPI().getExpOf(WATCHUUID, job);
+					;
 					String bought = plugin.getPlayerAPI().getBoughtDate(WATCHUUID, job);
 					Integer broken = plugin.getPlayerAPI().getBrokenTimes(WATCHUUID, job);
- 
+
 					String usedbuy = "";
 					String lvl = job.getLevelDisplay(level, WATCHUUID);
 					String usedlvl = "";
 
 					String item = job.getIcon();
-					String display = sp.getLanguage().getConfig()
-							.getString("Jobs." + job.getConfigID().toUpperCase() + ".StatsGUI.Display");
-					List<String> lore = sp.getLanguage().getConfig()
-							.getStringList("Jobs." + job.getConfigID().toUpperCase() + ".StatsGUI.Lore." + prefix);
+					String display = sp.getLanguage()
+							.getJobMessage("Jobs." + job.getConfigID().toUpperCase() + ".StatsGUI.Display");
+					List<String> lore = sp.getLanguage()
+							.getJobList("Jobs." + job.getConfigID().toUpperCase() + ".StatsGUI.Lore." + prefix);
 
 					ItemStack it = plugin.getItemAPI().createItem(pl, item);
 					ItemMeta m = it.getItemMeta();

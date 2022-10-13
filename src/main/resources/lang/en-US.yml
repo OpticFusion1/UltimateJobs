@@ -916,7 +916,7 @@ Levels_Custom:
 # '----------------'  '----------------'  '----------------'  '----------------'  '----------------'
 
 #config of stats gui - self
-Self_Name: "&b« &7Your Stats &b»"
+Self_Name: "&b« &7Own Stats &b»"
  
 Self_Custom:
 
@@ -1048,6 +1048,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -1162,6 +1197,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -1295,6 +1365,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -1428,6 +1533,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -1523,6 +1663,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -1618,6 +1793,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -1713,6 +1923,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -1827,6 +2072,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -1960,6 +2240,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -2074,6 +2389,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -2188,6 +2538,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -2283,6 +2668,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -2397,6 +2817,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -2511,6 +2966,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -2644,6 +3134,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -2756,6 +3281,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -2889,6 +3449,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -3022,6 +3617,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -3117,6 +3747,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -3269,6 +3934,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -3383,6 +4083,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -3498,6 +4233,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -3727,6 +4497,41 @@ Jobs:
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -3806,6 +4611,7 @@ Jobs:
       - "&7"
       - "&7Current Members (online)&8: &e<online> Players"
       - "&7" 
+      - "&7Level Rank&8: <level_rank>"
       - "&7Level &8: &b<stats_args_3> &8/ <stats_args_4>"
       - "&7Exp &8: &b<stats_args_5>&8/&c<stats_args_6>" 
 
@@ -3822,6 +4628,7 @@ Jobs:
            - "&7Blocks &8: &b<stats_args_2>" 
            - "&7Earned Today&8: &a<earned> Dollars"
            - "&7" 
+           - "&7Level Rank&8: <level_rank>"
            - "&7Level &8: &b<stats_args_3> &8/ <stats_args_4>"
            - "&7Exp &8: &b<stats_args_5>&8/&c<stats_args_6>" 
        
@@ -3832,6 +4639,7 @@ Jobs:
            - "&7Blocks &8: &b<stats_args_2>" 
            - "&7Earned Today&8: &a<earned> Dollars"
            - "&7" 
+           - "&7Level Rank&8: <level_rank>"
            - "&7Level &8: &b<stats_args_3> &8/ <stats_args_4>"
            - "&7Exp &8: &b<stats_args_5>&8/&c<stats_args_6>" 
       
@@ -3839,9 +4647,13 @@ Jobs:
     
       1:  
         Display: "&6Level I"
+        
+        Rank: "&7&lAverage Lumberjack"
      
       2:  
         Display: "&6Level II"
+        
+        Rank: "&7&lAverage Lumberjack"
         
         Lore:
           - "&7Rewards of this Level&8:"
@@ -3850,6 +4662,8 @@ Jobs:
       3:  
         Display: "&6Level III"
         
+        Rank: "&7&lAverage Lumberjack"
+        
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a500 Money"
@@ -3857,9 +4671,56 @@ Jobs:
       4: 
         Display: "&6Level IV"
         
+        Rank: "&7&lAverage Lumberjack"
+        
         Lore:
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Rank: "&7&lAverage Lumberjack"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Rank: "&7&lAverage Lumberjack"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Rank: "&7&lAverage Lumberjack"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Rank: "&7&lAverage Lumberjack"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Rank: "&b&lProf. Lumberjack"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 
@@ -3920,6 +4781,7 @@ Jobs:
       - "&7"
       - "&7Current Members (online)&8: &e<online> Players"
       - "&7" 
+      - "&7Level Rank&8: <level_rank>"
       - "&7Level &8: &b<stats_args_3> &8/ <stats_args_4>"
       - "&7Exp &8: &b<stats_args_5>&8/&c<stats_args_6>" 
       
@@ -3936,6 +4798,7 @@ Jobs:
            - "&7Blocks &8: &b<stats_args_2>" 
            - "&7Earned Today&8: &a<earned> Dollars"
            - "&7" 
+           - "&7Level Rank&8: <level_rank>"
            - "&7Level &8: &b<stats_args_3> &8/ <stats_args_4>"
            - "&7Exp &8: &b<stats_args_5>&8/&c<stats_args_6>" 
        
@@ -3946,6 +4809,7 @@ Jobs:
            - "&7Blocks &8: &b<stats_args_2>" 
            - "&7Earned Today&8: &a<earned> Dollars"
            - "&7" 
+           - "&7Level Rank&8: <level_rank>"
            - "&7Level &8: &b<stats_args_3> &8/ <stats_args_4>"
            - "&7Exp &8: &b<stats_args_5>&8/&c<stats_args_6>" 
       
@@ -3953,27 +4817,106 @@ Jobs:
     
       1:  
         Display: "&6Level I"
+        
+        Rank: "&7&lAverage Miner"
      
       2:  
         Display: "&6Level II"
         
+        Rank: "&7&lAverage Miner"
+        
         Lore:
+          - "&7"
+          - "&7You will earn &a<more>% &7more Money per Block"
+          - "&7"
           - "&7Rewards of this Level&8:"
           - "&8-> &a250 Money"
       
       3:  
         Display: "&6Level III"
         
+        Rank: "&7&lAverage Miner"
+        
         Lore:
+          - "&7"
+          - "&7You will earn &a<more>% &7more Money per Block"
+          - "&7"
           - "&7Rewards of this Level&8:"
           - "&8-> &a500 Money"
       
       4: 
         Display: "&6Level IV"
         
+        Rank: "&7&lAverage Miner"
+        
         Lore:
+          - "&7"
+          - "&7You will earn &a<more>% &7more Money per Block"
+          - "&7"
           - "&7Rewards of this Level&8:"
           - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Rank: "&7&lAverage Miner"
+        
+        Lore:
+          - "&7"
+          - "&7You will earn &a<more>% &7more Money per Block"
+          - "&7"
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Rank: "&7&lAverage Miner"
+        
+        Lore:
+          - "&7"
+          - "&7You will earn &a<more>% &7more Money per Block"
+          - "&7"
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Rank: "&7&lAverage Miner"
+        
+        Lore:
+          - "&7"
+          - "&7You will earn &a<more>% &7more Money per Block"
+          - "&7"
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Rank: "&7&lAverage Miner"
+        
+        Lore:
+          - "&7"
+          - "&7You will earn &a<more>% &7more Money per Block"
+          - "&7"
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Rank: "&b&lProf. Miner"
+        
+        BroadCastMessageOnLevelUp: "<prefix> &7The Player &c<name> &7just reached &blvl.<level> &7in the Miner Job! Hes now a Pro!"
+        
+        Lore:
+          - "&7"
+          - "&7You will earn &a<more>% &7more Money per Block"
+          - "&7"
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
       
     IDS:
 

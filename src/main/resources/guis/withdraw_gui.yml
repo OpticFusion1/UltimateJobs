@@ -71,9 +71,7 @@ Withdraw_Custom:
     - "Close" 
  
   Close:
-
-    Display: "{language:Withdraw_Custom.Close.Display}"
-
+ 
     ActionList:
       - "CLOSE"
       

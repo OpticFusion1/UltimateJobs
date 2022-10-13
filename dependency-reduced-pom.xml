@@ -98,6 +98,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.github.koca2000</groupId>
+      <artifactId>NoteBlockAPI</artifactId>
+      <version>1.6.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>io.lumine</groupId>
       <artifactId>Mythic-Dist</artifactId>
       <version>5.0.3-SNAPSHOT</version>

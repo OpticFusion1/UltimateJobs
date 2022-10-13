@@ -8,6 +8,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import de.warsteiner.jobs.api.Job;
+import de.warsteiner.jobs.utils.objects.JobLevel;
 import de.warsteiner.jobs.utils.objects.JobsPlayer;
 
 public class PlayerLevelJobEvent extends Event {
@@ -18,9 +19,9 @@ public class PlayerLevelJobEvent extends Event {
 	public JobsPlayer pl;
 	public Job job;
 	public Player player; 
-	public int level;
+	public JobLevel level;
 
-	public PlayerLevelJobEvent(Player player, JobsPlayer plt, Job job, int level) { 
+	public PlayerLevelJobEvent(Player player, JobsPlayer plt, Job job, JobLevel level) { 
 		this.pl = plt; 
 		this.level = level;
 		this.job = job;
@@ -28,7 +29,7 @@ public class PlayerLevelJobEvent extends Event {
 		Bukkit.getPluginManager().callEvent(this);
 	}
 	
-	public int getNewLevel() {
+	public JobLevel getNewLevel() {
 		return level;
 	}
 
