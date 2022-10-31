@@ -48,7 +48,7 @@ LeaveConfirm_Custom:
   Back:
  
     ActionList:
-      - "GUI:SETTINGS"
+      - "GUI;SETTINGS"
  
     Material: "name;Mhf_ArrowLeft"
 
@@ -56,5 +56,5 @@ LeaveConfirm_Custom:
 
 #Placeholders of the GUI
 LeaveConfirm_Place:
-  - "BLACK_STAINED_GLASS_PANE:13:&8-/-"
+  - "<random_generated_glass_plate>:13:&8-/-"
   

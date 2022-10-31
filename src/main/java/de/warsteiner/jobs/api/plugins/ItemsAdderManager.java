@@ -10,8 +10,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.api.Job;
-import de.warsteiner.jobs.utils.JobAction;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobAction;
 import dev.lone.itemsadder.api.CustomStack;
 
 public class ItemsAdderManager {

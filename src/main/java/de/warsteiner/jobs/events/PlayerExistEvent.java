@@ -17,7 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.api.PlayerAPI; 
 import de.warsteiner.jobs.utils.JsonMessage;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 
 public class PlayerExistEvent implements Listener {
 
@@ -30,7 +30,7 @@ public class PlayerExistEvent implements Listener {
 
 			@Override
 			public void run() {
-				FileConfiguration config = UltimateJobs.getPlugin().getFileManager().getConfig();
+				FileConfiguration config = UltimateJobs.getPlugin().getLocalFileManager().getConfig();
 
 				PlayerAPI cache = plugin.getPlayerAPI(); 
 
@@ -45,7 +45,7 @@ public class PlayerExistEvent implements Listener {
 
 					plugin.getPlayerOfflineAPI().addAPlayerToList("" + UUID, name.toUpperCase(), name);
 
-					String lang = plugin.getFileManager().getLanguageConfig().getString("PlayerDefaultLanguage");
+					String lang = plugin.getLocalFileManager().getLanguageConfig().getString("PlayerDefaultLanguage");
 
 					if (plugin.getPlayerOfflineAPI().getSettingData("" + UUID, "LANG") == null) {
 						plugin.getPlayerOfflineAPI().createSettingData("" + UUID, "LANG", lang);
@@ -126,7 +126,7 @@ public class PlayerExistEvent implements Listener {
 										"§8[§9UltimateJobs§8] §7Click to View a new §aUpdate§7! §7Current Version§8: §b"
 												+ plugin.getDescription().getVersion() + " §7new Version§8: §c"
 												+ plugin.getWebManager().newVersion + "")
-										.setClickAsExecuteCmd("/jobsadmin update").save().send(player);
+										.setClickAsURL("https://www.spigotmc.org/resources/ultimatejobs-player-jobs.99978/").save().send(player);
 							}
 						}
  

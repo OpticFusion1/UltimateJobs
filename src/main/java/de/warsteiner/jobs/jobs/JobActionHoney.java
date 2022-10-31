@@ -30,7 +30,7 @@ public class JobActionHoney implements Listener {
 			Beehive beehive = (Beehive) bdata;
 
 			if (beehive.getHoneyLevel() != beehive.getMaximumHoneyLevel()) {
-				if(plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+				if(plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 					event.setCancelled(true);
 				}
 				return;

@@ -7,6 +7,8 @@ Material: "CHEST"
 
 ColorOfBossBar: "GREEN"
 
+CustomGlassPlateColor: "GREEN_STAINED_GLASS_PANE"
+
 Slot: 34
 
 Price: 350
@@ -19,12 +21,38 @@ IDS:
 
   FIND_TREASURE:
     List:
-      - "C"  
+      - "C1" 
+      - "C2" 
+      - "C3"
 
-    C:
+    C3:
 
       Chance: 85
-      ID: "CHEST"
+      ID: "DESERT_PYRAMID"
+      Money: 2
+      Exp: 5
+      Points: 0.05
+      RewardsGUI:
+    
+        See: true
+        Icon: "CHEST"
+
+    C2:
+
+      Chance: 85
+      ID: "RUINED_PORTAL"
+      Money: 2
+      Exp: 5
+      Points: 0.05
+      RewardsGUI:
+    
+        See: true
+        Icon: "CHEST"
+
+    C1:
+
+      Chance: 85
+      ID: "BURIED_TREASURE"
       Money: 2
       Exp: 5
       Points: 0.05

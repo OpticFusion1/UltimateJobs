@@ -21,7 +21,7 @@ public class JobActionGrowSapling implements Listener {
 	public void onGrow(StructureGrowEvent event) { 
 		
 		if (event.isCancelled()) {
-			if(plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if(plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				event.setCancelled(true);
 			}
 			return;

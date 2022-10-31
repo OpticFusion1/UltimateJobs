@@ -13,9 +13,9 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.manager.GuiManager;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
 import de.warsteiner.jobs.utils.objects.PluginColor;
-import de.warsteiner.jobs.utils.objects.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.guis.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 import de.warsteiner.jobs.utils.playercommand.SubCommand;
 
 public class JobsCommand implements CommandExecutor {
@@ -24,7 +24,7 @@ public class JobsCommand implements CommandExecutor {
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		
-		FileConfiguration config = plugin.getFileManager().getConfig();
+		FileConfiguration config = plugin.getLocalFileManager().getConfig();
 
 		int length = args.length;
 		 

@@ -1,4 +1,4 @@
-package de.warsteiner.jobs.utils.objects;
+package de.warsteiner.jobs.utils.objects.jobs;
 
 import java.util.ArrayList;
 import java.util.List;

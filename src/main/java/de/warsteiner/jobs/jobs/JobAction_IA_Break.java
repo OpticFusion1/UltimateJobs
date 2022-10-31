@@ -18,7 +18,7 @@ public class JobAction_IA_Break  implements Listener {
 	public void onBreak(CustomBlockBreakEvent event) { 
 		
 		if (event.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				event.setCancelled(true);
 			}
 			return;

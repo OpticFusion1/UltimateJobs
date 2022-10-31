@@ -7,6 +7,8 @@ Material: "CRAFTING_TABLE"
 
 ColorOfBossBar: "YELLOW"
 
+CustomGlassPlateColor: "YELLOW_STAINED_GLASS_PANE"
+
 Slot: 19
 
 Price: 350

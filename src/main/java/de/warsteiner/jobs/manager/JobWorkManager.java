@@ -38,15 +38,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.sk89q.worldguard.bukkit.listener.debounce.BlockPistonExtendKey;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.api.Job;
 import de.warsteiner.jobs.api.JobAPI;
 import de.warsteiner.jobs.command.AdminCommand;
-import de.warsteiner.jobs.utils.JobAction;
 import de.warsteiner.jobs.utils.cevents.PlayerFinishedWorkEvent;
-import de.warsteiner.jobs.utils.objects.JobsMultiplier;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
-import de.warsteiner.jobs.utils.objects.MultiplierType;
-import de.warsteiner.jobs.utils.objects.MultiplierWeight;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobAction;
+import de.warsteiner.jobs.utils.objects.jobs.JobsMultiplier;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
+import de.warsteiner.jobs.utils.objects.multipliers.MultiplierType;
+import de.warsteiner.jobs.utils.objects.multipliers.MultiplierWeight;
 
 public class JobWorkManager {
 
@@ -62,7 +62,7 @@ public class JobWorkManager {
 	public void executeHoneyAction(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		if (event.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				event.setCancelled(true);
 			}
 			return;
@@ -93,7 +93,7 @@ public class JobWorkManager {
 
 	public void executeEatAction(FoodLevelChangeEvent event) {
 		if (event.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				event.setCancelled(true);
 			}
 			return;
@@ -183,7 +183,7 @@ public class JobWorkManager {
 			DyeColor color = sheep.getColor();
 
 			if (event.isCancelled()) {
-				if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+				if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 					event.setCancelled(true);
 				}
 				return;
@@ -208,7 +208,7 @@ public class JobWorkManager {
 		final int amount = event.getInventory().getResult().getAmount();
 
 		if (event.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				event.setCancelled(true);
 			}
 			return;
@@ -229,7 +229,7 @@ public class JobWorkManager {
 
 	public void executeStripLogWork(PlayerInteractEvent event) {
 		if (event.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				event.setCancelled(true);
 			}
 			return;
@@ -265,7 +265,7 @@ public class JobWorkManager {
 		}
 	
 		if (event.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				
 				event.setCancelled(true);
 			}
@@ -287,16 +287,15 @@ public class JobWorkManager {
 		}
 	}
 
-	public void executeTreasureEvent(Block block, Player player) {
-		final Material type = block.getType();
-
+	public void executeTreasureEvent(String type, Player player) {
+		 
 		UUID UUID = player.getUniqueId();
 
 		if (getJobOnWork("" + UUID, JobAction.FIND_TREASURE, "" + type) != null) {
 
 			Job job = getJobOnWork("" + UUID, JobAction.FIND_TREASURE, "" + type);
 
-			finalWork("" + type, UUID, JobAction.FIND_TREASURE, "find-treasure-action", 1, block, null, true, true,
+			finalWork("" + type, UUID, JobAction.FIND_TREASURE, "find-treasure-action", 1, null, null, true, false,
 					false, job);
 			return;
 		}
@@ -306,7 +305,7 @@ public class JobWorkManager {
 		final Material type = event.getBlock().getType();
 
 		if (event.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				event.setCancelled(true);
 			}
 			return;
@@ -326,7 +325,7 @@ public class JobWorkManager {
 
 	public void executeFishWork(PlayerFishEvent event) {
 		if (event.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				event.setCancelled(true);
 			}
 			return;
@@ -353,7 +352,7 @@ public class JobWorkManager {
 		final EntityType type = event.getEntity().getType();
 
 		if (event.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				event.setCancelled(true);
 			}
 			return;
@@ -380,7 +379,7 @@ public class JobWorkManager {
 		final EntityType type = event.getEntity().getType();
 
 		if (event.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				event.setCancelled(true);
 			}
 			return;
@@ -444,7 +443,7 @@ public class JobWorkManager {
 		}
 
 		if (event.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				event.setCancelled(true);
 			}
 			return;
@@ -630,7 +629,7 @@ public class JobWorkManager {
 			public void run() {
 				String PUID = "" + ID;
 
-				FileConfiguration cfg = plugin.getFileManager().getConfig();
+				FileConfiguration cfg = plugin.getLocalFileManager().getConfig();
 
 				if (plugin.getPlayerAPI().getCurrentJobs(PUID).contains(job.getConfigID().toUpperCase())) {
 
@@ -682,7 +681,11 @@ public class JobWorkManager {
 	 
 							double od1 = plugin.getPlayerAPI().getRealCalculatedAmountOfMoney(PUID, job, fixed);
 	 
+							 String date_average = plugin.getPluginManager().getDateTodayFromCalWithOutSeconds();
 							 
+							 plugin.getPlayerAPI().updateAverageEarnings(PUID, job, date_average, od1);
+							 plugin.getPlayerAPI().updateAverageWork(PUID, job, date_average, amount);
+							 plugin.getPlayerAPI().updateAverageExp(PUID, job, date_average, EPC1);
 	 
 							double earned_old = plugin.getPlayerAPI().getEarnedFrom(PUID, job, usedid, "" + ac);
 	 
@@ -691,7 +694,7 @@ public class JobWorkManager {
 							if (job.hasVaultReward(iD, ac)) {
 								if (can) {
 
-									if (plugin.getFileManager().getConfig().getString("PayMentMode").toUpperCase()
+									if (plugin.getLocalFileManager().getConfig().getString("PayMentMode").toUpperCase()
 											.equalsIgnoreCase("INSTANT")) {
 
 										if (Bukkit.getPlayer(ID).isOnline()) {
@@ -710,7 +713,7 @@ public class JobWorkManager {
 
 										} else {
 
-											if (UltimateJobs.getPlugin().getFileManager().getConfig()
+											if (UltimateJobs.getPlugin().getLocalFileManager().getConfig()
 													.getInt("MaxDefaultJobs") != 0) {
 												return;
 											}

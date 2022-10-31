@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
  
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
-import de.warsteiner.jobs.utils.objects.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.guis.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 import de.warsteiner.jobs.utils.playercommand.SubCommand;
 
 public class LangSub extends SubCommand {
@@ -53,7 +53,7 @@ public class LangSub extends SubCommand {
 
 	@Override
 	public boolean isEnabled() {
-		return plugin.getFileManager().getCMDSettings().getBoolean("Commands.Language.Enabled");
+		return plugin.getLocalFileManager().getCMDSettings().getBoolean("Commands.Language.Enabled");
 	}
 
 	@Override

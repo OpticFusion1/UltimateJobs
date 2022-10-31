@@ -17,10 +17,10 @@ import org.bukkit.inventory.ItemStack;
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.manager.FileManager;
 import de.warsteiner.jobs.utils.objects.DataMode;
-import de.warsteiner.jobs.utils.objects.Item;
-import de.warsteiner.jobs.utils.objects.ItemAction;
-import de.warsteiner.jobs.utils.objects.ItemType;
 import de.warsteiner.jobs.utils.objects.PluginColor;
+import de.warsteiner.jobs.utils.objects.items.Item;
+import de.warsteiner.jobs.utils.objects.items.ItemAction;
+import de.warsteiner.jobs.utils.objects.items.ItemType;
 
 public class ItemAPI {
 
@@ -30,6 +30,11 @@ public class ItemAPI {
 	public ArrayList<String> fails = new ArrayList<String>();
 	
 	public HashMap<String, List<Item>> custom_items = new HashMap<String,  List<Item>>();
+	public HashMap<String, Item> other_items = new HashMap<String,  Item>();
+	
+	public HashMap<String, Item> getOtherItems() {
+		return this.other_items;
+	}
 	
 	public HashMap<String, Item> getItems() {
 		return this.items;
@@ -42,59 +47,63 @@ public class ItemAPI {
 	@SuppressWarnings("deprecation")
 	public ItemStack getItemStack(String named, String player, String item) {
 		
+		if(getOtherItems().containsKey(named)) {
+			return getOtherItems().get(named).getItemStack();
+		}
+		
+		if(getItems().containsKey(named)) {
+			return getItem(named).getItemStack();
+		}
+		
 		if(!getItems().containsKey(named)) {
 			
 			//creating items
 			
 			ItemStack it = null;
 			
-			if (plugin.getPluginManager().isInstalled("ItemsAdder")) {
+			if(item != null) {
+				if (plugin.getPluginManager().isInstalled("ItemsAdder")) {
 
-				if (plugin.getItemsAdderManager().checkIfItemStackExist(item) != null) { 
-					it =  plugin.getItemsAdderManager().checkIfItemStackExist(item);
-				}
-			} 
-			
-			if (item.contains(";")) {
-				String[] split = item.split(";");
-				if(split[1] != null) {
-					String s = split[1];
-					if (split[0].toLowerCase().equalsIgnoreCase("url")) { 
-						it = plugin.getSkullCreatorAPI().itemFromUrl(s);
-					} else if (split[0].toLowerCase().equalsIgnoreCase("uuid")) { 
-						it = plugin.getSkullCreatorAPI().itemFromUuid(s);
-					} if (split[0].toLowerCase().equalsIgnoreCase("name")) {
-						it = plugin.getSkullCreatorAPI().itemFromName(s.replaceAll("<name>", player));
-					} if (split[0].toLowerCase().equalsIgnoreCase("base64")) { 
-						it = plugin.getSkullCreatorAPI().itemFromBase64(s);
+					if (plugin.getItemsAdderManager().checkIfItemStackExist(item) != null) { 
+						it =  plugin.getItemsAdderManager().checkIfItemStackExist(item);
+					}
+				} 
+				
+				if (item.contains(";")) {
+					String[] split = item.split(";");
+					if(split[1] != null) {
+						String s = split[1];
+						if (split[0].toLowerCase().equalsIgnoreCase("url")) { 
+							it = plugin.getSkullCreatorAPI().itemFromUrl(s);
+						} else if (split[0].toLowerCase().equalsIgnoreCase("uuid")) { 
+							it = plugin.getSkullCreatorAPI().itemFromUuid(s);
+						} if (split[0].toLowerCase().equalsIgnoreCase("name")) {
+							it = plugin.getSkullCreatorAPI().itemFromName(s.replaceAll("<name>", player));
+						} if (split[0].toLowerCase().equalsIgnoreCase("base64")) { 
+							it = plugin.getSkullCreatorAPI().itemFromBase64(s);
+						}
+					}
+				}  else {
+
+					try {
+						Material used = Material.valueOf(item.toUpperCase());
+		  
+						it = new ItemStack(used, 1);
+					} catch (IllegalArgumentException ex) { 
 					}
 				}
-			}  else {
-
-				try {
-					Material used = Material.valueOf(item.toUpperCase());
-	  
-					it = new ItemStack(used, 1);
-				} catch (IllegalArgumentException ex) { 
-				}
 			}
-			
+			 
 			return it;
-			
-		} else {
-			
-			//loading item
-			
-			return getItem(named).getItemStack();
-			
-		} 
+		}
+		return null;
 	}
 
 	public void loadItems() {
 
 		items.clear();
 
-		FileManager fm = plugin.getFileManager();
+		FileManager fm = plugin.getLocalFileManager();
 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.ITEM_RELATED_INFO.getPrefix() + "Checking Plugin Items...");
 
@@ -107,9 +116,20 @@ public class ItemAPI {
 			checkCustomItems("Withdraw_Custom", named, fm.getWithdrawConfig());
 		});
 		
+		if(fm.getWithdrawConfig() != null) {
+			checkOtherItems("Withdraw_Items.NoSalaryToCollect.Material",  "Withdraw_Items.NoSalaryToCollect", fm.getWithdrawConfig());
+			checkOtherItems("Withdraw_Items.Info.Material",  "Withdraw_Items.Info", fm.getWithdrawConfig());
+			checkOtherItems("Withdraw_Items.CollectButton.Material",  "Withdraw_Items.CollectButton", fm.getWithdrawConfig());
+		}
+		
 		fm.getWithdrawConfirmConfig().getStringList("ConfirmWithdraw_Custom.List").forEach((named) -> {
 			checkCustomItems("ConfirmWithdraw_Custom", named, fm.getWithdrawConfirmConfig());
 		});
+		
+		if(fm.getWithdrawConfirmConfig() != null) {
+			checkOtherItems("ConfirmWithdrawItems.Button_YES.Icon",  "ConfirmWithdrawItems.Button_YES", fm.getWithdrawConfirmConfig());
+			checkOtherItems("ConfirmWithdrawItems.Button_NO.Icon",  "ConfirmWithdrawItems.Button_NO", fm.getWithdrawConfirmConfig());
+		}
 		
 		fm.getStatsConfig().getStringList("Other_Custom.List").forEach((named) -> {
 			checkCustomItems("Other_Custom", named, fm.getStatsConfig());
@@ -125,25 +145,64 @@ public class ItemAPI {
 		fm.getRewardsConfig().getStringList("Rewards_Custom.List").forEach((named) -> {
 			checkCustomItems("Rewards_Custom", named, fm.getRewardsConfig());
 		});
+		
+		if(fm.getRewardsConfig() != null) {
+			checkOtherItems("PageItems.Previous.Material",  "Rewards.Previous", fm.getRewardsConfig());
+			checkOtherItems("PageItems.Next.Material",  "Rewards.Next", fm.getRewardsConfig());
+		}
+		
 		fm.getRankingPerJobConfig().getStringList("PerJobRanking_Custom.List").forEach((named) -> {
 			checkCustomItems("PerJobRanking_Custom", named, fm.getRankingPerJobConfig());
 		});
+		
+		if(fm.getRankingPerJobConfig().getStringList("Categories.List").contains("LEVEL")) {
+			checkOtherItems("Categories.Level.Material",  "Icon.Level", fm.getRankingPerJobConfig());
+		}
+		if(fm.getRankingPerJobConfig().getStringList("Categories.List").contains("BLOCKS")) {
+			checkOtherItems("Categories.Destroyed_Blocks.Material",  "Icon.Blocks", fm.getRankingPerJobConfig());
+		}
+		if(fm.getRankingPerJobConfig().getStringList("Categories.List").contains("TODAY")) {
+			checkOtherItems("Categories.Earnings_Today.Material",  "Icon.Today", fm.getRankingPerJobConfig());
+		}
+		if(fm.getRankingPerJobConfig() != null) {
+			checkOtherItems("PerJobRanking_Items.NoneFound.Material",  "Icon.RankingNotFound", fm.getRankingPerJobConfig());
+		}
+		 
+		
 		fm.getRankingGlobalConfig().getStringList("Global_Custom.List").forEach((named) -> {
 			checkCustomItems("Global_Custom", named, fm.getRankingGlobalConfig());
 		});
+		
+		if(fm.getRankingGlobalConfig() != null) {
+			checkOtherItems("Global_RankingItems.NoneFound.Material",  "Icon.GlobalRankingNotFound", fm.getRankingGlobalConfig());
+		}
 		
 		fm.getLevelGUIConfig().getStringList("Levels_Custom.List").forEach((named) -> {
 			checkCustomItems("Levels_Custom", named, fm.getLevelGUIConfig());
 		});
 		
+		if(fm.getLevelGUIConfig() != null) {
+			checkOtherItems("Options.Icons.CurrentlyWorkingOn",  "Icons.CurrentlyWorkingOn", fm.getLevelGUIConfig());
+			checkOtherItems("Options.Icons.Reached",  "Icons.Reached", fm.getLevelGUIConfig());
+			checkOtherItems("Options.Icons.NotReached",  "Icons.NotReached", fm.getLevelGUIConfig());
+			
+			checkOtherItems("PageItems.Previous.Material",  "Levels.Previous", fm.getLevelGUIConfig());
+			checkOtherItems("PageItems.Next.Material",  "Levels.Next", fm.getLevelGUIConfig());
+		}
+		
 		fm.getLeaveConfirmConfig().getStringList("LeaveConfirm_Custom.List").forEach((named) -> {
 			checkCustomItems("LeaveConfirm_Custom", named, fm.getLeaveConfirmConfig());
 		});
 		
+		if(fm.getLeaveConfirmConfig() != null) {
+			checkOtherItems("LeaveConfirmItems.Button_YES.Icon",  "LeaveConfirmItems.Button_YES", fm.getLeaveConfirmConfig());
+			checkOtherItems("LeaveConfirmItems.Button_NO.Icon",  "LeaveConfirmItems.Button_NO", fm.getLeaveConfirmConfig());
+		}
+		
 		fm.getLanguageGUIConfig().getStringList("Custom.List").forEach((named) -> {
 			checkCustomItems("Custom", named, fm.getLanguageGUIConfig());
 		});
-		
+ 
 		fm.getHelpSettings().getStringList("Help_Custom.List").forEach((named) -> {
 			checkCustomItems("Help_Custom", named, fm.getHelpSettings());
 		});
@@ -152,85 +211,285 @@ public class ItemAPI {
 			checkCustomItems("Job_Earnings_Custom", named, fm.getEarningsJobConfig());
 		});
 		
+		if(fm.getEarningsJobConfig() != null) {
+			checkOtherItems("Job_Earnings_Items.Icon",  "Icon.Job_Earnings_Items", fm.getEarningsJobConfig());
+			checkOtherItems("Job_Earnings_Items.NotAnyEarnings.Icon",  "Icon.Job_Earnings_ItemsNotFound", fm.getEarningsJobConfig());
+			
+			checkOtherItems("PageItems.Previous.Material",  "Icon.Job_Earnings_Previous", fm.getEarningsJobConfig());
+			checkOtherItems("PageItems.Next.Material",  "Icon.Job_Earnings_Next", fm.getEarningsJobConfig());
+			checkOtherItems("Job_Earnings_Items.NotAnyEarnings.Icon",  "Icon.Job_Earnings_ItemsNotFound", fm.getEarningsJobConfig());
+		}
+	 
 		fm.getEarningsAllConfig().getStringList("All_Earnings_Custom.List").forEach((named) -> {
 			checkCustomItems("All_Earnings_Custom", named, fm.getEarningsAllConfig());
 		});
 		
+		if(fm.getEarningsAllConfig() != null) {
+			checkOtherItems("All_Earnings_Items.Icon",  "Icon.All_Earnings_Items", fm.getEarningsAllConfig());
+			checkOtherItems("All_Earnings_Items.NotAnyEarnings.Icon",  "Icon.NotAnyEarningsGlobal", fm.getEarningsAllConfig());
+			
+			checkOtherItems("PageItems.Previous.Material",  "Icon.GlobalPrevious", fm.getEarningsAllConfig());
+			checkOtherItems("PageItems.Next.Material",  "Icon.GlobalNext", fm.getEarningsAllConfig());
+		}
+		
+		 
+		
 		fm.getConfirm().getStringList("AreYouSureGUI_Custom.List").forEach((named) -> {
-			checkCustomItems("Global_Custom", named, fm.getConfirm());
+			checkCustomItems("AreYouSureGUI_Custom", named, fm.getConfirm());
 		});
+		
+		String path1 = "AreYouSureItems.Button_YES.Icon";
+		String path2 = "AreYouSureItems.Button_YES";
+		
+		if(!fm.getConfirm().contains(path1)) {
+			checkOtherItems(path1, path2, fm.getConfirm());
+		}
+		
+		String path3 = "AreYouSureItems.Button_NO.Icon";
+		String path4 = "AreYouSureItems.Button_NO";
+		
+		if(!fm.getConfirm().contains(path3)) {
+			checkOtherItems(path3, path4, fm.getConfirm());
+		}
 		
 		plugin.getJobCache().forEach((id, real) -> {
 			
 			String cfgid = real.getConfigID();
 		 
-			String mat = real.getRawIcon();
-			
-			boolean ignore=false;
-			
-			ItemType type = null;
-			
-			ItemStack item = null;
-			
-			if (plugin.getPluginManager().isInstalled("ItemsAdder")) {
+		 
+			if(real.getRawIcon() != null) {
+				
+				String mat = real.getRawIcon();
+				 
+				
+				boolean ignore=false;
+				
+				ItemType type = null;
+				
+				ItemStack item = null;
+				
+				if (plugin.getPluginManager().isInstalled("ItemsAdder")) {
 
-				if (plugin.getItemsAdderManager().checkIfItemStackExist(mat) != null) {
-					type = ItemType.ITEMSADDER;
-					item =  plugin.getItemsAdderManager().checkIfItemStackExist(mat);
-				}
-			} 
-			
-			if (mat.contains(";")) {
-				String[] split = mat.split(";");
-				if(split[1] != null) {
-					String s = split[1];
-					if (split[0].toLowerCase().equalsIgnoreCase("url")) {
-						type = ItemType.URL;
-						item = plugin.getSkullCreatorAPI().itemFromUrl(s);
-					} else if (split[0].toLowerCase().equalsIgnoreCase("uuid")) {
-						type = ItemType.UUID;
-						item = plugin.getSkullCreatorAPI().itemFromUuid(s);
-					} if (split[0].toLowerCase().equalsIgnoreCase("name")) {
-						type = ItemType.NAME;
-						if(s.toLowerCase().equalsIgnoreCase("<name>")) {
-							ignore = true;
+					if (plugin.getItemsAdderManager().checkIfItemStackExist(mat) != null) {
+						type = ItemType.ITEMSADDER;
+						item =  plugin.getItemsAdderManager().checkIfItemStackExist(mat);
+					}
+				} 
+				
+				if (mat.contains(";")) {
+					String[] split = mat.split(";");
+					if(split[1] != null) {
+						String s = split[1];
+						if (split[0].toLowerCase().equalsIgnoreCase("url")) {
+							type = ItemType.URL;
+							item = plugin.getSkullCreatorAPI().itemFromUrl(s);
+						} else if (split[0].toLowerCase().equalsIgnoreCase("uuid")) {
+							type = ItemType.UUID;
+							item = plugin.getSkullCreatorAPI().itemFromUuid(s);
+						} if (split[0].toLowerCase().equalsIgnoreCase("name")) {
+							type = ItemType.NAME;
+							if(s.toLowerCase().equalsIgnoreCase("<name>")) {
+								ignore = true;
+							}
+						} if (split[0].toLowerCase().equalsIgnoreCase("base64")) {
+							type = ItemType.BASE64;
+							item = plugin.getSkullCreatorAPI().itemFromBase64(s);
 						}
-					} if (split[0].toLowerCase().equalsIgnoreCase("base64")) {
-						type = ItemType.BASE64;
-						item = plugin.getSkullCreatorAPI().itemFromBase64(s);
+					}
+				}  else {
+
+					try {
+						Material used = Material.valueOf(mat.toUpperCase());
+		 
+						type = ItemType.NORMAL;
+						item = new ItemStack(used, 1);
+					} catch (IllegalArgumentException ex) { 
 					}
 				}
-			}  else {
+				
 
-				try {
-					Material used = Material.valueOf(mat.toUpperCase());
-	 
-					type = ItemType.NORMAL;
-					item = new ItemStack(used, 1);
-				} catch (IllegalArgumentException ex) { 
-				}
-			}
-			
-			if(!ignore) {
-				if(type == null) {
-					Bukkit.getConsoleSender().sendMessage(
-							PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+mat+" for Job "+cfgid+"!");
+				if(!ignore) {
+					if(type == null) {
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+mat+" for Job "+cfgid+"!");
+					} else {
+						
+						String pr = cfgid+"_Material";
+						
+						Item it = new Item(pr, cfgid, type, item, null);
+						
+						items.put(pr, it);
+				 
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+mat+" for Job "+cfgid+"!");
+					}
 				} else {
-					
-					String pr = cfgid+"_Material";
-					
-					Item it = new Item(pr, type, item, null);
-					
-					items.put(pr, it);
-			 
 					Bukkit.getConsoleSender().sendMessage(
-							PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+mat+" for Job "+cfgid+"!");
+							PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+mat+" for Job "+cfgid+"...");
 				}
-			} else {
-				Bukkit.getConsoleSender().sendMessage(
-						PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+mat+" for Job "+cfgid+"...");
+				
 			}
+			 
+			real.getLevels().forEach((lvl, rlvl) -> {
 			
+				String mat = rlvl.getIcon();
+				
+				boolean ignore=false;
+				
+				ItemType type = null;
+				
+				ItemStack item = null;
+				
+				
+				
+				if(mat != null) {
+					if (plugin.getPluginManager().isInstalled("ItemsAdder")) {
+
+						if (plugin.getItemsAdderManager().checkIfItemStackExist(mat) != null) {
+							type = ItemType.ITEMSADDER;
+							item =  plugin.getItemsAdderManager().checkIfItemStackExist(mat);
+						}
+					} 
+					
+					if (mat.contains(";")) {
+						String[] split = mat.split(";");
+						if(split[1] != null) {
+							String s = split[1];
+							if (split[0].toLowerCase().equalsIgnoreCase("url")) {
+								type = ItemType.URL;
+								item = plugin.getSkullCreatorAPI().itemFromUrl(s);
+							} else if (split[0].toLowerCase().equalsIgnoreCase("uuid")) {
+								type = ItemType.UUID;
+								item = plugin.getSkullCreatorAPI().itemFromUuid(s);
+							} if (split[0].toLowerCase().equalsIgnoreCase("name")) {
+								type = ItemType.NAME;
+								if(s.toLowerCase().equalsIgnoreCase("<name>")) {
+									ignore = true;
+								} else {
+									item = plugin.getSkullCreatorAPI().itemFromName(s);
+								}
+							} if (split[0].toLowerCase().equalsIgnoreCase("base64")) {
+								type = ItemType.BASE64;
+								item = plugin.getSkullCreatorAPI().itemFromBase64(s);
+							}
+						}
+					}  else {
+
+						try {
+							Material used = Material.valueOf(mat.toUpperCase());
+			 
+							type = ItemType.NORMAL;
+							item = new ItemStack(used, 1);
+						} catch (IllegalArgumentException ex) { 
+						}
+					}
+					
+
+					if(!ignore) {
+						if(type == null) {
+							Bukkit.getConsoleSender().sendMessage(
+									PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+mat+" for Job "+cfgid+"!");
+							fails.add("Failed");
+						} else {
+							
+							String pr = cfgid+"_LevelMat_"+rlvl.getLevel();
+							
+							Item it = new Item(pr, cfgid, type, item, null);
+							
+							items.put(pr, it);
+					 
+							Bukkit.getConsoleSender().sendMessage(
+									PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+mat+" for Job "+cfgid+"!");
+						}
+					} else {
+						Bukkit.getConsoleSender().sendMessage(
+								PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+mat+" for Job "+cfgid+"...");
+					}
+				}
+				
+				
+			});
+			
+			real.getActionList().forEach((action) -> {
+				
+				real.getIDsOf(action).forEach((i, realid) -> {
+					
+					String icon = realid.getIcon();
+					
+					if(icon != null) {
+						boolean ignore=false;
+						
+						ItemType type = null;
+						
+						ItemStack item = null;
+						 
+							if (plugin.getPluginManager().isInstalled("ItemsAdder")) {
+
+								if (plugin.getItemsAdderManager().checkIfItemStackExist(icon) != null) {
+									type = ItemType.ITEMSADDER;
+									item =  plugin.getItemsAdderManager().checkIfItemStackExist(icon);
+								}
+							} 
+							
+							if (icon.contains(";")) {
+								String[] split = icon.split(";");
+								if(split[1] != null) {
+									String s = split[1];
+									if (split[0].toLowerCase().equalsIgnoreCase("url")) {
+										type = ItemType.URL;
+										item = plugin.getSkullCreatorAPI().itemFromUrl(s);
+									} else if (split[0].toLowerCase().equalsIgnoreCase("uuid")) {
+										type = ItemType.UUID;
+										item = plugin.getSkullCreatorAPI().itemFromUuid(s);
+									} if (split[0].toLowerCase().equalsIgnoreCase("name")) {
+										type = ItemType.NAME;
+										if(s.toLowerCase().equalsIgnoreCase("<name>")) {
+											ignore = true;
+										} else {
+											item = plugin.getSkullCreatorAPI().itemFromName(s);
+										}
+									} if (split[0].toLowerCase().equalsIgnoreCase("base64")) {
+										type = ItemType.BASE64;
+										item = plugin.getSkullCreatorAPI().itemFromBase64(s);
+									}
+								}
+							}  else {
+
+								try {
+									Material used = Material.valueOf(icon.toUpperCase());
+					 
+									type = ItemType.NORMAL;
+									item = new ItemStack(used, 1);
+								} catch (IllegalArgumentException ex) { 
+								}
+							}
+							
+
+							if(!ignore) {
+								if(type == null) {
+									Bukkit.getConsoleSender().sendMessage(
+											PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+icon+" for Job "+cfgid+"!");
+								} else {
+									
+									String pr = cfgid+"_JobItems_"+i;
+									
+									Item it = new Item(pr, cfgid, type, item, null);
+									
+									items.put(pr, it);
+							 
+									Bukkit.getConsoleSender().sendMessage(
+											PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+icon+" for Job "+cfgid+"!");
+								}
+							} else {
+								Bukkit.getConsoleSender().sendMessage(
+										PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+icon+" for Job "+cfgid+"...");
+							}
+						 
+					}
+					
+				});
+				
+			});
 			
 		});
 
@@ -241,43 +500,20 @@ public class ItemAPI {
 		} else {
 			Bukkit.getConsoleSender().sendMessage(
 					PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to load Items with "+fails.size()+" Issues!");
-			plugin.printFailed();
+		 
 		}
 		
 	}
-
-	public void checkCustomItems(String prefix, String named, FileConfiguration cfg) {
-		Bukkit.getConsoleSender()
-				.sendMessage(PluginColor.ITEM_RELATED_INFO.getPrefix() + "Loading Custom Item " + named + "...");
-
-		String actions_path = prefix + "." + named + ".ActionList";
-
-		if (cfg.getStringList(actions_path) == null) {
+	
+	public void checkOtherItems(String path, String named, FileConfiguration cfg) {
+		
+		if(!cfg.contains(path)) {
 			Bukkit.getConsoleSender().sendMessage(
-					PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to get ActionList for Item " + named + ".");
-			fails.add(actions_path);
+					PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to get icon for Item " + path + ".");
+			fails.add(path);
 		}
-
-		List<String> cfgactions = cfg.getStringList(actions_path);
-
-		List<ItemAction> actions = new ArrayList<ItemAction>();
-
-		for (String action : cfgactions) {
-			try {
-				actions.add(ItemAction.valueOf(action));
-			} catch (IllegalArgumentException ex) {
-				Bukkit.getConsoleSender().sendMessage(PluginColor.ITEM_RELATED_ERROR.getPrefix()
-						+ "Failed to get Real Job Action for " + named + ".");
-			}
-		}
-
-		String material = prefix + "." + named + ".Material";
-
-		if (!cfg.contains(material)) {
-			Bukkit.getConsoleSender().sendMessage(
-					PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to get Material for Item " + named + ".");
-			fails.add(actions_path);
-		}
+		
+		String material = cfg.getString(path);
 		
 		boolean ignore=false;
 		
@@ -307,6 +543,8 @@ public class ItemAPI {
 					type = ItemType.NAME;
 					if(s.toLowerCase().equalsIgnoreCase("<name>")) {
 						ignore = true;
+					} else {
+						item = plugin.getSkullCreatorAPI().itemFromName(s);
 					}
 				} if (split[0].toLowerCase().equalsIgnoreCase("base64")) {
 					type = ItemType.BASE64;
@@ -327,33 +565,123 @@ public class ItemAPI {
 		if(!ignore) {
 			if(type == null) {
 				Bukkit.getConsoleSender().sendMessage(
-						PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+named+"!");
-			} else {
+						PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+path+" named; "+named+"!");
+				fails.add("Failed");
+			}   else {
+				Item it = new Item(path, named, type, item, null);
 				
-				String pr = prefix+"_"+named;
-				
-				Item it = new Item(pr, type, item, actions);
-				
-				items.put(pr, it);
-				
-				List<Item> listed = null;
-				
-				if(!custom_items.containsKey(prefix)) {
-					listed = new ArrayList<Item>();
-				} else {
-					listed = custom_items.get(prefix);
-				}
-				
-				listed.add(it);
-				
-				custom_items.put(prefix, listed);
-				
+				other_items.put(named, it);
+				 
 				Bukkit.getConsoleSender().sendMessage(
 						PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+named+"!");
 			}
-		} else {
+		}
+	}
+
+	public void checkCustomItems(String prefix, String named, FileConfiguration cfg) {
+		Bukkit.getConsoleSender()
+				.sendMessage(PluginColor.ITEM_RELATED_INFO.getPrefix() + "Loading Custom Item " + named + "...");
+
+		String actions_path = prefix + "." + named + ".ActionList";
+
+		if (cfg.getStringList(actions_path) == null) {
 			Bukkit.getConsoleSender().sendMessage(
-					PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+named+"...");
+					PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to get ActionList for Item " + named + ".");
+			fails.add(actions_path);
+		}
+
+		List<String> cfgactions = cfg.getStringList(actions_path);
+
+		String b = prefix + "." + named + ".Material";
+		  
+		if (!cfg.contains(b)) {
+			Bukkit.getConsoleSender().sendMessage(
+					PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to get Material for Item " + prefix+"."+named + ".");
+			fails.add(actions_path);
+		}
+		
+		String material = cfg.getString(prefix + "." + named + ".Material");
+		
+		if(material != null) {
+			boolean ignore=false;
+			
+			ItemType type = null;
+			
+			ItemStack item = null;
+			
+			if (plugin.getPluginManager().isInstalled("ItemsAdder")) {
+
+				if (plugin.getItemsAdderManager().checkIfItemStackExist(material) != null) {
+					type = ItemType.ITEMSADDER;
+					item =  plugin.getItemsAdderManager().checkIfItemStackExist(material);
+				}
+			} 
+			
+			if (material.contains(";")) {
+				String[] split = material.split(";");
+				if(split[1] != null) {
+					String s = split[1];
+					if (split[0].toLowerCase().equalsIgnoreCase("url")) {
+						type = ItemType.URL;
+						item = plugin.getSkullCreatorAPI().itemFromUrl(s);
+					} else if (split[0].toLowerCase().equalsIgnoreCase("uuid")) {
+						type = ItemType.UUID;
+						item = plugin.getSkullCreatorAPI().itemFromUuid(s);
+					} if (split[0].toLowerCase().equalsIgnoreCase("name")) {
+						type = ItemType.NAME;
+						if(s.toLowerCase().equalsIgnoreCase("<name>")) {
+							ignore = true;
+						} else {
+							item = plugin.getSkullCreatorAPI().itemFromName(s);
+						}
+					} if (split[0].toLowerCase().equalsIgnoreCase("base64")) {
+						type = ItemType.BASE64;
+						item = plugin.getSkullCreatorAPI().itemFromBase64(s);
+					}
+				}
+			}  else {
+
+				try {
+					Material used = Material.valueOf(material.toUpperCase());
+	 
+					type = ItemType.NORMAL;
+					item = new ItemStack(used, 1);
+				} catch (IllegalArgumentException ex) { 
+				}
+			}
+			
+			if(!ignore) {
+				if(type == null) {
+					Bukkit.getConsoleSender().sendMessage(
+							PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+prefix+"."+named+" MaterialPath; "+material+"!");
+					fails.add("Failed");
+				} else {
+					
+					String pr = prefix+"_"+named;
+					
+					Item it = new Item(pr, named, type, item, cfgactions);
+					
+					items.put(pr, it);
+					
+					List<Item> listed = null;
+					
+					if(!custom_items.containsKey(prefix)) {
+						listed = new ArrayList<Item>();
+					} else {
+						listed = custom_items.get(prefix);
+					}
+					
+					listed.add(it);
+					
+					custom_items.put(prefix, listed);
+					
+					Bukkit.getConsoleSender().sendMessage(
+							PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+named+"!");
+				}
+			} else {
+				Bukkit.getConsoleSender().sendMessage(
+						PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+named+"...");
+			}
 		}
 		
 		 

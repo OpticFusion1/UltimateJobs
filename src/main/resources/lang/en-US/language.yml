@@ -1,0 +1,36 @@
+# .----------------.  .-----------------. .----------------.  .----------------.  .----------------. 
+#| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
+#| |  _________   | || | ____  _____  | || |              | || | _____  _____ | || |    _______   | |
+#| | |_   ___  |  | || ||_   \|_   _| | || |              | || ||_   _||_   _|| || |   /  ___  |  | |
+#| |   | |_  \_|  | || |  |   \ | |   | || |    ______    | || |  | |    | |  | || |  |  (__ \_|  | |
+#| |   |  _|  _   | || |  | |\ \| |   | || |   |______|   | || |  | '    ' |  | || |   '.___`-.   | |
+#| |  _| |___/ |  | || | _| |_\   |_  | || |              | || |   \ `--' /   | || |  |`\____) |  | |
+#| | |_________|  | || ||_____|\____| | || |              | || |    `.__.'    | || |  |_______.'  | |
+#| |              | || |              | || |              | || |              | || |              | |
+#| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
+# '----------------'  '----------------'  '----------------'  '----------------'  '----------------'
+
+#
+# <-------- { INFORMATIONS } -------->
+# 
+# You need more Help? Docs -> https://dto.mc-plugins.org
+# Join our Discord -> https://dcto.mc-plugins.org
+# Visit out Website -> https://mc-plugins.org
+#
+
+#used on /jobs language 
+LanguageName: "english"
+LanguageIcon: "url;http://textures.minecraft.net/texture/b205771bed2586c4f05fdc5938339a711f4eb3f7778d93771794c1ad4bf0091e"
+LanguageDisplay: "&8< &6English &8>"
+CustomModelData: 0
+LanguageEnabled: true
+
+LanguageChoosenLore:
+  - "&aYou have selected this Language!"
+  
+LanguageChoosenMessage: "<prefix> &cYou already selected this language!"
+  
+LanguageCanChoose:
+  - "&7Click to choose this Language!"
+  
+LanguageChangedMessage: "<prefix> &7You have choosen the language <lang>&7!"

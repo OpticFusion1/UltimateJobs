@@ -1,6 +1,7 @@
-package de.warsteiner.jobs.utils.objects;
+package de.warsteiner.jobs.utils.objects.jobs;
 
-import de.warsteiner.jobs.api.Job;
+import de.warsteiner.jobs.utils.objects.multipliers.MultiplierType;
+import de.warsteiner.jobs.utils.objects.multipliers.MultiplierWeight;
 
 public class JobsMultiplier {
 	

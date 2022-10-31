@@ -7,8 +7,8 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.api.Job;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public class PlaceHolderManager extends PlaceholderExpansion {

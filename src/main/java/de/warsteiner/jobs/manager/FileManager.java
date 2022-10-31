@@ -74,8 +74,11 @@ public class FileManager {
 	private  FileConfiguration jobr;
 	private  File jobr_file;
 	
-	//"es-ES","fr-FR","nl-NL","tr-TR", "de-DE","de-BAR"
+	private  FileConfiguration ef;
+	private  File ef_file;
+	 
 	private List<String> defaultlanguages = Arrays.asList("en-US");
+	private List<String> defaultlanguages_files = Arrays.asList("guis","jobs","language","messages");
 	private List<String> defaultjobs = Arrays.asList("Miner","Lumberjack","FarmGrow","Digger", "Killer","Fishman","Milkman"
 			, "Crafter", "Shear","Advancements","Eat","Honey","Tame","MythicMobs","Breed"
 			, "Berrys","Saplings","KillBow","FarmBreak","FindTreasure","Smelt","Explore","Enchant","DrinkPotion","VillagerTrade");
@@ -97,7 +100,7 @@ public class FileManager {
 		createWithConfirmFile();
 		createLeaveConfirmFile();
 		createUtilsFile();
-	 
+		createEffectsFile();
  
 		//guis
 		createguistatsFiles();
@@ -134,12 +137,21 @@ public class FileManager {
 	
 	public void createDefaultLanguages() { 
 		for(String b : defaultlanguages) {
-			File f = new File(UltimateJobs.getPlugin().getDataFolder(), "lang" + File.separatorChar + b+".yml");
-	        if (!f.exists()) {
-	        	f.getParentFile().mkdirs();
-	        	UltimateJobs.getPlugin().saveResource("lang" + File.separatorChar + b+".yml", false);
-	         }
-		}
+			
+			File folder_1 = new File(UltimateJobs.getPlugin().getDataFolder()+"/lang/", b);
+
+			if (!folder_1.exists()) {
+				folder_1.mkdir();
+			}
+			
+			for(String file : defaultlanguages_files) {
+				File f = new File(UltimateJobs.getPlugin().getDataFolder()+"/lang/"+b+"/", file+".yml");
+		        if (!f.exists()) {
+		        	f.getParentFile().mkdirs();
+		        	UltimateJobs.getPlugin().saveResource("lang/"+b+"/" + file+".yml", false);
+		         }
+			}
+		} 
 	}
  
 	/*
@@ -151,6 +163,14 @@ public class FileManager {
 	
 	public  File getGUIFile() {
 		return gui_file;
+	}
+	
+	public  FileConfiguration getEffectSettings() {
+		return ef;
+	}
+	
+	public  File getEffectFile() {
+		return ef_file;
 	}
 	
  
@@ -626,6 +646,23 @@ public class FileManager {
         cmd = new YamlConfiguration();
         try {
         	cmd.load(cmd_file);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+	
+	public  boolean createEffectsFile() {
+		ef_file = new File(UltimateJobs.getPlugin().getDataFolder(), "settings" + File.separatorChar + "effects.yml");
+        if (!ef_file.exists()) {
+        	ef_file.getParentFile().mkdirs();
+        	UltimateJobs.getPlugin().saveResource("settings" + File.separatorChar + "effects.yml", true);
+         }
+
+        ef = new YamlConfiguration();
+        try {
+        	ef.load(ef_file);
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
             return false;

@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.warsteiner.jobs.UltimateJobs;
 
 public class Language {
 
 	private String name;
-	private File file;
 	private String id;
 	private String icon;
 	private String display;
@@ -24,13 +24,12 @@ public class Language {
 	private HashMap<String, String> js;
 	private HashMap<String, List<String>> jl;
 
-	public Language(String name, File file, String id, String icon, String display, int data,
+	public Language(String name, String id, String icon, String display, int data,
 			HashMap<String, String> dm, HashMap<String, List<String>> dl, HashMap<String, String> gm,
 			HashMap<String, List<String>> gl, HashMap<String, String> js,
 			HashMap<String, List<String>> jl) {
 		this.name = name;
 		this.id = id;
-		this.file = file;
 		this.icon = icon;
 		this.display = display;
 		this.data = data;
@@ -50,16 +49,16 @@ public class Language {
 
 	public String getGUIMessage(String path) {
 		if (!this.gm.containsKey(path)) {
-			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to get String " + path
+			Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix() + "Failed to get String " + path
 					+ " from language " + this.name + "!");
-			return null;
+			return "Error";
 		}
 		return UltimateJobs.getPlugin().getPluginManager().toHex(this.gm.get(path).replaceAll("<prefix>", ""+getPrefix()));
 	}
 
 	public List<String> getGUIList(String path) {
 		if (!this.gl.containsKey(path)) {
-			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to get Stringlist " + path
+			Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix() + "Failed to get Stringlist " + path
 					+ " from language " + this.name + "!");
 			return null;
 		}
@@ -68,16 +67,16 @@ public class Language {
 
 	public String getJobMessage(String path) {
 		if (!this.js.containsKey(path)) {
-			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to get String " + path
+			Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix() + "Failed to get String " + path
 					+ " from language " + this.name + "!");
-			return null;
+			return "Error";
 		}
 		return UltimateJobs.getPlugin().getPluginManager().toHex(this.js.get(path).replaceAll("<prefix>", ""+getPrefix()));
 	}
 	
 	public List<String> getJobList(String path) {
 		if (!this.jl.containsKey(path)) {
-			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to get Stringlist " + path
+			Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix() + "Failed to get Stringlist " + path
 					+ " from language " + this.name + "!");
 			return null;
 		}
@@ -90,16 +89,16 @@ public class Language {
 	
 	public String getMessage(String path) {
 		if (!this.dm.containsKey(path)) {
-			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to get String " + path
+			Bukkit.getConsoleSender().sendMessage(PluginColor.LANG_RELATED_ERROR.getPrefix() + "Failed to get String " + path
 					+ " from language " + this.name + "!");
-			return null;
+			return "Error";
 		}
 		return UltimateJobs.getPlugin().getPluginManager().toHex(this.dm.get(path).replaceAll("<prefix>", ""+getPrefix()));
 	}
 
 	public List<String> getList(String path) {
 		if (!this.dl.containsKey(path)) {
-			Bukkit.getConsoleSender().sendMessage(PluginColor.ERROR.getPrefix() + "Failed to get Stringlist " + path
+			Bukkit.getConsoleSender().sendMessage(PluginColor.LANG_RELATED_ERROR.getPrefix() + "Failed to get Stringlist " + path
 					+ " from language " + this.name + "!");
 			return null;
 		}
@@ -121,11 +120,7 @@ public class Language {
 	public String getID() {
 		return id;
 	}
-
-	public File getFile() {
-		return file;
-	}
-
+ 
 	public String getName() {
 		return name;
 	}

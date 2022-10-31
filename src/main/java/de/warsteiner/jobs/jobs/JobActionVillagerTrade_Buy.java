@@ -23,7 +23,7 @@ public class JobActionVillagerTrade_Buy implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	  public void Click(InventoryClickEvent e) {
 		if (e.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				e.setCancelled(true);
 			}
 			return;

@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import de.warsteiner.jobs.UltimateJobs;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
 
 /**
  * Class to manage everything related to the Player-Chunks

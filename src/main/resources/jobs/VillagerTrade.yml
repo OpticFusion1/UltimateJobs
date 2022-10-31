@@ -9,6 +9,8 @@ ColorOfBossBar: "GREEN"
 
 Slot: 32
 
+CustomGlassPlateColor: "GREEN_STAINED_GLASS_PANE"
+
 Price: 350
 
 Worlds:

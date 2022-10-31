@@ -5,12 +5,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.api.Job; 
 import de.warsteiner.jobs.command.AdminCommand;
 import de.warsteiner.jobs.utils.JsonMessage;
 import de.warsteiner.jobs.utils.admincommand.AdminSubCommand;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
 import de.warsteiner.jobs.utils.objects.Language;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 
 public class LanguageSub extends AdminSubCommand {
 

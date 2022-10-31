@@ -26,7 +26,7 @@ public class JobActionKillByBow implements Listener {
 			if (e instanceof Arrow) {
 
 				if (dc.isCancelled()) {
-					if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+					if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 						dc.setCancelled(true);
 					}
 					return;

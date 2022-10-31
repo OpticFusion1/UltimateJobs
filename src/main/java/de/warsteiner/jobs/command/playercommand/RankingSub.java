@@ -6,9 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.api.Job;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
-import de.warsteiner.jobs.utils.objects.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.guis.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 import de.warsteiner.jobs.utils.playercommand.SubCommand;
 
 public class RankingSub extends SubCommand {
@@ -33,7 +33,7 @@ public class RankingSub extends SubCommand {
 		UUID UUID = player.getUniqueId();
 		if (args.length == 1) {
 
-			if (plugin.getFileManager().getRankingGlobalConfig().getBoolean("EnabledGlobalRanking")) {
+			if (plugin.getLocalFileManager().getRankingGlobalConfig().getBoolean("EnabledGlobalRanking")) {
 				plugin.getGUIAddonManager().createGlobalRankingGUI(player, UpdateTypes.OPEN);
 
 			} else {
@@ -44,7 +44,7 @@ public class RankingSub extends SubCommand {
 
 		} else if (args.length == 2) {
 
-			if (plugin.getFileManager().getRankingPerJobConfig().getBoolean("EnabledRankingPerJob")) {
+			if (plugin.getLocalFileManager().getRankingPerJobConfig().getBoolean("EnabledRankingPerJob")) {
 
 				String notreal = args[1].toUpperCase();
 
@@ -82,7 +82,7 @@ public class RankingSub extends SubCommand {
 
 	@Override
 	public boolean isEnabled() {
-		return plugin.getFileManager().getCMDSettings().getBoolean("Commands.Ranking.Enabled");
+		return plugin.getLocalFileManager().getCMDSettings().getBoolean("Commands.Ranking.Enabled");
 	}
 
 	@Override

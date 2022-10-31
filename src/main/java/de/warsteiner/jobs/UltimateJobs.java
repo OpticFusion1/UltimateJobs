@@ -20,8 +20,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.warsteiner.jobs.api.DataBaseAPI;
+import de.warsteiner.jobs.api.EffectAPI;
 import de.warsteiner.jobs.api.ItemAPI;
-import de.warsteiner.jobs.api.Job;
 import de.warsteiner.jobs.api.JobAPI;
 import de.warsteiner.jobs.api.LanguageAPI;
 import de.warsteiner.jobs.api.LevelAPI;
@@ -48,7 +48,6 @@ import de.warsteiner.jobs.command.admincommand.LevelSub;
 import de.warsteiner.jobs.command.admincommand.MaxSub;
 import de.warsteiner.jobs.command.admincommand.OpenSub;
 import de.warsteiner.jobs.command.admincommand.PluginSub;
-import de.warsteiner.jobs.command.admincommand.UpdateSub; 
 import de.warsteiner.jobs.command.playercommand.EarningsSub;
 import de.warsteiner.jobs.command.playercommand.JoinSub;
 import de.warsteiner.jobs.command.playercommand.LangSub;
@@ -60,20 +59,7 @@ import de.warsteiner.jobs.command.playercommand.PointsSub;
 import de.warsteiner.jobs.command.playercommand.RankingSub;
 import de.warsteiner.jobs.command.playercommand.RewardsSub;
 import de.warsteiner.jobs.command.playercommand.StatsSub;
-import de.warsteiner.jobs.command.playercommand.WithdrawSub;
-import de.warsteiner.jobs.inventorys.AreYouSureMenuClickEvent;
-import de.warsteiner.jobs.inventorys.ClickAtLanguageGUI;
-import de.warsteiner.jobs.inventorys.ClickAtUpdateMenuEvent;
-import de.warsteiner.jobs.inventorys.EarningsMenuClickEvent;
-import de.warsteiner.jobs.inventorys.HelpMenuClickEvent;
-import de.warsteiner.jobs.inventorys.LeaveConfirmMenuClickEvent;
-import de.warsteiner.jobs.inventorys.LevelsMenuClickEvent;
-import de.warsteiner.jobs.inventorys.MainMenuClickEvent;
-import de.warsteiner.jobs.inventorys.RankingMenuClickEvent;
-import de.warsteiner.jobs.inventorys.RewardsMenuClickEvent;
-import de.warsteiner.jobs.inventorys.SettingsMenuClickEvent;
-import de.warsteiner.jobs.inventorys.StatsMenuClickEvent;
-import de.warsteiner.jobs.inventorys.WithdrawMenuClickEvent;
+import de.warsteiner.jobs.command.playercommand.WithdrawSub; 
 import de.warsteiner.jobs.jobs.DefaultJobActions;
 import de.warsteiner.jobs.jobs.JobActionAdvancement;
 import de.warsteiner.jobs.jobs.JobActionBreak;
@@ -120,6 +106,7 @@ import de.warsteiner.jobs.utils.database.hikari.HikariAuthentication;
 import de.warsteiner.jobs.utils.database.statements.SQLStatementAPI;
 import de.warsteiner.jobs.utils.objects.DataMode;
 import de.warsteiner.jobs.utils.objects.PluginColor;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
 import de.warsteiner.jobs.utils.playercommand.SubCommandRegistry;
 import net.milkbowl.vault.economy.Economy;
 
@@ -169,6 +156,8 @@ public class UltimateJobs extends JavaPlugin {
 
 	private ItemsAdderManager aim;
 	private NoteBlockManager ntb;
+	
+	private EffectAPI ef;
 
 	/**
 	 * Loading Data, Config-Files and checking for Updates
@@ -208,8 +197,6 @@ public class UltimateJobs extends JavaPlugin {
 			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Checking for Updates...");
 			web.checkVersion();
 		}
-
-		getLanguageAPI().loadLanguages();
 	}
 
 	/**
@@ -291,15 +278,23 @@ public class UltimateJobs extends JavaPlugin {
 
 		getPlayerAPI().calculateRanking();
 		getPlayerAPI().startUtil();
-
+		 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading Job Events...");
 
 		loadEvents();
+		
+		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading and checking for Jobs...");
+
+		api.loadJobs(getLogger());
+		i.loadItems();
+
+		getLanguageAPI().loadLanguages();
+ 
 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading basic Events...");
 		loadBasicEvents();
-
-		if (getLanguageAPI().getLoadedLanguagesAsArray().size() != 0) {
+	 
+		if (getLanguageAPI().getLoadedLanguagesAsArray().size() != 0 && getItemAPI().fails.size() == 0 && getAPI().fails.size() == 0) {
 			Bukkit.getConsoleSender().sendMessage("§7");
 			Bukkit.getConsoleSender().sendMessage("§7");
 			Bukkit.getConsoleSender().sendMessage(
@@ -435,13 +430,7 @@ public class UltimateJobs extends JavaPlugin {
 		}
 
 		plugin.getPlayerAPI().getCacheJobPlayers().clear();
-		plugin.getItemAPI().items.clear();
-		plugin.getLanguageAPI().languages_lists.clear();
-		plugin.getLanguageAPI().languages_lists.clear();
-		plugin.getLanguageAPI().gui_languages_lists.clear();
-		plugin.getLanguageAPI().gui_languages_strings.clear();
-		plugin.getLanguageAPI().jobs_languages_strings.clear();
-		plugin.getLanguageAPI().jobs_languages_lists.clear();
+		plugin.getItemAPI().items.clear(); 
 	}
 
 	/**
@@ -520,8 +509,6 @@ public class UltimateJobs extends JavaPlugin {
 
 		getAdminSubCommandManager().getSubCommandList().add(new PluginSub());
  
-		getAdminSubCommandManager().getSubCommandList().add(new UpdateSub());
-
 		getAdminSubCommandManager().getSubCommandList().add(new BoostSub());
 		getAdminSubCommandManager().getSubCommandList().add(new MaxSub());
 		getAdminSubCommandManager().getSubCommandList().add(new LevelSub());
@@ -566,13 +553,16 @@ public class UltimateJobs extends JavaPlugin {
 		ogui = new GuiOpenManager();
 
 		capi = new PlayerChunkAPI();
+		
+		ef = new EffectAPI();
 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Classes...");
 
-		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading and checking for Jobs...");
-
-		api.loadJobs(getLogger());
-		i.loadItems();
+		 
+	}
+	
+	public EffectAPI getEffectAPI() {
+		return ef;
 	}
 
 	public ItemsAdderManager getItemsAdderManager() {
@@ -715,23 +705,10 @@ public class UltimateJobs extends JavaPlugin {
 	 */
 
 	public void loadBasicEvents() {
-		Bukkit.getPluginManager().registerEvents(new PlayerExistEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new MainMenuClickEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new SettingsMenuClickEvent(), this);
+		Bukkit.getPluginManager().registerEvents(new PlayerExistEvent(), this); 
 		Bukkit.getPluginManager().registerEvents(new BlockFireWorkDamage(), this);
-		Bukkit.getPluginManager().registerEvents(new AreYouSureMenuClickEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new PlayerRewardCommandEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new HelpMenuClickEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new StatsMenuClickEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new RewardsMenuClickEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new LevelsMenuClickEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new EarningsMenuClickEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new ClickAtLanguageGUI(), this);
-		Bukkit.getPluginManager().registerEvents(new ClickAtUpdateMenuEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new WithdrawMenuClickEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new LeaveConfirmMenuClickEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new RankingMenuClickEvent(), this);
-
+		Bukkit.getPluginManager().registerEvents(new JobsInventoryClickEvent(), this); 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded basic Events!");
 	}
 

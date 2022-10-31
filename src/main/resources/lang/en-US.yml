@@ -977,7 +977,7 @@ Jobs:
 
   VILBUX:
   
-    Display: "&aVillager Trade)"
+    Display: "&aVillager Trade"
     
     DisplayID: "vil-buy"
     

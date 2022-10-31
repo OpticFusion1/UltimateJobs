@@ -11,9 +11,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.manager.PluginManager;
 import de.warsteiner.jobs.utils.cevents.PlayerLevelJobEvent;
-import de.warsteiner.jobs.utils.objects.JobLevel;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
 import de.warsteiner.jobs.utils.objects.PluginColor;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobLevel;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 
 /**
  * Class for the Job Levels
@@ -63,7 +64,7 @@ public class LevelAPI {
 
 		if (event.getNewLevel() != null) {
 			Player player = event.getPlayer();
-			FileConfiguration config = UltimateJobs.getPlugin().getFileManager().getConfig();
+			FileConfiguration config = UltimateJobs.getPlugin().getLocalFileManager().getConfig();
 
 			JobsPlayer jb = plugin.getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
 
@@ -129,7 +130,7 @@ public class LevelAPI {
 				UUID UUID = player.getUniqueId();
 
 				PluginManager api = UltimateJobs.getPlugin().getPluginManager();
-				FileConfiguration cfg = plugin.getFileManager().getConfig();
+				FileConfiguration cfg = plugin.getLocalFileManager().getConfig();
 				String prefix = pl.getLanguage().getPrefix();
 
 				int old_level = pl.getStatsOf(job.getConfigID()).getLevel();
@@ -168,9 +169,9 @@ public class LevelAPI {
 
 									boolean ys = true;
 
-									if (plugin.getFileManager().getConfig().getString("PayMentMode").toUpperCase()
+									if (plugin.getLocalFileManager().getConfig().getString("PayMentMode").toUpperCase()
 											.equalsIgnoreCase("STORED")) {
-										if (plugin.getFileManager().getConfig()
+										if (plugin.getLocalFileManager().getConfig()
 												.getBoolean("CountLevelsRewardAsSalary")) {
 											ys = false;
 											double old = plugin.getPlayerAPI().getSalary(pl.getUUIDAsString());

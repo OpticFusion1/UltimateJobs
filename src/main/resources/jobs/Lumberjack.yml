@@ -6,7 +6,9 @@ ID: "LUMBER"
 
 Material: "WOODEN_AXE"
 
-ColorOfBossBar: "BLUE"
+ColorOfBossBar: "GREEN"
+
+CustomGlassPlateColor: "GREEN_STAINED_GLASS_PANE"
 
 Slot: 11
 

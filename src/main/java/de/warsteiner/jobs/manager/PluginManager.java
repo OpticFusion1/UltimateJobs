@@ -37,13 +37,19 @@ public class PluginManager {
 	}
 
 	public String getDateTodayFromCal() {
-		DateFormat format = new SimpleDateFormat(plugin.getFileManager().getConfig().getString("Date"));
+		DateFormat format = new SimpleDateFormat(plugin.getLocalFileManager().getConfig().getString("Date"));
 		Date data = new Date();
 		return format.format(data);
 	}
 
 	public String getDateTodayFromCalWith() {
 		DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		Date data = new Date();
+		return format.format(data);
+	}
+	
+	public String getDateTodayFromCalWithOutSeconds() {
+		DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		Date data = new Date();
 		return format.format(data);
 	}
@@ -84,7 +90,7 @@ public class PluginManager {
 				}.runTaskAsynchronously(plugin);
 			}
 
-		}.runTaskTimer(plugin, 0, 20 * plugin.getFileManager().getDataConfig().getInt("CheckConnectionEvery"));
+		}.runTaskTimer(plugin, 0, 20 * plugin.getLocalFileManager().getDataConfig().getInt("CheckConnectionEvery"));
 	}
 
 	public boolean isInt(String s) {

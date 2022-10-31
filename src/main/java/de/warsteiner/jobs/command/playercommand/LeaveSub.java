@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.warsteiner.jobs.UltimateJobs; 
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
+import de.warsteiner.jobs.UltimateJobs;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 import de.warsteiner.jobs.utils.playercommand.SubCommand;
 
 public class LeaveSub extends SubCommand {
@@ -66,7 +66,7 @@ public class LeaveSub extends SubCommand {
 
 	@Override
 	public boolean isEnabled() {
-		return plugin.getFileManager().getCMDSettings().getBoolean("Commands.Leave.Enabled");
+		return plugin.getLocalFileManager().getCMDSettings().getBoolean("Commands.Leave.Enabled");
 	}
 
 	@Override

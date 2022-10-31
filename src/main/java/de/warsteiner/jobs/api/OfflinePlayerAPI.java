@@ -21,14 +21,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.util.concurrent.AtomicDouble;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.utils.JobAction;
 import de.warsteiner.jobs.utils.database.statements.SQLStatementAPI;
 import de.warsteiner.jobs.utils.objects.DataMode;
-import de.warsteiner.jobs.utils.objects.JobStats;
-import de.warsteiner.jobs.utils.objects.JobsMultiplier;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
-import de.warsteiner.jobs.utils.objects.MultiplierType;
-import de.warsteiner.jobs.utils.objects.MultiplierWeight;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobAction;
+import de.warsteiner.jobs.utils.objects.jobs.JobStats;
+import de.warsteiner.jobs.utils.objects.jobs.JobsMultiplier;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
+import de.warsteiner.jobs.utils.objects.multipliers.MultiplierType;
+import de.warsteiner.jobs.utils.objects.multipliers.MultiplierWeight;
 
 /**
  * Class to manage ALL Offline Player Data
@@ -1249,7 +1250,7 @@ public class OfflinePlayerAPI {
 				
 				int level = stats.getLevel();
 				double exp = stats.getExp();
-				int broken = stats.getBrokenTimes();
+				int broken = stats.getHowManyTimesWorked();
 				String date = stats.getDate();
 
 				String jd = stats.getJoinedDate();
@@ -1268,7 +1269,7 @@ public class OfflinePlayerAPI {
 					
 				}
 				 
-				stats.getEarningsList().forEach((key, value) -> {
+				stats.getEarningDatesList().forEach((key, value) -> {
 
 					final String insertQuery = "UPDATE `earnings_all` SET `MONEY`='" + value + "' WHERE UUID='" + UUID
 							+ "' AND JOB= '" + job + "' AND DATE= '" + key + "' ";
@@ -1302,7 +1303,7 @@ public class OfflinePlayerAPI {
 
 				for (JobAction action : j.getActionList()) {
 
-					stats.getBrokenList().forEach((key, value) -> {
+					stats.getTimesExecutedMoneyList().forEach((key, value) -> {
 
 						final String insert_earnings = "UPDATE `earnings_stats_per_action` SET `MONEY`='" + value
 								+ "' WHERE UUID='" + UUID + "' AND JOB= '" + job + "' AND ID= '" + key
@@ -1311,7 +1312,7 @@ public class OfflinePlayerAPI {
 
 					});
 
-					stats.getBrokenTimesOfIDList().forEach((key, value) -> {
+					stats.getWorkedTimesOfIDList().forEach((key, value) -> {
 
 						final String insert_times = "UPDATE `earnings_stats_per_action` SET `TIMES`='" + value
 								+ "' WHERE UUID='" + UUID + "' AND JOB= '" + job + "' AND ID= '" + key
@@ -1404,13 +1405,19 @@ public class OfflinePlayerAPI {
 
 				JobStats stats = pl.getStatsOf(job);
 
-				stats.getEarningsList().forEach((key, value) -> {
+				List<String> listed = cfg.getStringList("EarningsList." + UUID + "." + job);
+				
+				
+				stats.getEarningDatesList().forEach((key, value) -> {
+					listed.add(key);
 					cfg.set("EarnedDate." + UUID + "." + key + "." + job, value);
 				});
+				
+				cfg.set("EarningsList." + UUID + "." + job, listed);
 
 				int level = stats.getLevel();
 				double exp = stats.getExp();
-				int broken = stats.getBrokenTimes();
+				int broken = stats.getHowManyTimesWorked();
 				String date = stats.getDate();
 
 				cfg.set("Jobs." + UUID + "." + job + ".Level", level);
@@ -1424,14 +1431,14 @@ public class OfflinePlayerAPI {
 
 				for (JobAction action : j.getActionList()) {
 
-					stats.getBrokenList().forEach((key, value) -> {
+					stats.getTimesExecutedMoneyList().forEach((key, value) -> {
 
 						cfg.set("Earnings." + UUID + "." + job + "." + key + ".Action." + action.toString() + ".Money",
 								value);
 
 					});
 
-					stats.getBrokenTimesOfIDList().forEach((key, value) -> {
+					stats.getWorkedTimesOfIDList().forEach((key, value) -> {
 
 						cfg.set("Earnings." + UUID + "." + job + "." + key + ".Action." + action.toString() + ".Times",
 								value);
@@ -1495,7 +1502,33 @@ public class OfflinePlayerAPI {
 			return cfg.getDouble("EarnedDate." + UUID + "." + date + "." + job);
 
 		}
-		return 0.9;
+		return 0.1;
+	}
+	
+	public ArrayList<String> getAllEarnings(String UUID, String job) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
+		 
+				Collection<String> jobs = new ArrayList<String>();
+				mg.executeQuery("SELECT * FROM earnings_all WHERE UUID= '" + UUID + "' AND JOB='"+job+"'", rs -> {
+
+					while (rs.next()) {
+						jobs.add(rs.getString("DATE"));
+					}
+
+					return 1;
+				});
+
+				return (ArrayList<String>) jobs;
+		
+	} else if (mode.equals(DataMode.FILE)) {
+
+			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+
+			return (ArrayList<String>) cfg.getStringList("EarningsList." + UUID + "." + job);
+
+		}
+		return null; 
 	}
 
 	public void updateBrokenTimes(String UUID, String job, int val) {
@@ -1721,7 +1754,7 @@ public class OfflinePlayerAPI {
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equals(DataMode.SQL)) {
 
-			int max = UltimateJobs.getPlugin().getFileManager().getConfig().getInt("MaxDefaultJobs") - 1;
+			int max = UltimateJobs.getPlugin().getLocalFileManager().getConfig().getInt("MaxDefaultJobs") - 1;
 			final String insertQuery = "INSERT INTO job_players(UUID,DATE,POINTS,MAX) VALUES(?,?,?,?)";
 			mg.executeUpdate(insertQuery, ps -> {
 				ps.setString(1, UUID);
@@ -1734,7 +1767,7 @@ public class OfflinePlayerAPI {
 	} else if (mode.equals(DataMode.FILE)) {
 			FileConfiguration cfg = plugin.getPlayerDataFile().get();
 			File file = plugin.getPlayerDataFile().getfile();
-			int max = UltimateJobs.getPlugin().getFileManager().getConfig().getInt("MaxDefaultJobs") - 1;
+			int max = UltimateJobs.getPlugin().getLocalFileManager().getConfig().getInt("MaxDefaultJobs") - 1;
 
 			ArrayList<String> list = new ArrayList<String>();
 			cfg.set("Player." + UUID + ".Points", 0);

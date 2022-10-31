@@ -1,4 +1,4 @@
-package de.warsteiner.jobs.utils.objects;
+package de.warsteiner.jobs.utils.objects.items;
 
 public enum ItemType {
 	

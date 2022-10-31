@@ -11,11 +11,11 @@ import org.bukkit.entity.Player;
 
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.utils.admincommand.AdminSubCommand;
-import de.warsteiner.jobs.utils.objects.AdminCommandOptions;
-import de.warsteiner.jobs.utils.objects.GUIType;
 import de.warsteiner.jobs.utils.objects.Language;
-import de.warsteiner.jobs.utils.objects.MultiplierType;
-import de.warsteiner.jobs.utils.objects.MultiplierWeight;
+import de.warsteiner.jobs.utils.objects.commands.AdminCommandOptions;
+import de.warsteiner.jobs.utils.objects.guis.GUIType;
+import de.warsteiner.jobs.utils.objects.multipliers.MultiplierType;
+import de.warsteiner.jobs.utils.objects.multipliers.MultiplierWeight;
 
 public class AdminTabComplete implements TabCompleter {
 

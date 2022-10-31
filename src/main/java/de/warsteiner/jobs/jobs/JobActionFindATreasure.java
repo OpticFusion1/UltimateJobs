@@ -1,5 +1,6 @@
 package de.warsteiner.jobs.jobs;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
@@ -18,7 +19,7 @@ public class JobActionFindATreasure implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onOpen(PlayerInteractEvent e) {
 		if (e.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				e.setCancelled(true);
 			}
 			return;
@@ -35,10 +36,10 @@ public class JobActionFindATreasure implements Listener {
 		if (c.getLootTable() == null) {
 			return;
 		}
-		if (!c.getLootTable().equals(LootTables.BURIED_TREASURE.getLootTable())) {
-			return;
-		}
-		plugin.getJobWorkManager().executeTreasureEvent(e.getClickedBlock(), p);
+	 
+		String rep = c.getLootTable().toString().replaceAll("minecraft:chests/", "    ").replaceAll(" ", "");
+		
+		plugin.getJobWorkManager().executeTreasureEvent(rep.toUpperCase(), p);
 
 	}
 }

@@ -7,6 +7,8 @@ Material: "FURNACE"
 
 ColorOfBossBar: "RED"
 
+CustomGlassPlateColor: "RED_STAINED_GLASS_PANE"
+
 Slot: 37
 
 Price: 350

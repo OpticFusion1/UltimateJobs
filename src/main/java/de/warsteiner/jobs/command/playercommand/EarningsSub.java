@@ -6,9 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
  
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.api.Job;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
-import de.warsteiner.jobs.utils.objects.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.guis.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 import de.warsteiner.jobs.utils.playercommand.SubCommand;
 
 public class EarningsSub extends SubCommand {
@@ -49,7 +49,7 @@ public class EarningsSub extends SubCommand {
 			return;
 		} else if (args.length == 1) {
 			
-			if(plugin.getFileManager().getEarningsAllConfig().getBoolean("Enabled")) {
+			if(plugin.getLocalFileManager().getEarningsAllConfig().getBoolean("Enabled")) {
 			
 				plugin.getGUIAddonManager().createEarningsGUI_ALL_Jobs(player, UpdateTypes.OPEN);
 			 
@@ -83,7 +83,7 @@ public class EarningsSub extends SubCommand {
 
 	@Override
 	public boolean isEnabled() {
-		return plugin.getFileManager().getCMDSettings().getBoolean("Commands.Earnings.Enabled");
+		return plugin.getLocalFileManager().getCMDSettings().getBoolean("Commands.Earnings.Enabled");
 	}
 
 	@Override

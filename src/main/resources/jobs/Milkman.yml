@@ -7,6 +7,8 @@ Material: "COW_SPAWN_EGG"
 
 ColorOfBossBar: "WHITE"
 
+CustomGlassPlateColor: "WHITE_STAINED_GLASS_PANE"
+
 Slot: 16
 
 Price: 350

@@ -12,15 +12,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.api.Job; 
 import de.warsteiner.jobs.command.AdminCommand;
 import de.warsteiner.jobs.utils.JsonMessage;
 import de.warsteiner.jobs.utils.admincommand.AdminSubCommand;
 import de.warsteiner.jobs.utils.objects.DataMode;
-import de.warsteiner.jobs.utils.objects.JobsMultiplier;
-import de.warsteiner.jobs.utils.objects.MultiplierType;
-import de.warsteiner.jobs.utils.objects.MultiplierWeight;
-import de.warsteiner.jobs.utils.objects.PluginColor; 
+import de.warsteiner.jobs.utils.objects.PluginColor;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobsMultiplier;
+import de.warsteiner.jobs.utils.objects.multipliers.MultiplierType;
+import de.warsteiner.jobs.utils.objects.multipliers.MultiplierWeight; 
 
 public class BoostSub extends AdminSubCommand {
 	

@@ -48,7 +48,7 @@ ConfirmWithdraw_Custom:
   Back:
  
     ActionList:
-      - "GUI:WITHDRAW"
+      - "GUI;WITHDRAW"
  
     Material: "name;Mhf_ArrowLeft"
 
@@ -56,5 +56,5 @@ ConfirmWithdraw_Custom:
 
 #Placeholders of the GUI
 ConfirmWithdraw_Place:
-  - "BLACK_STAINED_GLASS_PANE:13:&8-/-"
+  - "<random_generated_glass_plate>:13:&8-/-"
   

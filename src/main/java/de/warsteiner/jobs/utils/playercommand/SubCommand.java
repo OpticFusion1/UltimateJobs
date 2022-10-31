@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 
 public abstract class SubCommand {
 	

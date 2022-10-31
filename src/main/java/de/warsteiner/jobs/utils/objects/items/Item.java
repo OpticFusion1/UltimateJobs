@@ -1,4 +1,4 @@
-package de.warsteiner.jobs.utils.objects;
+package de.warsteiner.jobs.utils.objects.items;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,23 +13,30 @@ public class Item {
 	
 	private ItemStack icon;
 	
+	private String named;
+	
 	private ItemType type;
  
-	private List<ItemAction> actions;
+	private List<String> actions;
 	
-	public Item(String internal, ItemType type, ItemStack icon, List<ItemAction> actions) {
+	public Item(String internal, String named, ItemType type, ItemStack icon, List<String> cfgactions) {
 		
 		this.internal = internal;
 		this.icon = icon;
-		this.actions = actions;
+		this.actions = cfgactions;
 		this.type = type;
+		this.named = named;
 	}
 	
 	public ItemType getType() {
 		return type;
 	}
 	
-	public List<ItemAction> getActions() {
+	public String getNamed() {
+		return this.named;
+	}
+	
+	public List<String> getActions() {
 		return this.actions;
 	}
 

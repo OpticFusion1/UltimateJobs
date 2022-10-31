@@ -16,7 +16,7 @@ public class JobActionsCollectBerrys implements Listener {
 	public void onTame(PlayerHarvestBlockEvent event) { 
 		
 		if (event.isCancelled()) {
-			if(plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if(plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				event.setCancelled(true);
 			}
 			return;

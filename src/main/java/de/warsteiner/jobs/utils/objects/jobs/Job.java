@@ -1,4 +1,4 @@
-package de.warsteiner.jobs.api;
+package de.warsteiner.jobs.utils.objects.jobs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,10 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.utils.JobAction;
-import de.warsteiner.jobs.utils.objects.JobID;
-import de.warsteiner.jobs.utils.objects.JobLevel;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
 
 public class Job {
 
@@ -35,11 +31,15 @@ public class Job {
 
 	private ArrayList<String> quit;
 	private ArrayList<String> join;
+	
+	private String song;
+	
+	private String glass_color;
 
 	public Job(String id, ArrayList<JobAction> action, String icon, int slot, double price, String permission,
 			List<String> worlds, String model, BarColor bar, HashMap<Integer, JobLevel> levels2, String bypassperm,
 			double maxear, HashMap<JobAction, HashMap<String, JobID>> ids, List<String> customs,
-			HashMap<String, Boolean> options, ArrayList<String> quit, ArrayList<String> join) {
+			HashMap<String, Boolean> options, ArrayList<String> quit, ArrayList<String> join, String song, String glass_color) {
 
 		this.action = action;
 		this.idt = id;
@@ -59,6 +59,26 @@ public class Job {
 
 		this.quit = quit;
 		this.join = join;
+		
+		this.song = song;
+		
+		this.glass_color = glass_color;
+	}
+	
+	public String getGlassColor() {
+		return this.glass_color;
+	}
+	
+	public boolean hasGlassColor() {
+		return this.glass_color != null;
+	}
+	
+	public String getSong() {
+		return this.song;
+	}
+	
+	public boolean hasSong() {
+		return getSong() != null;
 	}
 
 	public ArrayList<String> getQuitCommands() {
@@ -500,7 +520,7 @@ public class Job {
 
 	public String getDisplayOfJob(String UUID) {
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer(UUID);
-		String display = jb.getLanguage().getJobMessage("Jobs." + this.getConfigID() + ".Display");
+		String display = jb.getLanguage().getJobMessage("Jobs." + this.idt + ".Display");
 
 		if (display == null) {
 			return "Error";
@@ -510,7 +530,7 @@ public class Job {
 	}
 
 	public String getConfigID() {
-		return idt;
+		return idt.toUpperCase();
 	}
 
 	public String getDisplayID(String UUID) {

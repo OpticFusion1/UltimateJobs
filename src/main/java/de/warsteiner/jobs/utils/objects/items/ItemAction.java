@@ -1,4 +1,4 @@
-package de.warsteiner.jobs.utils.objects;
+package de.warsteiner.jobs.utils.objects.items;
 
 public enum ItemAction {
 	
@@ -6,7 +6,7 @@ public enum ItemAction {
 	PLAYER_COMMAND,
 	CONSOLE_COMMAND,
 	CLOSE,
-	OPEN_GUI,
+	GUI,
 	LEAVE,
 	LEAVEALL;
 	 

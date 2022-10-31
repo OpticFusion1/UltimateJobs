@@ -1,4 +1,4 @@
-package de.warsteiner.jobs.utils.objects;
+package de.warsteiner.jobs.utils.objects.jobs;
 
 import java.util.ArrayList; 
 import java.util.HashMap; 
@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.bukkit.configuration.file.YamlConfiguration;
  
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.api.Job;
+import de.warsteiner.jobs.utils.objects.Language;
  
 
 public class JobsPlayer {
@@ -112,18 +112,23 @@ public class JobsPlayer {
 			HashMap<String, Integer> list02 = new HashMap<String, Integer>();
 			
 			HashMap<String, Double> list03 = new HashMap<String, Double>();
-			 
+			
+			HashMap<String, Integer> list04 = new HashMap<String, Integer>();
+			HashMap<String, Double> list05 = new HashMap<String, Double>();
+			HashMap<String, Double> list06 = new HashMap<String, Double>();
+			
 			real.getActionList().forEach((action) -> {
 				
 				real.getIDsOf(action).forEach((id, type) -> {
 					list01.put(id, 0.0);
-					list02.put(id, 1);
-					list03.put(id, 0.0);
+					list02.put(id, 1); 
 				});
 				
 			});
 			
-			used = new JobStats(real, job, 0, 1, 0, UltimateJobs.getPlugin().getDate(), list01, list02, list03, UltimateJobs.getPlugin().getDate());
+			list03.put(UltimateJobs.getPlugin().getDate(), 0.0);
+			
+			used = new JobStats(real, job, 0, 1, 0, UltimateJobs.getPlugin().getDate(), list01, list02, list03, UltimateJobs.getPlugin().getDate(), list04, list05, list06);
 			
 			newstats.put(job, used);
 			
@@ -141,8 +146,8 @@ public class JobsPlayer {
  
 	public Language getLanguage() {
 		
-		if(!UltimateJobs.getPlugin().getFileManager().getLanguageConfig().getBoolean("EnabledLanguages")) {
-			String used =UltimateJobs.getPlugin().getFileManager().getLanguageConfig().getString("UseLanguageWhenDisabled");
+		if(!UltimateJobs.getPlugin().getLocalFileManager().getLanguageConfig().getBoolean("EnabledLanguages")) {
+			String used =UltimateJobs.getPlugin().getLocalFileManager().getLanguageConfig().getString("UseLanguageWhenDisabled");
 			return UltimateJobs.getPlugin().getLanguageAPI().getLanguages().get(used);
 		}
 		

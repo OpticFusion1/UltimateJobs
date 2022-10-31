@@ -20,7 +20,7 @@ public class JobActionEnchant implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void enchClick(EnchantItemEvent e) {
 		if (e.isCancelled()) {
-			if (plugin.getFileManager().getConfig().getBoolean("CancelEvents")) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
 				e.setCancelled(true);
 			}
 			return;

@@ -7,8 +7,8 @@ import org.bukkit.entity.Player;
 
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.command.AdminCommand;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
-import de.warsteiner.jobs.utils.objects.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.guis.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 import de.warsteiner.jobs.utils.playercommand.SubCommand;
 
 public class WithdrawSub extends SubCommand {
@@ -55,11 +55,11 @@ public class WithdrawSub extends SubCommand {
 	@Override
 	public boolean isEnabled() {
 		
-		if(plugin.getFileManager().getConfig().getString("PayMentMode").toUpperCase().equalsIgnoreCase("INSTANT")) {
+		if(plugin.getLocalFileManager().getConfig().getString("PayMentMode").toUpperCase().equalsIgnoreCase("INSTANT")) {
 			return false;
 		}
 		
-		return plugin.getFileManager().getCMDSettings().getBoolean("Commands.Withdraw.Enabled");
+		return plugin.getLocalFileManager().getCMDSettings().getBoolean("Commands.Withdraw.Enabled");
 	}
 
 	@Override

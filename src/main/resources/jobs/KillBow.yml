@@ -7,6 +7,8 @@ Material: "BOW"
 
 ColorOfBossBar: "RED"
 
+CustomGlassPlateColor: "RED_STAINED_GLASS_PANE"
+
 Slot: 31
 
 Price: 350

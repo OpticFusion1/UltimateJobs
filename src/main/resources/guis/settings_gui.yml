@@ -62,7 +62,7 @@ Settings_Custom:
   Earnings:
  
     ActionList:
-      - "GUI:EARNINGS_ALL"
+      - "GUI;EARNINGS_ALL"
  
     Material: "EMERALD"
 
@@ -71,7 +71,7 @@ Settings_Custom:
   MoneyList:
  
     ActionList:
-      - "GUI:REWARDS"
+      - "GUI;REWARDS"
  
     Material: "BOOK"
 
@@ -80,7 +80,7 @@ Settings_Custom:
   Back:
  
     ActionList:
-      - "GUI:MAIN"
+      - "GUI;MAIN"
  
     Material: "name;Mhf_ArrowLeft"
 
@@ -88,27 +88,27 @@ Settings_Custom:
 
 #Placeholders of the GUI
 Settings_Place:
-  - "BLACK_STAINED_GLASS_PANE:0:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:1:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:2:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:3:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:4:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:5:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:6:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:7:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:8:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:9:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:17:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:18:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:26:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:27:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:35:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:36:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:37:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:38:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:39:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:40:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:41:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:42:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:43:&8-/-"
-  - "BLACK_STAINED_GLASS_PANE:44:&8-/-"
+  - "<job_glass_color>:0:&8-/-"
+  - "<job_glass_color>:1:&8-/-"
+  - "<job_glass_color>:2:&8-/-"
+  - "<job_glass_color>:3:&8-/-"
+  - "<job_glass_color>:4:&8-/-"
+  - "<job_glass_color>:5:&8-/-"
+  - "<job_glass_color>:6:&8-/-"
+  - "<job_glass_color>:7:&8-/-"
+  - "<job_glass_color>:8:&8-/-"
+  - "<job_glass_color>:9:&8-/-"
+  - "<job_glass_color>:17:&8-/-"
+  - "<job_glass_color>:18:&8-/-"
+  - "<job_glass_color>:26:&8-/-"
+  - "<job_glass_color>:27:&8-/-"
+  - "<job_glass_color>:35:&8-/-"
+  - "<job_glass_color>:36:&8-/-"
+  - "<job_glass_color>:37:&8-/-"
+  - "<job_glass_color>:38:&8-/-"
+  - "<job_glass_color>:39:&8-/-"
+  - "<job_glass_color>:40:&8-/-"
+  - "<job_glass_color>:41:&8-/-"
+  - "<job_glass_color>:42:&8-/-"
+  - "<job_glass_color>:43:&8-/-"
+  - "<job_glass_color>:44:&8-/-"

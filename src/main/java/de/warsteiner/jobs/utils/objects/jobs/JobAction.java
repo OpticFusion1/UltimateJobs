@@ -1,4 +1,4 @@
-package de.warsteiner.jobs.utils;
+package de.warsteiner.jobs.utils.objects.jobs;
 
 public enum JobAction {
 

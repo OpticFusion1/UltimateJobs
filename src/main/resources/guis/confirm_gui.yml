@@ -48,7 +48,7 @@ AreYouSureGUI_Custom:
   Back:
  
     ActionList:
-      - "GUI:MAIN"
+      - "GUI;MAIN"
  
     Material: "name;Mhf_ArrowLeft"
 
@@ -56,5 +56,5 @@ AreYouSureGUI_Custom:
 
 #Placeholders of the GUI
 AreYouSureGUI_Place:
-  - "BLACK_STAINED_GLASS_PANE:13:&8-/-"
+  - "<random_generated_glass_plate>:13:&8-/-"
   

@@ -7,6 +7,8 @@ Material: "IRON_SHOVEL"
 
 ColorOfBossBar: "YELLOW"
 
+CustomGlassPlateColor: "YELLOW_STAINED_GLASS_PANE"
+
 Slot: 13
 
 Price: 350

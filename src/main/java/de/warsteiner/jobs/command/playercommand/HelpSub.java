@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
  
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
-import de.warsteiner.jobs.utils.objects.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.guis.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 import de.warsteiner.jobs.utils.playercommand.SubCommand;
 
 public class HelpSub extends SubCommand {
@@ -31,7 +31,7 @@ public class HelpSub extends SubCommand {
 		final Player player = (Player) sender;
 		UUID UUID = player.getUniqueId();
 		if (args.length == 1) {
-			String mode = plugin.getFileManager().getHelpSettings().getString("Help_Mode").toUpperCase();
+			String mode = plugin.getLocalFileManager().getHelpSettings().getString("Help_Mode").toUpperCase();
 			if(mode.equalsIgnoreCase("GUI")) {
 				plugin.getGUI().createHelpGUI(player, UpdateTypes.OPEN);
 			} else {
@@ -60,7 +60,7 @@ public class HelpSub extends SubCommand {
 	
 	@Override
 	public boolean isEnabled() { 
-		return  plugin.getFileManager().getCMDSettings().getBoolean("Commands.Help.Enabled");
+		return  plugin.getLocalFileManager().getCMDSettings().getBoolean("Commands.Help.Enabled");
 	}
 
 	@Override

@@ -1,0 +1,217 @@
+# .----------------.  .-----------------. .----------------.  .----------------.  .----------------. 
+#| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
+#| |  _________   | || | ____  _____  | || |              | || | _____  _____ | || |    _______   | |
+#| | |_   ___  |  | || ||_   \|_   _| | || |              | || ||_   _||_   _|| || |   /  ___  |  | |
+#| |   | |_  \_|  | || |  |   \ | |   | || |    ______    | || |  | |    | |  | || |  |  (__ \_|  | |
+#| |   |  _|  _   | || |  | |\ \| |   | || |   |______|   | || |  | '    ' |  | || |   '.___`-.   | |
+#| |  _| |___/ |  | || | _| |_\   |_  | || |              | || |   \ `--' /   | || |  |`\____) |  | |
+#| | |_________|  | || ||_____|\____| | || |              | || |    `.__.'    | || |  |_______.'  | |
+#| |              | || |              | || |              | || |              | || |              | |
+#| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
+# '----------------'  '----------------'  '----------------'  '----------------'  '----------------'
+
+#
+# <-------- { INFORMATIONS } -------->
+# 
+# You need more Help? Docs -> https://dto.mc-plugins.org
+# Join our Discord -> https://dcto.mc-plugins.org
+# Visit out Website -> https://mc-plugins.org
+#
+ 
+prefix: "&8[#14e0ba#Jobs&8]"
+
+job_not_found: "<prefix> &cThe Job <job> does not exist!"
+
+noperm: "<prefix> &cYou dont have permissions!"
+
+#placeholders
+placeholder_no_job: "&cNo Job"
+placeholder_no_level: "&cNo Level"
+placeholder_no_exp: "&cNo Exp"
+placeholder_no_levelname: "&cNo Levelname"
+
+#commands
+command_notfound: "<prefix> &7Cannot find command &6<cmd>&7!"
+command_usage: "<prefix> &7Please use &6<usage>&7."
+
+#command /job language
+command_language_NotFound: "<prefix> &cCannot find that language!"
+command_language_Already: "<prefix> &cYou already have that language!"
+command_language_Changed: "<prefix> &aYou changed your language to <lang>!"
+
+#command /job join
+command_join_Joined: "<prefix> &7You joined the Job <job>&7!"
+command_join_max: "<prefix> &7You reached the maximum Jobs!"
+command_join_already: "<prefix> &7You are already in that Job!"
+command_join_not_own: "<prefix> &7You dont own that Job!"
+
+#command /job leaveall
+command_leaveall_message: "<prefix> &7You left all &6current &7Jobs."
+command_leaveall_already: "<prefix> &cYou are not in any Job!"
+
+#command /job leave
+command_leave_message: "<prefix> &7You have left the Job <job>&7."
+command_leave_already: "<prefix> &cYou are not in that Job!"
+
+#command /job limit
+command_limit_other: "<prefix> &7<name> can have &a<max> &7Jobs."
+command_limit_not_found: "<prefix> &cCannot find player <name>."
+command_limit_self: "<prefix> &7You can have &b<max> &7Jobs."
+
+#command /job points
+command_points_not_found: "<prefix> &cCannot find player <name>."
+command_points_self: "<prefix> &7You have &b<points> &7Points."
+command_points_other: "<prefix> &7<name> owns &b<points> &7Points."
+
+#command /job stats
+command_stats_not_found: "<prefix> &cCannot find player <name>."
+
+#command /jobs levels <job>
+command_levels_no_data_found: "<prefix> &cThere were no Stats found for this Job!"
+ 
+#other messages
+Other:
+
+  Bought_Job: "<prefix> &7You bought the Job <job>&7." 
+  
+  Not_Enough_Money: "<prefix> &7You dont have enough money."
+  
+  Full: "<prefix> &7You already reached the &cmaximum &7of Jobs."
+  
+  Joined: "<prefix> &7You joined the Job <job>&7."
+
+  Left_Job: "<prefix> &7You have left the Job <job>&7."
+  
+  Leave_All: "<prefix> &7You left all &6current &7Jobs."
+  
+  Already_Left_All: "<prefix> &7You are &6not &7in any Job."
+
+#config of levels
+Levels:
+
+  BoardCastMessage: "&6Server &8| &7Player &c<name> &7reached Level &b<level> &7in the <job> Job&7!"
+
+  Ttitle_1: "&8| &b&lLevel UP &8|"
+
+  Ttitle_2: "&7New level <level_int> &8/ <level_name>"
+  
+  Message: "<prefix> &7You reached a new level! &8(&7<level_int> &8/ <level_name>&8)"
+  
+  Actionbar: "<prefix> &7You reached a new level! &8(&7<level_int> &8/ <level_name>&8)"
+ 
+#confog of commands
+Commands:
+
+  Ranking:
+  
+    Usage: "ranking"
+    
+    UsageMessage: "/Jobs ranking <job>"
+    
+    Description: "View the best Players!"
+
+  Withdraw:
+  
+    Usage: "withdraw"
+    
+    UsageMessage: "/Jobs withdraw"
+    
+    Description: "Withdraw earned Money from a Job"
+
+  Earnings:
+  
+    Usage: "earnings"
+    
+    UsageMessage: "/Jobs earnings <jobs>"
+    
+    Description: "View Earnings of the last 30 Days"
+
+  Rewards:
+  
+    Usage: "rewards"
+    
+    UsageMessage: "/Jobs rewards <job>"
+    
+    Description: "View Earnings of Jobs"
+
+  Stats:
+  
+    Usage: "stats"
+    
+    UsageMessage: "/Jobs stats <name>"
+    
+    Description: "View Player Stats"
+
+  Language:
+  
+    Usage: "language"
+    
+    UsageMessage: "/Jobs language <name>"
+    
+    Description: "Change your Language"
+
+  Help:
+  
+    Usage: "help"
+    
+    UsageMessage: "/Jobs help"
+    
+    List:
+      - "&8"
+      - " &8| &9UltimateJobs &8- &7Help &8| "
+      - "&8-> &6/Jobs leave <job> &8| &7Leave a Job"
+      - "&8-> &6/Jobs join <job> &8| &7Join a Job"
+      - "&8-> &6/Jobs leaveall &8| &7Leave all current Jobs"
+      - "&8-> &6/Jobs help &8| &7This Page" 
+      - "&8-> &6/Jobs limit <name> &8| &7View a Jobs-Limit"
+      - "&8"
+ 
+    Description: "See more help"
+
+  Points:
+  
+    Usage: "points"
+    
+    UsageMessage: "/Jobs points <name>"
+    
+    Description: "See your Points"
+
+  Limit:
+  
+    Usage: "limit"
+    
+    UsageMessage: "/Jobs limit <name>"
+    
+    Description: "See your Job Limit"
+
+  Leave:
+  
+    Usage: "leave"
+    
+    UsageMessage: "/Jobs leave <job>"
+    
+    Description: "Leave a Job"
+
+  LeaveALL:
+  
+    Usage: "leaveall"
+    
+    UsageMessage: "/Jobs leaveall"
+    
+    Description: "Leave all Jobs"
+
+  Join:
+  
+    Usage: "join"
+    
+    UsageMessage: "/Jobs join <job>"
+    
+    Description: "Join A Job"
+    
+  Levels:
+  
+    Usage: "levels"
+    
+    UsageMessage: "/Jobs levels <job>"
+    
+    Description: "View Job Levels"

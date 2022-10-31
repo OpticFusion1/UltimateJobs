@@ -7,11 +7,11 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
- 
-import de.warsteiner.jobs.api.Job;
-import de.warsteiner.jobs.utils.JobAction;
+
 import de.warsteiner.jobs.utils.cevents.PlayerFinishedWorkEvent;
 import de.warsteiner.jobs.utils.cevents.PlayerLevelJobEvent;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobAction;
 
 public class PlayerRewardCommandEvent implements Listener  {
  

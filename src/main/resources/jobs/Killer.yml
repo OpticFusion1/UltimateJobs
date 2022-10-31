@@ -7,6 +7,8 @@ Material: "DIAMOND_SWORD"
 
 ColorOfBossBar: "RED"
 
+CustomGlassPlateColor: "RED_STAINED_GLASS_PANE"
+
 Slot: 14
 
 Price: 350

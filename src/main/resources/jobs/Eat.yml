@@ -7,6 +7,8 @@ Material: "BREAD"
 
 ColorOfBossBar: "YELLOW"
 
+CustomGlassPlateColor: "YELLOW_STAINED_GLASS_PANE"
+
 Slot: 22
 
 Price: 350

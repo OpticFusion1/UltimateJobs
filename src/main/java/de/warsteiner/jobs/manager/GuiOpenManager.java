@@ -7,12 +7,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.api.Job;
 import de.warsteiner.jobs.command.AdminCommand;
-import de.warsteiner.jobs.utils.objects.AdminCommandOptions;
-import de.warsteiner.jobs.utils.objects.GUIType;
-import de.warsteiner.jobs.utils.objects.JobsPlayer;
-import de.warsteiner.jobs.utils.objects.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.commands.AdminCommandOptions;
+import de.warsteiner.jobs.utils.objects.guis.GUIType;
+import de.warsteiner.jobs.utils.objects.guis.UpdateTypes;
+import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 
 public class GuiOpenManager {
 

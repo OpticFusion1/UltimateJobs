@@ -62,35 +62,7 @@ public class WebManager {
 			Bukkit.getConsoleSender().sendMessage("§cFailed to send Web Request to Web-Server!");
 		}
 	}
-	
-	  public void downloadUpdate(Player player) {
-		  
-			File folder_1 = new File("plugins/UltimateJobs/", "updates");
-
-			if (!folder_1.exists()) {
-				folder_1.mkdir();
-			}
-		  
-			String ver = UltimateJobs.getPlugin().getWebManager().newVersion;
-			
-			String url = "https://apiv3.war-projects.com/ultimatejobs/changelogs/UltimateJobs-"+ver+".jar";
-			
-		  
-		 
-			try {
-				InputStream inputStream = new URL(url).openStream();
-				Files.copy(inputStream, Paths.get("plugins/UltimateJobs/updates/UltimateJobs-"+ver+".jar"), StandardCopyOption.REPLACE_EXISTING);
-				player.sendMessage(AdminCommand.prefix+"§aUpdate downloaded & can be found now in plugins/UltimateJobs/updates/");
-			} catch (IOException e) {
-				player.sendMessage(AdminCommand.prefix+"§cFailed to download Update, please check the logs");
-				e.printStackTrace();
-			}
-        
-             
-	  }
-	 
  
-	  
  
 	public void checkVersionWithPlayer(Player player) {
 		try {
@@ -116,8 +88,7 @@ public class WebManager {
 				canUpdate = true;
 				newVersion = version;
 				 
-				player.sendMessage(AdminCommand.prefix+"§4There was a new Update Found! https://www.spigotmc.org/resources/ultimatejobs-player-jobs.99978/");
-				UltimateJobs.getPlugin().getGUIAddonManager().createUpdateMenu(player);
+				player.sendMessage(AdminCommand.prefix+"§4There was a new Update Found! https://www.spigotmc.org/resources/ultimatejobs-player-jobs.99978/"); 
 			} else {
 				player.sendMessage(AdminCommand.prefix+"§aNo Update Found!");
 			}

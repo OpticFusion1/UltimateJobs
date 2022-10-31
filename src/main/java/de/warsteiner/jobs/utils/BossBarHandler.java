@@ -20,12 +20,12 @@ public class BossBarHandler {
 
 	public static HashMap<String, BossBar> g = new HashMap<String, BossBar>();
 
-	public static void createBar(Player p, String name, BarColor color, String ID, double pr) {
+	public static void createBar(Player p, String name, BarColor color, String ID, double pr) { 
 		BossBar b = Bukkit.createBossBar(name, color, BarStyle.SOLID, new BarFlag[] {});
 		b.setProgress(pr);
 		b.setVisible(true);
 		g.put(ID, b);
-
+	 
 		((BossBar) g.get(ID)).addPlayer(p);
 	}
 
