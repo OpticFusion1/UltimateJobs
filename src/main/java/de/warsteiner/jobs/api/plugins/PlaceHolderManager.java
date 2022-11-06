@@ -37,34 +37,42 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 
 	@Override
 	public String onRequest(OfflinePlayer player, String pr) {
-		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
-
-		if (jb != null) {
+		JobsPlayer j = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());
+ 
 			String UUID = "" + player.getUniqueId();
-			Collection<String> jobs = jb.getCurrentJobs();
-			Collection<String> jobs_own = jb.getOwnJobs();
-			if (pr.equalsIgnoreCase("job_player_own")) {
+		 
+			if (pr.equalsIgnoreCase("job_player_points")) {
 				 
-				String dis = null;
+				if(j != null) {
+					return plugin.getAPI().Format(plugin.getPlayerAPI().getPoints(UUID));
+				}
 				
-				if(jobs_own.size() == 0) {
-					dis = jb.getLanguage().getMessage("placeholder_no_job");
+				return "0.0";
+
+			} else	if (pr.equalsIgnoreCase("job_player_own")) {
+				 
+				String dis = " ";
+				
+				if(j != null) {
+				if(j.getOwnJobs().size() == 0) {
+					dis = j.getLanguage().getMessage("placeholder_no_job");
 				} else {
-					dis = plugin.getJobCache().get(jb.getOwnJobs().get(0)).getDisplayOfJob(jb.getUUIDAsString());
+					dis = plugin.getJobCache().get(j.getOwnJobs().get(0)).getDisplayOfJob(j.getUUIDAsString());
+				}
 				}
 				
 				return dis;
 
 			}   else if (pr.equalsIgnoreCase("job_player_current")) {
 			 
-				String dis = null;
-				
-				if(jobs.size() == 0) {
-					dis = jb.getLanguage().getMessage("placeholder_no_job");
+				String dis = " ";
+				if(j != null) {
+				if(j.getCurrentJobs().size() == 0) {
+					dis = j.getLanguage().getMessage("placeholder_no_job");
 				} else {
-					dis = plugin.getJobCache().get(jb.getCurrentJobs().get(0)).getDisplayOfJob(jb.getUUIDAsString());
+					dis = plugin.getJobCache().get(j.getCurrentJobs().get(0)).getDisplayOfJob(j.getUUIDAsString());
 				}
-				
+				}
 				return dis;
 
 			}  else if (pr.contains("job_topranking_global")) {
@@ -72,7 +80,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				 
 				int rank = Integer.valueOf(split[3]);
   
-				String dis = null;
+				String dis = " ";
 				
 				if(plugin.getPlayerAPI().getPlaceOfGlobalPlayer(rank).equalsIgnoreCase("Unknown")) {
 					dis = "Unknown";
@@ -90,7 +98,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 
 				Job job = plugin.getJobCache().get(internal.toUpperCase());
 				 
-				String dis = null;
+				String dis = " ";
 				
 				if(plugin.getPlayerAPI().getPlaceOfLevelsJob(job, rank).equalsIgnoreCase("Unknown")) {
 					dis = "Unknown";
@@ -108,7 +116,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 
 				Job job = plugin.getJobCache().get(internal.toUpperCase());
 				 
-				String dis = null;
+				String dis = " ";
 				
 				if(plugin.getPlayerAPI().getPlaceOfBlocksJob(job, rank).equalsIgnoreCase("Unknown")) {
 					dis = "Unknown";
@@ -126,7 +134,7 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 
 				Job job = plugin.getJobCache().get(internal.toUpperCase());
 			 
-				String dis = null;
+				String dis = " ";
 				
 				if(plugin.getPlayerAPI().getPlaceOfEarningsJob(job, rank).equalsIgnoreCase("Unknown")) {
 					dis = "Unknown";
@@ -167,44 +175,48 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 			} else if (pr.contains("job_current_levelrank")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
+				if(j != null) {
+				if (j.getCurrentJobs().size() != 0) {
 
-				if (jobs.size() != 0) {
-
-					if (jobs.contains(internal.toUpperCase())) {
+					if (j.getCurrentJobs().contains(internal.toUpperCase())) {
 
 						Job job = plugin.getJobCache().get(internal.toUpperCase());
-						return job.getLevelRankDisplay(jb.getStatsOf(internal).getLevel(), UUID);
+						return job.getLevelRankDisplay(j.getStatsOf(internal).getLevel(), UUID);
 
 					} else {
 						return "Unknown";
 					}
 				} else {
-					return jb.getLanguage().getMessage("placeholder_no_job");
+					return j.getLanguage().getMessage("placeholder_no_job");
 				}
+				}
+				return " ";
 			}  else if (pr.contains("job_current_name")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
+				if(j != null) {
+				if (j.getCurrentJobs().size() != 0) {
 
-				if (jobs.size() != 0) {
-
-					if (jobs.contains(internal.toUpperCase())) {
+					if (j.getCurrentJobs().contains(internal.toUpperCase())) {
 
 						Job job = plugin.getJobCache().get(internal.toUpperCase());
 						return job.getDisplayOfJob(UUID);
 
 					} else {
-						return jb.getLanguage().getMessage("placeholder_no_job");
+						return j.getLanguage().getMessage("placeholder_no_job");
 					}
 				} else {
-					return jb.getLanguage().getMessage("placeholder_no_job");
+					return j.getLanguage().getMessage("placeholder_no_job");
 				}
+				}
+				return " ";
 			} else if (pr.contains("job_own_contains")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
+				if(j != null) {
+				if (j.getOwnJobs().size() != 0) {
 
-				if (jobs_own.size() != 0) {
-
-					if (jobs_own.contains(internal.toUpperCase())) {
+					if (j.getOwnJobs().contains(internal.toUpperCase())) {
 
 						return "true";
 
@@ -214,13 +226,15 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				} else {
 					return "false";
 				}
+				}
+				return "false";
 			} else if (pr.contains("job_current_contains")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
+				if(j != null) {
+				if (j.getCurrentJobs().size() != 0) {
 
-				if (jobs.size() != 0) {
-
-					if (jobs.contains(internal.toUpperCase())) {
+					if (j.getCurrentJobs().contains(internal.toUpperCase())) {
 
 						return "true";
 
@@ -230,71 +244,61 @@ public class PlaceHolderManager extends PlaceholderExpansion {
 				} else {
 					return "false";
 				}
-			} else if (pr.contains("job_current_online")) {
-				String[] split = pr.split("_");
-				String internal = split[3];
-
-				if (jobs.size() != 0) {
-
-					if (jobs.contains(internal.toUpperCase())) {
-
-						Job job = plugin.getJobCache().get(internal.toUpperCase());
-						return "" + plugin.getPlayerAPI().getOnlinePlayersInJob(job).size();
-
-					} else {
-						return "0";
-					}
-				} else {
-					return "0";
 				}
+				return "false";
 			} else if (pr.contains("job_current_level")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
+				if(j != null) {
+				if (j.getCurrentJobs().size() != 0) {
 
-				if (jobs.size() != 0) {
+					if (j.getCurrentJobs().contains(internal.toUpperCase())) {
 
-					if (jobs.contains(internal.toUpperCase())) {
-
-						return "" + jb.getStatsOf(internal.toUpperCase()).getLevel();
+						return "" + j.getStatsOf(internal.toUpperCase()).getLevel();
 					} else {
-						return jb.getLanguage().getMessage("placeholder_no_level");
+						return j.getLanguage().getMessage("placeholder_no_level");
 					}
 				} else {
-					return jb.getLanguage().getMessage("placeholder_no_level");
+					return j.getLanguage().getMessage("placeholder_no_level");
 				}
+				}
+				return " ";
 			} else if (pr.contains("job_current_exp")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
-				if (jobs.size() != 0) {
-					if (jobs.contains(internal.toUpperCase())) {
+				if(j != null) {
+				if (j.getCurrentJobs().size() != 0) {
+					if (j.getCurrentJobs().contains(internal.toUpperCase())) {
 
-						return "" + jb.getStatsOf(internal.toUpperCase()).getExp();
+						return "" + j.getStatsOf(internal.toUpperCase()).getExp();
 					} else {
-						return jb.getLanguage().getMessage("placeholder_no_exp");
+						return j.getLanguage().getMessage("placeholder_no_exp");
 					}
 				} else {
-					return jb.getLanguage().getMessage("placeholder_no_exp");
+					return j.getLanguage().getMessage("placeholder_no_exp");
 				}
+				}
+				return " ";
 			} else if (pr.contains("job_current_levelname")) {
 				String[] split = pr.split("_");
 				String internal = split[3];
+				if(j != null) {
+				if (j.getCurrentJobs().size() != 0) {
 
-				if (jobs.size() != 0) {
-
-					if (jobs.contains(internal.toUpperCase())) {
+					if (j.getCurrentJobs().contains(internal.toUpperCase())) {
 						Job job = plugin.getJobCache().get(internal.toUpperCase());
-						int lvl = jb.getStatsOf(internal.toUpperCase()).getLevel();
+						int lvl = j.getStatsOf(internal.toUpperCase()).getLevel();
 						return job.getLevelDisplay(lvl, UUID);
 					} else {
-						return jb.getLanguage().getMessage("placeholder_no_levelname");
+						return j.getLanguage().getMessage("placeholder_no_levelname");
 					}
 				} else {
-					return jb.getLanguage().getMessage("placeholder_no_levelname");
+					return j.getLanguage().getMessage("placeholder_no_levelname");
 				}
-			}
-
+				}
+				return " ";
+	 
 		}
 
-		return null;
-	}
-}
+	return null;
+}}

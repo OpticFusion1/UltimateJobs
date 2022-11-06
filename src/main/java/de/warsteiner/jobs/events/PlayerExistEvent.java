@@ -29,110 +29,16 @@ public class PlayerExistEvent implements Listener {
 		new BukkitRunnable() {
 
 			@Override
-			public void run() {
-				FileConfiguration config = UltimateJobs.getPlugin().getLocalFileManager().getConfig();
-
-				PlayerAPI cache = plugin.getPlayerAPI(); 
-
+			public void run() { 
 				Player player = event.getPlayer();
 
 				UUID UUID = player.getUniqueId();
 
-				String name = player.getName();
-
-				if (plugin.getPlayerOfflineAPI().ExistPlayer("" + UUID) == false) {
-					plugin.getPlayerOfflineAPI().createPlayer("" + UUID, name);
-
-					plugin.getPlayerOfflineAPI().addAPlayerToList("" + UUID, name.toUpperCase(), name);
-
-					String lang = plugin.getLocalFileManager().getLanguageConfig().getString("PlayerDefaultLanguage");
-
-					if (plugin.getPlayerOfflineAPI().getSettingData("" + UUID, "LANG") == null) {
-						plugin.getPlayerOfflineAPI().createSettingData("" + UUID, "LANG", lang);
-					}
-
-				} 
-				
-				plugin.getPlayerOfflineAPI().updateName("" + UUID, name.toUpperCase());
-				plugin.getPlayerOfflineAPI().updateDisplay("" + UUID, name);
-
-				cache.loadData(name, UUID);
-
+				String name = player.getName().toLowerCase();
+  
+				plugin.getPlayerAPI().checkAndLoadIntoOnlineCache(player, name, player.getName() , ""+UUID);
+				 
 				plugin.getLocationAPI().setLocation(player.getLocation(), "LastLoc." + UUID);
-				
-
-				JobsPlayer jp = cache.getRealJobPlayer("" + player.getUniqueId());
-				
-				if (jp != null) {
-
-					if (config.getBoolean("EnabledDefaultJobs")) {
-						if (config.getStringList("DefaultJobs") != null) {
-							for (String job : config.getStringList("DefaultJobs")) {
-
-								if (plugin.getJobCache().get(job) != null) {
-
-									if (!jp.getOwnJobs().contains(job)) {
-										jp.addOwnedJob(job);
-
-										if (config.getBoolean("AutoJoinDefaultJobs")) {
-											jp.addCurrentJob(job);
-										}
-
-									}
-								}
-
-							}
-						}
-					}
-
-					if (config.getBoolean("EnableMaxJobPermissions")) {
-
-						if (config.getBoolean("UpdateOnServerJoin")) {
-
-							for (PermissionAttachmentInfo perms : player.getEffectivePermissions()) {
-
-								if (perms.getPermission().startsWith("ultimatejobs.max.")) {
-
-									int real = Integer
-											.valueOf(perms.getPermission().split("ultimatejobs.max.")[1]) - 1;
-
-									jp.updateCacheMax(real);
-								}
-
-							}
-						}
-					}
-
-				} 
- 
-				new BukkitRunnable() {
-
-					@Override
-					public void run() {
-						if (!plugin.getPlayerOfflineAPI().isFirstPluginStart()) {
-							if (player.hasPermission("ultimatejobs.admin.first")) {
-								player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 2, 3);
-								
-								plugin.getGUIAddonManager().createFirstStartMenu(player);
-								
-								UltimateJobs.getPlugin().getPlayerOfflineAPI().createFirstPluginStart(UltimateJobs.getPlugin().getPluginManager().getDateTodayFromCal());
-								
-							}
-						}
-
-						if (plugin.getWebManager().canUpdate) {
-							if (player.hasPermission("ultimatejobs.admin.update")) {
-								new JsonMessage().append(
-										"§8[§9UltimateJobs§8] §7Click to View a new §aUpdate§7! §7Current Version§8: §b"
-												+ plugin.getDescription().getVersion() + " §7new Version§8: §c"
-												+ plugin.getWebManager().newVersion + "")
-										.setClickAsURL("https://www.spigotmc.org/resources/ultimatejobs-player-jobs.99978/").save().send(player);
-							}
-						}
- 
-						cancel();
-					}
-				}.runTaskLater(plugin, 25);
 				
 				cancel();
 			}
@@ -150,18 +56,13 @@ public class PlayerExistEvent implements Listener {
 			public void run() {
 
 				Player player = event.getPlayer();
-				PlayerAPI cache = plugin.getPlayerAPI(); 
 				UUID UUID = player.getUniqueId();
+				
+				String name = player.getName().toLowerCase();
 
-				if (cache.existInCacheByUUID("" + UUID)) {
-					plugin.getLocationAPI().setLocation(player.getLocation(), "LastLoc." + UUID);
-
-					plugin.getPlayerOfflineAPI().savePlayer(cache.getRealJobPlayer("" + UUID), "" + UUID);
-					cache.removePlayerFromCache("" + UUID);
-				} else {
-					Bukkit.getConsoleSender()
-							.sendMessage("§cFailed to save player : " + player.getName() + " for Ultimatejobs!");
-				}
+				plugin.getPlayerAPI().saveAndLoadIntoOfflineCache(player, name, ""+UUID);
+				
+				plugin.getLocationAPI().setLocation(player.getLocation(), "LastLoc." + UUID);
 				
 				cancel();
 			}

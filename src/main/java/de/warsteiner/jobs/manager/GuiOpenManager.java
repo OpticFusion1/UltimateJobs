@@ -393,7 +393,7 @@ public class GuiOpenManager {
 					return;
 				}
 
-				if (plugin.getPlayerAPI().getUUIDByName(about.toUpperCase()) == null) {
+				if (plugin.getPlayerAPI().getJobsPlayerByName(about.toLowerCase()) == null) {
 					if (sender instanceof Player) {
 						Player player3 = (Player) sender;
 						player3.playSound(player3.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 2);
@@ -402,7 +402,7 @@ public class GuiOpenManager {
 					return;
 				}
 
-				String id = plugin.getPlayerAPI().getUUIDByName(about.toUpperCase());
+				String id = plugin.getPlayerAPI().getJobsPlayerByName(about.toLowerCase());
 				b = true;
 				addon.createOtherStatsGUI(player, UpdateTypes.OPEN, about, id);
 			} else if (type.equals(GUIType.REWARDS)) {

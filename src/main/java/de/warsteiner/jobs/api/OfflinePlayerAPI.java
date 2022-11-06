@@ -21,8 +21,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.util.concurrent.AtomicDouble;
 
 import de.warsteiner.jobs.UltimateJobs;
+import de.warsteiner.jobs.utils.PlayerDataFile;
 import de.warsteiner.jobs.utils.database.statements.SQLStatementAPI;
 import de.warsteiner.jobs.utils.objects.DataMode;
+import de.warsteiner.jobs.utils.objects.PluginColor;
 import de.warsteiner.jobs.utils.objects.jobs.Job;
 import de.warsteiner.jobs.utils.objects.jobs.JobAction;
 import de.warsteiner.jobs.utils.objects.jobs.JobStats;
@@ -35,7 +37,7 @@ import de.warsteiner.jobs.utils.objects.multipliers.MultiplierWeight;
  * Class to manage ALL Offline Player Data
  * 
  * DO NOT USE THIS CLASS AS API IN ANY PLUGIN.
-*/
+ */
 
 public class OfflinePlayerAPI {
 
@@ -50,7 +52,7 @@ public class OfflinePlayerAPI {
 			public void run() {
 
 				s.executeUpdate(
-						"CREATE TABLE IF NOT EXISTS playerlist (UUID varchar(200), NAME varchar(200), DISPLAY varchar(200))");
+						"CREATE TABLE IF NOT EXISTS playernames (UUID varchar(200), NAME varchar(200), DISPLAY varchar(200))");
 				s.executeUpdate(
 						"CREATE TABLE IF NOT EXISTS playersettings (UUID varchar(200), TYPE varchar(200), MODE varchar(200))");
 
@@ -66,9 +68,7 @@ public class OfflinePlayerAPI {
 
 				s.executeUpdate(
 						"CREATE TABLE IF NOT EXISTS earnings_stats_per_action (UUID varchar(200),IDACTION varchar(200), JOB varchar(200), ID varchar(200), TIMES int, MONEY double)");
-
-				s.executeUpdate("CREATE TABLE IF NOT EXISTS jobs_plugin (DATE varchar(200), PLY varchar(200))");
-
+ 
 				s.executeUpdate(
 						"CREATE TABLE IF NOT EXISTS job_dates_joined (UUID varchar(200), JOBID varchar(200), DATE varchar(200))");
 
@@ -101,9 +101,9 @@ public class OfflinePlayerAPI {
 					});
 			return a.get() != null;
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			FileConfiguration cfg = plugin.getMultipliersDataFile().get();
 
 			return cfg.getString("Multipliers." + UUID + "." + name + ".Plugin") != null;
 
@@ -122,10 +122,10 @@ public class OfflinePlayerAPI {
 					+ "'";
 			mg.executeUpdate(insertQuery);
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			File file = plugin.getMultipliersDataFile().getfile();
+			FileConfiguration cfg = plugin.getMultipliersDataFile().get();
 
 			cfg.set("Multipliers." + uuid + "." + name + ".Plugin", by_plugin);
 			cfg.set("Multipliers." + uuid + "." + name + ".Type", type_of.toString());
@@ -171,8 +171,8 @@ public class OfflinePlayerAPI {
 			});
 
 			return (ArrayList<JobsMultiplier>) ms;
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getMultipliersDataFile().get();
 
 			List<String> listed = cfg.getStringList("MultipliersList." + UUID);
 
@@ -202,8 +202,8 @@ public class OfflinePlayerAPI {
 		if (mode.equals(DataMode.SQL)) {
 			mg.executeUpdate("DELETE FROM job_player_multipliers WHERE UUID='" + UUID + "' AND NAME='" + name + "';");
 		} else {
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			File file = plugin.getMultipliersDataFile().getfile();
+			FileConfiguration cfg = plugin.getMultipliersDataFile().get();
 
 			List<String> listed = cfg.getStringList("MultipliersList." + UUID);
 
@@ -239,10 +239,10 @@ public class OfflinePlayerAPI {
 				}
 			});
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			File file = plugin.getMultipliersDataFile().getfile();
+			FileConfiguration cfg = plugin.getMultipliersDataFile().get();
 
 			List<String> listed = cfg.getStringList("MultipliersList." + uuid);
 
@@ -281,10 +281,10 @@ public class OfflinePlayerAPI {
 				});
 			}
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			File file = plugin.getStatsDataFile().getfile();
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			cfg.set("CDATE." + UUID, date);
 			try {
@@ -310,9 +310,9 @@ public class OfflinePlayerAPI {
 			});
 			return a.get();
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			return cfg.getString("CDATE." + UUID);
 
@@ -334,8 +334,8 @@ public class OfflinePlayerAPI {
 			});
 			return a.get() != null;
 
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 			return cfg.contains("CDATE." + UUID);
 		}
 		return false;
@@ -358,9 +358,9 @@ public class OfflinePlayerAPI {
 			});
 			return a.get();
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			return cfg.getDouble("Salary." + UUID);
 
@@ -386,10 +386,10 @@ public class OfflinePlayerAPI {
 				});
 			}
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			File file = plugin.getStatsDataFile().getfile();
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			cfg.set("Salary." + UUID, sal);
 			try {
@@ -415,8 +415,8 @@ public class OfflinePlayerAPI {
 			});
 			return a.get() != null;
 
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 			return cfg.contains("Salary." + UUID);
 		}
 		return false;
@@ -440,9 +440,9 @@ public class OfflinePlayerAPI {
 					});
 			return a.get();
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			return cfg.getString("JobDates." + UUID + ".Job." + job);
 
@@ -469,10 +469,10 @@ public class OfflinePlayerAPI {
 				});
 			}
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			File file = plugin.getStatsDataFile().getfile();
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			cfg.set("JobDates." + UUID + ".Job." + job, date);
 			try {
@@ -499,66 +499,13 @@ public class OfflinePlayerAPI {
 					});
 			return a.get() != null;
 
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 			return cfg.contains("JobDates." + UUID + ".Job." + job);
 		}
 		return false;
 	}
-
-	public void createFirstPluginStart(String date) {
-		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equals(DataMode.SQL)) {
-
-			final String insertQuery = "INSERT INTO jobs_plugin(DATE,PLY) VALUES(?,?)";
-			mg.executeUpdate(insertQuery, ps -> {
-				ps.setString(1, date);
-				ps.setString(2, "null");
-			});
-
-	} else if (mode.equals(DataMode.FILE)) {
-
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-
-			cfg.set("Plugin.Data.Date", date);
-			try {
-				cfg.save(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
-	public boolean isFirstPluginStart() {
-		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equals(DataMode.SQL)) {
-
-			AtomicBoolean a = new AtomicBoolean(false);
-
-			mg.executeQuery("SELECT * FROM jobs_plugin", rs -> {
-
-				if (rs.next()) {
-					if (rs.getString("DATE") != null) {
-						a.set(true);
-					}
-				}
-				return 1;
-			});
-
-			return a.get();
-
-	} else if (mode.equals(DataMode.FILE)) {
-
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-
-			return cfg.getString("Plugin.Data.Date") != null;
-
-		}
-		return false;
-	}
-
+  
 	public HashMap<String, String> getSettingsOfPlayer(String uuid) {
 
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
@@ -583,7 +530,7 @@ public class OfflinePlayerAPI {
 
 		} else {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			FileConfiguration cfg = plugin.getOtherDataFile().get();
 
 			List<String> listed = cfg.getStringList("SettingsList." + uuid);
 
@@ -614,30 +561,6 @@ public class OfflinePlayerAPI {
 		return false;
 	}
 
-	public boolean existPlayer(String UUID) {
-		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equals(DataMode.SQL)) {
-
-			AtomicReference<String> a = new AtomicReference<String>();
-
-			mg.executeQuery("SELECT * FROM playerlist WHERE UUID= '" + UUID + "'", rs -> {
-				if (rs.next()) {
-					a.set(rs.getString("NAME"));
-				}
-				return 1;
-			});
-			return a.get() != null;
-
-	} else if (mode.equals(DataMode.FILE)) {
-
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-
-			return cfg.getString("Fetcher." + UUID + ".Name") != null;
-
-		}
-		return false;
-	}
-
 	public void createSettingData(String UUID, String type, String value) {
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equals(DataMode.SQL)) {
@@ -649,10 +572,10 @@ public class OfflinePlayerAPI {
 				ps.setString(3, value);
 			});
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			File file = plugin.getOtherDataFile().getfile();
+			FileConfiguration cfg = plugin.getOtherDataFile().get();
 
 			List<String> listed = cfg.getStringList("SettingsList." + UUID);
 
@@ -678,10 +601,10 @@ public class OfflinePlayerAPI {
 					+ "' AND TYPE= '" + type + "'";
 			mg.executeUpdate(insertQuery);
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			File file = plugin.getOtherDataFile().getfile();
+			FileConfiguration cfg = plugin.getOtherDataFile().get();
 
 			cfg.set("Settings." + UUID + "." + type, value);
 			try {
@@ -707,196 +630,26 @@ public class OfflinePlayerAPI {
 			});
 			return a.get();
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			FileConfiguration cfg = plugin.getOtherDataFile().get();
 
 			return cfg.getString("Settings." + UUID + "." + type);
 
 		}
 		return null;
 	}
-
-	public void updateName(String UUID, String name) {
-		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equals(DataMode.SQL)) {
-
-			final String insertQuery = "UPDATE `playerlist` SET `NAME`='" + name + "' WHERE UUID='" + UUID + "'";
-			mg.executeUpdate(insertQuery);
-
-	} else if (mode.equals(DataMode.FILE)) {
-
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-
-			cfg.set("Fetcher." + UUID + ".Name", name);
-			try {
-				cfg.save(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
-	public void updateDisplay(String UUID, String name) {
-		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equals(DataMode.SQL)) {
-
-			final String insertQuery = "UPDATE `playerlist` SET `DISPLAY`='" + name + "' WHERE UUID='" + UUID + "'";
-			mg.executeUpdate(insertQuery);
-
-	} else if (mode.equals(DataMode.FILE)) {
-
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-
-			cfg.set("Fetcher." + UUID + ".Name", name);
-			try {
-				cfg.save(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
-	public void addAPlayerToList(String UUID, String name, String dis) {
-		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equals(DataMode.SQL)) {
-
-			final String insertQuery = "INSERT INTO playerlist(UUID,NAME,DISPLAY) VALUES(?,?,?)";
-			mg.executeUpdate(insertQuery, ps -> {
-				ps.setString(1, UUID);
-				ps.setString(2, name);
-				ps.setString(3, dis);
-			});
-
-	} else if (mode.equals(DataMode.FILE)) {
-
-			List<String> list = getUltimatePlayers();
-
-			File file = plugin.getPlayerDataFile().getfile();
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-
-			list.add(UUID);
-
-			cfg.set("Players", list);
-			cfg.set("Fetcher." + name.toUpperCase() + ".UUID", UUID);
-			cfg.set("Fetcher." + UUID + ".Name", name.toUpperCase());
-			cfg.set("Fetcher." + UUID + ".Display", dis);
-			try {
-				cfg.save(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
-	public boolean existInPlayersList(String uuid) {
-		return getUltimatePlayers().contains(uuid);
-	}
-
-	public List<String> getUltimatePlayers() {
-
-		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
-
-		if (mode.equals(DataMode.SQL)) {
-
-			Collection<String> jobs = new ArrayList<String>();
-			mg.executeQuery("SELECT * FROM playerlist", rs -> {
-
-				while (rs.next()) {
-					jobs.add(rs.getString("UUID"));
-				}
-
-				return 1;
-			});
-
-			return (List<String>) jobs;
-
-		} else {
-
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			return cfg.getStringList("Players");
-
-		}
-	}
-
-	public String getUUIDByName(String name) {
-		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equals(DataMode.SQL)) {
-
-			AtomicReference<String> a = new AtomicReference<String>();
-
-			mg.executeQuery("SELECT * FROM playerlist WHERE NAME= '" + name + "'", rs -> {
-				if (rs.next()) {
-					a.set(rs.getString("UUID"));
-				}
-				return 0;
-			});
-			return a.get();
-
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			return cfg.getString("Fetcher." + name.toUpperCase() + ".UUID");
-		}
-		return null;
-	}
-
-	public String getDisplayByUUID(String UUID) {
-		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equals(DataMode.SQL)) {
-
-			AtomicReference<String> a = new AtomicReference<String>();
-
-			mg.executeQuery("SELECT * FROM playerlist WHERE UUID= '" + UUID + "'", rs -> {
-				if (rs.next()) {
-					a.set(rs.getString("DISPLAY"));
-				}
-				return 0;
-			});
-			return a.get();
-
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			return cfg.getString("Fetcher." + UUID + ".Display");
-		}
-		return null;
-	}
-
-	public String getNameByUUID(String UUID) {
-		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equals(DataMode.SQL)) {
-
-			AtomicReference<String> a = new AtomicReference<String>();
-
-			mg.executeQuery("SELECT * FROM playerlist WHERE UUID= '" + UUID + "'", rs -> {
-				if (rs.next()) {
-					a.set(rs.getString("NAME"));
-				}
-				return 0;
-			});
-			return a.get();
-
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			return cfg.getString("Fetcher." + UUID + ".Name");
-		}
-		return null;
-	}
-
+ 
 	public void updateEarningsTimesOf(String UUID, String job, String id, int time, String action) {
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equals(DataMode.SQL)) {
 			final String insertQuery = "UPDATE `earnings_stats_per_action` SET `TIMES`='" + time + "' WHERE UUID='"
 					+ UUID + "' AND JOB= '" + job + "' AND ID= '" + id + "' AND IDACTION= '" + action + "'";
 			mg.executeUpdate(insertQuery);
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
+			FileConfiguration cfg = plugin.getEarningsDataFile().get();
+			File file = plugin.getEarningsDataFile().getfile();
 
 			cfg.set("Earnings." + UUID + "." + job + "." + id + ".Action." + action + ".Times", time);
 			save(cfg, file);
@@ -910,10 +663,10 @@ public class OfflinePlayerAPI {
 			final String insertQuery = "UPDATE `earnings_stats_per_action` SET `MONEY`='" + money + "' WHERE UUID='"
 					+ UUID + "' AND JOB= '" + job + "' AND ID= '" + id + "' AND IDACTION= '" + action + "'";
 			mg.executeUpdate(insertQuery);
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
+			FileConfiguration cfg = plugin.getEarningsDataFile().get();
+			File file = plugin.getEarningsDataFile().getfile();
 			cfg.set("Earnings." + UUID + "." + job + "." + id + ".Action." + action + ".Money", money);
 			save(cfg, file);
 
@@ -933,8 +686,8 @@ public class OfflinePlayerAPI {
 						return 1;
 					});
 			return a.get() != null;
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getEarningsDataFile().get();
 			return cfg.contains("Earnings." + UUID + "." + job + "." + id + ".Action." + action + ".Times");
 		}
 		return false;
@@ -957,9 +710,9 @@ public class OfflinePlayerAPI {
 			} else {
 				createEarningsOfBlock(UUID, job, id, action);
 			}
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getEarningsDataFile().get();
+			File file = plugin.getEarningsDataFile().getfile();
 
 			if (cfg.contains("Earnings." + UUID + "." + job + "." + id + ".Action." + action + ".Times")) {
 				return cfg.getInt("Earnings." + UUID + "." + job + "." + id + ".Action." + action + ".Times");
@@ -989,10 +742,10 @@ public class OfflinePlayerAPI {
 				createEarningsOfBlock(UUID, job, id, action);
 			}
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
+			FileConfiguration cfg = plugin.getEarningsDataFile().get();
+			File file = plugin.getEarningsDataFile().getfile();
 
 			if (cfg.contains("Earnings." + UUID + "." + job + "." + id + ".Action." + action + ".Money")) {
 				return cfg.getDouble("Earnings." + UUID + "." + job + "." + id + ".Action." + action + ".Money");
@@ -1033,8 +786,8 @@ public class OfflinePlayerAPI {
 						return 1;
 					});
 			return a.get() != null;
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getEarningsDataFile().get();
 			return cfg.getString("Earnings." + UUID + "." + date + "." + job) != null;
 		}
 		return false;
@@ -1059,9 +812,9 @@ public class OfflinePlayerAPI {
 		if (mode.equals(DataMode.SQL)) {
 			final String insertQuery = "UPDATE `job_players` SET `POINTS`='" + value + "' WHERE UUID='" + UUID + "'";
 			mg.executeUpdate(insertQuery);
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
+			File file = plugin.getStatsDataFile().getfile();
 
 			cfg.set("Player." + UUID + ".Points", value);
 			save(cfg, file);
@@ -1074,10 +827,10 @@ public class OfflinePlayerAPI {
 			final String insertQuery = "UPDATE `job_stats` SET `LEVEL`='" + value + "' WHERE UUID='" + UUID
 					+ "' AND JOB='" + job + "'";
 			mg.executeUpdate(insertQuery);
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
+			File file = plugin.getStatsDataFile().getfile();
 
 			cfg.set("Jobs." + UUID + "." + job + ".Level", value);
 			save(cfg, file);
@@ -1090,10 +843,10 @@ public class OfflinePlayerAPI {
 		if (mode.equals(DataMode.SQL)) {
 			final String insertQuery = "UPDATE `job_players` SET `MAX`='" + value + "' WHERE UUID='" + UUID + "'";
 			mg.executeUpdate(insertQuery);
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
+			File file = plugin.getStatsDataFile().getfile();
 
 			cfg.set("Player." + UUID + ".Max", value);
 			save(cfg, file);
@@ -1107,10 +860,10 @@ public class OfflinePlayerAPI {
 			final String insertQuery = "UPDATE `job_stats` SET `EXP`='" + d + "' WHERE UUID='" + UUID + "' AND JOB`='"
 					+ job + "'";
 			mg.executeUpdate(insertQuery);
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
+			File file = plugin.getStatsDataFile().getfile();
 
 			cfg.set("Jobs." + UUID + "." + job + ".Exp", d);
 			save(cfg, file);
@@ -1118,7 +871,107 @@ public class OfflinePlayerAPI {
 		}
 	}
 
-	public void savePlayer(JobsPlayer pl, String UUID) {
+	public List<String> getAllPlayersFromData() {
+
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+
+		if (mode.equals(DataMode.SQL)) {
+
+			Collection<String> jobs = new ArrayList<String>();
+			mg.executeQuery("SELECT * FROM job_players", rs -> {
+
+				while (rs.next()) {
+					jobs.add(rs.getString("UUID"));
+				}
+
+				return 1;
+			});
+
+			return (List<String>) jobs;
+
+		} else {
+
+			FileConfiguration cfg = plugin.getGlobalDataFile().get();
+			return cfg.getStringList("JobPlayers");
+
+		}
+	}
+
+	public boolean existANameForUUID(String UUID) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
+
+			AtomicReference<String> a = new AtomicReference<String>();
+
+			mg.executeQuery("SELECT * FROM playernames WHERE UUID= '" + UUID + "'", rs -> {
+				if (rs.next()) {
+					a.set(rs.getString("NAME"));
+				}
+				return 1;
+			});
+			return a.get() != null;
+
+		} else if (mode.equals(DataMode.FILE)) {
+
+			FileConfiguration cfg = plugin.getGlobalDataFile().get();
+
+			return cfg.getString("PlayerDetails." + UUID + ".Name") != null;
+
+		}
+		return false;
+	}
+	
+	
+	
+	public String getADisplayNameFromUUID(String UUID) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
+ 
+			AtomicReference<String> a = new AtomicReference<String>();
+
+			mg.executeQuery("SELECT * FROM playernames WHERE UUID= '" + UUID + "'", rs -> {
+				if (rs.next()) {
+					a.set(rs.getString("DISPLAY"));
+				}
+				return 0;
+			});
+			return a.get();
+
+		} else if (mode.equals(DataMode.FILE)) {
+
+			FileConfiguration cfg = plugin.getGlobalDataFile().get();
+
+			return cfg.getString("PlayerDetails." + UUID + ".Display");
+
+		}
+		return null;
+	}
+ 
+	public String getANameFromUUID(String UUID) {
+		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
+		if (mode.equals(DataMode.SQL)) {
+ 
+			AtomicReference<String> a = new AtomicReference<String>();
+
+			mg.executeQuery("SELECT * FROM playernames WHERE UUID= '" + UUID + "'", rs -> {
+				if (rs.next()) {
+					a.set(rs.getString("NAME"));
+				}
+				return 0;
+			});
+			return a.get();
+
+		} else if (mode.equals(DataMode.FILE)) {
+
+			FileConfiguration cfg = plugin.getGlobalDataFile().get();
+
+			return cfg.getString("PlayerDetails." + UUID + ".Name");
+
+		}
+		return null;
+	}
+ 
+	public void savePlayerAsFinal(JobsPlayer pl, String UUID, String named, String display) {
 
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equals(DataMode.SQL)) {
@@ -1129,7 +982,39 @@ public class OfflinePlayerAPI {
 			Collection<String> owned = pl.getOwnJobs();
 			int max = pl.getMaxJobs();
 			double points = pl.getPoints();
-			
+
+			String dated = UltimateJobs.getPlugin().getDate();
+
+			if (!existANameForUUID(UUID)) {
+				final String insertQuery = "INSERT INTO playernames(UUID,NAME,DISPLAY) VALUES(?,?,?)";
+				mg.executeUpdate(insertQuery, ps -> {
+					ps.setString(1, UUID);
+					ps.setString(2, named);
+					ps.setString(3, display);
+				});
+			} else {
+				final String insertQuery = "UPDATE `playernames` SET `NAME`='" + named + "' AND SET `DISPLAY`='"
+						+ display + "' WHERE UUID='" + UUID + "'";
+				mg.executeUpdate(insertQuery);
+			}
+
+			if (!existPlayer(UUID)) {
+				final String insertQuery = "INSERT INTO job_players(UUID,DATE,POINTS,MAX) VALUES(?,?,?,?)";
+				mg.executeUpdate(insertQuery, ps -> {
+					ps.setString(1, UUID);
+					ps.setString(2, "" + dated);
+					ps.setInt(3, 0);
+					ps.setInt(4, max);
+
+				});
+			} else {
+
+				final String insertQuery = "UPDATE `job_players` SET `DATE`='" + dated + "' AND SET `POINTS`='" + points
+						+ "' AND SET `MAX`='" + max + "' WHERE UUID='" + UUID + "'";
+				mg.executeUpdate(insertQuery);
+
+			}
+
 			final String insertQuery_owned = "INSERT INTO job_current(UUID,JOB) VALUES(?,?)";
 
 			if (current != null) {
@@ -1166,20 +1051,6 @@ public class OfflinePlayerAPI {
 				});
 			}
 
-			String dated = UltimateJobs.getPlugin().getDate();
- 
-			if (dated != null) {
-				final String insertQuery = "UPDATE `job_players` SET `DATE`='" + dated + "' WHERE UUID='" + UUID + "'";
-				mg.executeUpdate(insertQuery);
-			}
-
-			final String insertQuery_points = "UPDATE `job_players` SET `POINTS`='" + points + "' WHERE UUID='" + UUID
-					+ "'";
-			mg.executeUpdate(insertQuery_points);
-
-			final String insertQuery_max = "UPDATE `job_players` SET `MAX`='" + max + "' WHERE UUID='" + UUID + "'";
-			mg.executeUpdate(insertQuery_max);
- 
 			double sal = pl.getSalary();
 
 			String sat = pl.getSalaryDate();
@@ -1243,20 +1114,20 @@ public class OfflinePlayerAPI {
 			}
 
 			for (String job : owned) {
- 
+
 				Job j = plugin.getJobCache().get(job);
-				
+
 				JobStats stats = pl.getStatsOf(job);
-				
+
 				int level = stats.getLevel();
 				double exp = stats.getExp();
 				int broken = stats.getHowManyTimesWorked();
 				String date = stats.getDate();
 
 				String jd = stats.getJoinedDate();
-			 
-				if(! ExistJobData(UUID, job)) {
-				 
+
+				if (!ExistJobData(UUID, job)) {
+
 					final String insertQuery = "INSERT INTO job_stats(UUID,JOB,DATE,LEVEL,EXP,BROKEN) VALUES(?,?,?,?,?,?)";
 					mg.executeUpdate(insertQuery, ps -> {
 						ps.setString(1, UUID);
@@ -1266,9 +1137,9 @@ public class OfflinePlayerAPI {
 						ps.setDouble(5, exp);
 						ps.setInt(6, broken);
 					});
-					
+
 				}
-				 
+
 				stats.getEarningDatesList().forEach((key, value) -> {
 
 					final String insertQuery = "UPDATE `earnings_all` SET `MONEY`='" + value + "' WHERE UUID='" + UUID
@@ -1279,28 +1150,14 @@ public class OfflinePlayerAPI {
 
 				plugin.getPlayerChunkAPI().savePlayerChunks(UUID, j);
 
-			 
-
 				final String insertQuery = "UPDATE `job_dates_joined` SET `DATE`='" + jd + "' WHERE UUID='" + UUID
 						+ "' AND JOBID= '" + job + "'";
 				mg.executeUpdate(insertQuery);
 
-				final String insertQuery_date = "UPDATE `job_stats` SET `DATE`='" + date + "' WHERE UUID='" + UUID
+				final String insertQuery_date = "UPDATE `job_stats` SET `DATE`='" + date + "' AND SET `BROKEN`='" + broken + "' AND SET `EXP`='" + exp + "' AND SET `LEVEL`='" + level + "' WHERE UUID='" + UUID
 						+ "' AND JOB='" + j.getConfigID() + "'";
 				mg.executeUpdate(insertQuery_date);
-
-				final String insertQuery_level = "UPDATE `job_stats` SET `LEVEL`='" + level + "' WHERE UUID='" + UUID
-						+ "' AND JOB='" + j.getConfigID() + "'";
-				mg.executeUpdate(insertQuery_level);
-
-				final String insertQuery_exp = "UPDATE `job_stats` SET `EXP`='" + exp + "' WHERE UUID='" + UUID
-						+ "' AND JOB='" + j.getConfigID() + "'";
-				mg.executeUpdate(insertQuery_exp);
-
-				final String insertQuery_br = "UPDATE `job_stats` SET `BROKEN`='" + broken + "' WHERE UUID='" + UUID
-						+ "' AND JOB='" + j.getConfigID() + "'";
-				mg.executeUpdate(insertQuery_br);
-
+  
 				for (JobAction action : j.getActionList()) {
 
 					stats.getTimesExecutedMoneyList().forEach((key, value) -> {
@@ -1324,17 +1181,60 @@ public class OfflinePlayerAPI {
 				}
 
 			}
-
 			 
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
+		} else if (mode.equals(DataMode.FILE)) {
+		 
+			PlayerDataFile global = plugin.getGlobalDataFile();
+			PlayerDataFile statsf = plugin.getStatsDataFile();
+			PlayerDataFile earnings = plugin.getEarningsDataFile();
+			PlayerDataFile crow = plugin.getCrAndOwDataFile();
+			PlayerDataFile other = plugin.getOtherDataFile();
+			PlayerDataFile multi = plugin.getMultipliersDataFile();
+	 
+			FileConfiguration globalcfg = global.get();
+			FileConfiguration statscfg = statsf.get();
+			FileConfiguration earningscfg = earnings.get();
+			FileConfiguration crowcfg = crow.get();
+			FileConfiguration othercfg = other.get();
+			FileConfiguration multicfg = multi.get();
+	 
 
 			Collection<String> current = pl.getCurrentJobs();
 			Collection<String> owned = pl.getOwnJobs();
 			int max = pl.getMaxJobs();
 			double points = pl.getPoints();
 			double sal = pl.getSalary();
+
+			String dated = UltimateJobs.getPlugin().getDate();
+
+			List<String> g = globalcfg.getStringList("JobPlayers");
+
+			if(!g.contains(UUID)) {
+				g.add(UUID);
+
+				globalcfg.set("JobPlayers", g);
+			}
+
+			if (!existANameForUUID(UUID)) {
+				globalcfg.set("PlayerDetails." + UUID + ".Name", named);
+				globalcfg.set("PlayerDetails." + UUID + ".Display", display);
+			}
+
+			if (!existPlayer(UUID)) {
+				ArrayList<String> list = new ArrayList<String>();
+				statscfg.set("Player." + UUID + ".Points", 0);
+				statscfg.set("Player." + UUID + ".Max", max);
+				statscfg.set("Player." + UUID + ".Date", dated);
+				crowcfg.set("Player." + UUID + ".Owned", list);
+				crowcfg.set("Player." + UUID + ".Current", list);
+ 
+			} else {
+
+				statscfg.set("Player." + UUID + ".Points", points);
+				statscfg.set("Player." + UUID + ".Date", plugin.getDate());
+				statscfg.set("Player." + UUID + ".Max", max);
+
+			}
 
 			String sat = pl.getSalaryDate();
 
@@ -1343,24 +1243,22 @@ public class OfflinePlayerAPI {
 			if (!settings.isEmpty()) {
 				settings.forEach((type, value) -> {
 					if (existSettingData(UUID, type)) {
-						cfg.set("Settings." + UUID + "." + type, value);
+						othercfg.set("Settings." + UUID + "." + type, value);
 					} else {
-						List<String> listed = cfg.getStringList("SettingsList." + UUID);
+						List<String> listed = othercfg.getStringList("SettingsList." + UUID);
 
 						listed.add(type);
 
-						cfg.set("Settings." + UUID + "." + type, value);
+						othercfg.set("Settings." + UUID + "." + type, value);
 
-						cfg.set("SettingsList." + UUID, listed);
+						othercfg.set("SettingsList." + UUID, listed);
 					}
 				});
 			}
 
-			cfg.set("Player." + UUID + ".Points", points);
-			cfg.set("CDATE." + UUID, sat);
-			cfg.set("Player." + UUID + ".Date", plugin.getDate());
-			cfg.set("Player." + UUID + ".Max", max);
-			cfg.set("Salary." + UUID, sal);
+			statscfg.set("CDATE." + UUID, sat);
+
+			statscfg.set("Salary." + UUID, sal);
 
 			ArrayList<String> newowned = new ArrayList<String>();
 
@@ -1376,24 +1274,24 @@ public class OfflinePlayerAPI {
 
 				if (existMultiplier(UUID, name)) {
 
-					cfg.set("Multipliers." + UUID + "." + name + ".Plugin", by);
-					cfg.set("Multipliers." + UUID + "." + name + ".Type", type.toString());
-					cfg.set("Multipliers." + UUID + "." + name + ".Until", until);
-					cfg.set("Multipliers." + UUID + "." + name + ".Weight", weight.toString());
-					cfg.set("Multipliers." + UUID + "." + name + ".Value", value);
-					cfg.set("Multipliers." + UUID + "." + name + ".Job", job);
+					multicfg.set("Multipliers." + UUID + "." + name + ".Plugin", by);
+					multicfg.set("Multipliers." + UUID + "." + name + ".Type", type.toString());
+					multicfg.set("Multipliers." + UUID + "." + name + ".Until", until);
+					multicfg.set("Multipliers." + UUID + "." + name + ".Weight", weight.toString());
+					multicfg.set("Multipliers." + UUID + "." + name + ".Value", value);
+					multicfg.set("Multipliers." + UUID + "." + name + ".Job", job);
 
 				} else {
-					List<String> listed = cfg.getStringList("MultipliersList." + UUID);
+					List<String> listed = multicfg.getStringList("MultipliersList." + UUID);
 
-					cfg.set("Multipliers." + UUID + "." + name + ".Plugin", by);
-					cfg.set("Multipliers." + UUID + "." + name + ".Type", type.toString());
-					cfg.set("Multipliers." + UUID + "." + name + ".Until", until);
-					cfg.set("Multipliers." + UUID + "." + name + ".Weight", weight.toString());
-					cfg.set("Multipliers." + UUID + "." + name + ".Value", value);
-					cfg.set("Multipliers." + UUID + "." + name + ".Job", job);
+					multicfg.set("Multipliers." + UUID + "." + name + ".Plugin", by);
+					multicfg.set("Multipliers." + UUID + "." + name + ".Type", type.toString());
+					multicfg.set("Multipliers." + UUID + "." + name + ".Until", until);
+					multicfg.set("Multipliers." + UUID + "." + name + ".Weight", weight.toString());
+					multicfg.set("Multipliers." + UUID + "." + name + ".Value", value);
+					multicfg.set("Multipliers." + UUID + "." + name + ".Job", job);
 					listed.add(name);
-					cfg.set("MultipliersList." + UUID, listed);
+					multicfg.set("MultipliersList." + UUID, listed);
 
 				}
 
@@ -1405,25 +1303,24 @@ public class OfflinePlayerAPI {
 
 				JobStats stats = pl.getStatsOf(job);
 
-				List<String> listed = cfg.getStringList("EarningsList." + UUID + "." + job);
-				
-				
+				List<String> listed = earningscfg.getStringList("EarningsList." + UUID + "." + job);
+
 				stats.getEarningDatesList().forEach((key, value) -> {
 					listed.add(key);
-					cfg.set("EarnedDate." + UUID + "." + key + "." + job, value);
+					earningscfg.set("EarnedDate." + UUID + "." + key + "." + job, value);
 				});
-				
-				cfg.set("EarningsList." + UUID + "." + job, listed);
+
+				earningscfg.set("EarningsList." + UUID + "." + job, listed);
 
 				int level = stats.getLevel();
 				double exp = stats.getExp();
 				int broken = stats.getHowManyTimesWorked();
 				String date = stats.getDate();
 
-				cfg.set("Jobs." + UUID + "." + job + ".Level", level);
-				cfg.set("Jobs." + UUID + "." + job + ".Date", date);
-				cfg.set("Jobs." + UUID + "." + job + ".Broken", broken);
-				cfg.set("Jobs." + UUID + "." + job + ".Exp", exp);
+				statscfg.set("Jobs." + UUID + "." + job + ".Level", level);
+				statscfg.set("Jobs." + UUID + "." + job + ".Date", date);
+				statscfg.set("Jobs." + UUID + "." + job + ".Broken", broken);
+				statscfg.set("Jobs." + UUID + "." + job + ".Exp", exp);
 
 				newowned.add(job);
 
@@ -1433,14 +1330,14 @@ public class OfflinePlayerAPI {
 
 					stats.getTimesExecutedMoneyList().forEach((key, value) -> {
 
-						cfg.set("Earnings." + UUID + "." + job + "." + key + ".Action." + action.toString() + ".Money",
+						earningscfg.set("Earnings." + UUID + "." + job + "." + key + ".Action." + action.toString() + ".Money",
 								value);
 
 					});
 
 					stats.getWorkedTimesOfIDList().forEach((key, value) -> {
 
-						cfg.set("Earnings." + UUID + "." + job + "." + key + ".Action." + action.toString() + ".Times",
+						earningscfg.set("Earnings." + UUID + "." + job + "." + key + ".Action." + action.toString() + ".Times",
 								value);
 
 					});
@@ -1449,16 +1346,17 @@ public class OfflinePlayerAPI {
 
 			}
 
-			cfg.set("Player." + UUID + ".Owned", newowned);
-			cfg.set("Player." + UUID + ".Current", current);
-
-			try {
-				cfg.save(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			crowcfg.set("Player." + UUID + ".Owned", newowned);
+			crowcfg.set("Player." + UUID + ".Current", current);
+		 
+			global.save();
+			statsf.save();
+			earnings.save();
+			crow.save();
+			other.save();
+			multi.save();
 		}
-
+		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Saved "+UUID+" with the Name "+display+"!");
 	}
 
 	public void updateEarnings(String UUID, String job, String date, double money) {
@@ -1467,10 +1365,10 @@ public class OfflinePlayerAPI {
 			final String insertQuery = "UPDATE `earnings_all` SET `MONEY`='" + money + "' WHERE UUID='" + UUID
 					+ "' AND JOB= '" + job + "' AND DATE= '" + date + "' ";
 			mg.executeUpdate(insertQuery);
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
+			FileConfiguration cfg = plugin.getEarningsDataFile().get();
+			File file = plugin.getEarningsDataFile().getfile();
 			cfg.set("EarnedDate." + UUID + "." + date + "." + job, money);
 			save(cfg, file);
 
@@ -1495,40 +1393,40 @@ public class OfflinePlayerAPI {
 				createEarningsData(UUID, job, date);
 			}
 
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			FileConfiguration cfg = plugin.getEarningsDataFile().get();
 
 			return cfg.getDouble("EarnedDate." + UUID + "." + date + "." + job);
 
 		}
 		return 0.1;
 	}
-	
+
 	public ArrayList<String> getAllEarnings(String UUID, String job) {
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equals(DataMode.SQL)) {
-		 
-				Collection<String> jobs = new ArrayList<String>();
-				mg.executeQuery("SELECT * FROM earnings_all WHERE UUID= '" + UUID + "' AND JOB='"+job+"'", rs -> {
 
-					while (rs.next()) {
-						jobs.add(rs.getString("DATE"));
-					}
+			Collection<String> jobs = new ArrayList<String>();
+			mg.executeQuery("SELECT * FROM earnings_all WHERE UUID= '" + UUID + "' AND JOB='" + job + "'", rs -> {
 
-					return 1;
-				});
+				while (rs.next()) {
+					jobs.add(rs.getString("DATE"));
+				}
 
-				return (ArrayList<String>) jobs;
-		
-	} else if (mode.equals(DataMode.FILE)) {
+				return 1;
+			});
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			return (ArrayList<String>) jobs;
+
+		} else if (mode.equals(DataMode.FILE)) {
+
+			FileConfiguration cfg = plugin.getEarningsDataFile().get();
 
 			return (ArrayList<String>) cfg.getStringList("EarningsList." + UUID + "." + job);
 
 		}
-		return null; 
+		return null;
 	}
 
 	public void updateBrokenTimes(String UUID, String job, int val) {
@@ -1539,16 +1437,16 @@ public class OfflinePlayerAPI {
 			final String insertQuery = "UPDATE `job_stats` SET `BROKEN`='" + val + "' WHERE UUID='" + UUID
 					+ "' AND JOB='" + job + "'";
 			mg.executeUpdate(insertQuery);
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
+			File file = plugin.getStatsDataFile().getfile();
 
 			cfg.set("Jobs." + UUID + "." + job + ".Broken", val);
 			save(cfg, file);
 		}
 	}
- 
+
 	public boolean ExistJobData(String UUID, String job) {
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equals(DataMode.SQL)) {
@@ -1561,8 +1459,8 @@ public class OfflinePlayerAPI {
 				return 1;
 			});
 			return a.get() != null;
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			return cfg.getString("Jobs." + UUID + "." + job + ".Date") != null;
 		}
@@ -1581,8 +1479,8 @@ public class OfflinePlayerAPI {
 				return 1;
 			});
 			return a.get();
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			return cfg.getInt("Jobs." + UUID + "." + job + ".Level");
 		}
@@ -1601,8 +1499,8 @@ public class OfflinePlayerAPI {
 				return 0;
 			});
 			return a.get();
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			return cfg.getDouble("Jobs." + UUID + "." + job + ".Exp");
 		}
@@ -1621,9 +1519,9 @@ public class OfflinePlayerAPI {
 				return 0;
 			});
 			return a.get();
-	} else if (mode.equals(DataMode.FILE)) {
+		} else if (mode.equals(DataMode.FILE)) {
 
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			return cfg.getInt("Jobs." + UUID + "." + job + ".Broken");
 
@@ -1643,8 +1541,8 @@ public class OfflinePlayerAPI {
 				return 0;
 			});
 			return a.get();
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			return cfg.getString("Jobs." + UUID + "." + job + ".Date");
 		}
@@ -1665,8 +1563,8 @@ public class OfflinePlayerAPI {
 			});
 
 			return (ArrayList<String>) jobs;
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getCrAndOwDataFile().get();
 
 			return (ArrayList<String>) cfg.getStringList("Player." + UUID + ".Owned");
 		}
@@ -1687,8 +1585,8 @@ public class OfflinePlayerAPI {
 			});
 
 			return (ArrayList<String>) jobs;
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getCrAndOwDataFile().get();
 
 			return (ArrayList<String>) cfg.getStringList("Player." + UUID + ".Current");
 		}
@@ -1707,8 +1605,8 @@ public class OfflinePlayerAPI {
 				return 0.0;
 			});
 			return a.get();
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			return cfg.getDouble("Player." + UUID + ".Points");
 		}
@@ -1727,77 +1625,34 @@ public class OfflinePlayerAPI {
 				return 0;
 			});
 			return a.get();
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
+		} else if (mode.equals(DataMode.FILE)) {
+			FileConfiguration cfg = plugin.getStatsDataFile().get();
 
 			return cfg.getInt("Player." + UUID + ".Max");
 		}
 		return 0;
 	}
 
-	public void createPlayer(String UUID, String name) {
-
-		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equals(DataMode.SQL)) {
-
-			String date = UltimateJobs.getPlugin().getDate();
-			createPlayerDetails(UUID, date);
-
-	} else if (mode.equals(DataMode.FILE)) {
-			String date = plugin.getDate();
-			createPlayerDetails(UUID, date);
-		}
-	}
-
-	public void createPlayerDetails(String UUID, String date) {
-
-		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
-		if (mode.equals(DataMode.SQL)) {
-
-			int max = UltimateJobs.getPlugin().getLocalFileManager().getConfig().getInt("MaxDefaultJobs") - 1;
-			final String insertQuery = "INSERT INTO job_players(UUID,DATE,POINTS,MAX) VALUES(?,?,?,?)";
-			mg.executeUpdate(insertQuery, ps -> {
-				ps.setString(1, UUID);
-				ps.setString(2, "" + date);
-				ps.setInt(3, 0);
-				ps.setInt(4, max);
-
-			});
-
-	} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			File file = plugin.getPlayerDataFile().getfile();
-			int max = UltimateJobs.getPlugin().getLocalFileManager().getConfig().getInt("MaxDefaultJobs") - 1;
-
-			ArrayList<String> list = new ArrayList<String>();
-			cfg.set("Player." + UUID + ".Points", 0);
-			cfg.set("Player." + UUID + ".Max", max);
-			cfg.set("Player." + UUID + ".Date", date);
-			cfg.set("Player." + UUID + ".Owned", list);
-			cfg.set("Player." + UUID + ".Current", list);
-
-			save(cfg, file);
-		}
-	}
-
-	public boolean ExistPlayer(String UUID) {
-
+	public boolean existPlayer(String UUID) {
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equals(DataMode.SQL)) {
 
 			AtomicReference<String> a = new AtomicReference<String>();
 
-			mg.executeQuery("SELECT * FROM job_players WHERE UUID= '" + UUID + "'", rs -> {
+			mg.executeQuery("SELECT * FROM playerlist WHERE UUID= '" + UUID + "'", rs -> {
 				if (rs.next()) {
-					a.set(rs.getString("DATE"));
+					a.set(rs.getString("NAME"));
 				}
 				return 1;
 			});
 			return a.get() != null;
 
 		} else if (mode.equals(DataMode.FILE)) {
-			FileConfiguration cfg = plugin.getPlayerDataFile().get();
-			return cfg.getString("Player." + UUID + ".Date") != null;
+
+			FileConfiguration cfg = plugin.getGlobalDataFile().get();
+
+			return cfg.getString("Fetcher." + UUID + ".Name") != null;
+
 		}
 		return false;
 	}

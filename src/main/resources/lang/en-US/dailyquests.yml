@@ -1,0 +1,223 @@
+# .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
+#| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
+#| |  ________    | || |      __      | || |     _____    | || |   _____      | || |  ____  ____  | || |              | || |    ___       | || | _____  _____ | || |  _________   | || |    _______   | || |  _________   | || |    _______   | |
+#| | |_   ___ `.  | || |     /  \     | || |    |_   _|   | || |  |_   _|     | || | |_  _||_  _| | || |              | || |  .'   '.     | || ||_   _||_   _|| || | |_   ___  |  | || |   /  ___  |  | || | |  _   _  |  | || |   /  ___  |  | |
+#| |   | |   `. \ | || |    / /\ \    | || |      | |     | || |    | |       | || |   \ \  / /   | || |    ______    | || | /  .-.  \    | || |  | |    | |  | || |   | |_  \_|  | || |  |  (__ \_|  | || | |_/ | | \_|  | || |  |  (__ \_|  | |
+#| |   | |    | | | || |   / ____ \   | || |      | |     | || |    | |   _   | || |    \ \/ /    | || |   |______|   | || | | |   | |    | || |  | '    ' |  | || |   |  _|  _   | || |   '.___`-.   | || |     | |      | || |   '.___`-.   | |
+#| |  _| |___.' / | || | _/ /    \ \_ | || |     _| |_    | || |   _| |__/ |  | || |    _|  |_    | || |              | || | \  `-'  \_   | || |   \ `--' /   | || |  _| |___/ |  | || |  |`\____) |  | || |    _| |_     | || |  |`\____) |  | |
+#| | |________.'  | || ||____|  |____|| || |    |_____|   | || |  |________|  | || |   |______|   | || |              | || |  `.___.\__|  | || |    `.__.'    | || | |_________|  | || |  |_______.'  | || |   |_____|    | || |  |_______.'  | |
+#| |              | || |              | || |              | || |              | || |              | || |              | || |              | || |              | || |              | || |              | || |              | || |              | |
+#| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
+# '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
+ 
+#
+# <-------- { INFORMATIONS } -------->
+# 
+# You need more Help? Docs -> https://dto.mc-plugins.org
+# Join our Discord -> https://dcto.mc-plugins.org
+# Visit out Website -> https://mc-plugins.org
+#
+
+ActionLores:
+ 
+  ia_kill:
+    - "&7ItemsAdder Kill <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  ia_break:
+    - "&7ItemsAdder Break <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  drink_potion:
+    - "&7Drink <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  enchant:
+    - "&7Enchant <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  explore_chunk:
+    - "&7Explore <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  smelt:
+    - "&7Smelt <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  villager_trade:
+    - "&7Trades <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  find_treasure:
+    - "&7Collect Treasures <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  mmkill:
+    - "&7MMKill <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  growsaplings:
+    - "&7Grow-Saplings <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  kill_by_bow:
+    - "&7Kill by Bow <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  collectberrys:
+    - "&7Collect Berrys <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  breed:
+    - "&7Breed <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  tame:
+    - "&7Tame <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  striplog:
+    - "&7Strip <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  honey:
+    - "&7Collect Honey <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  eat:
+    - "&7Eat <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  advancement:
+    - "&7Advancements <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  shear:
+    - "&7Shear <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  craft:
+    - "&7Craft <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  milk:
+    - "&7Milk <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  farm_grow:
+    - "&7Grow <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  farm_break:
+    - "&7Farm (break) <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  fish:
+    - "&7Fish <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  kill_mob:
+    - "&7Kill <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+
+  place:
+    - "&7Place <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+  
+  break:
+    - "&7Break <progress_amount>&8/&7<amount> <block> &8/ &7<progress_percent>"
+ 
+CompleteMessages:
+
+  ActionBar:
+  
+    Enable: true
+    
+    Message: "&aCompleted Quest <quest>!"
+
+  Title:
+  
+    Enable: true
+    
+    1: "&8| &bQuest Completed &8|"
+    2: "&7<quest>"
+
+  Message:
+  
+    Enable: true
+    
+    Message: "<prefix> &7You just completed Quest <quest>&7!"
+
+ProgressLore:
+
+  Completed:
+    - "&7"
+    - "&aQuest Completed!"
+    
+  Permission:
+    - "&7"
+    - "&cThis Quest is locked!"
+    
+  InWork:
+    - "&7"
+    - "&cYou have completed <percent>%!"
+ 
+Quests:
+
+  QuestOnlyMinerButRequiresASecondJob:
+  
+    Display: "&bMiner Quest"
+    
+    Lore:
+      - "&7<jobs>"
+      - "&7Require&8: &7<requier>"
+      - "&7"
+      - "&7Complete&8:"
+      - "<types>" 
+      - "&a"
+      - "&7Reward&8: &a<reward> Dollars"
+      
+    ItemDisplays:
+        
+      BlockXY: "&aEmerald"
+
+  QuestOnlyKiller:
+  
+    Display: "&cKiller Quest"
+    
+    Lore:
+      - "&7<jobs>"
+      - "&7"
+      - "&7Complete&8:"
+      - "<types>" 
+      - "&a"
+      - "&7Reward&8: &a<reward> Dollars"
+      
+    ItemDisplays:
+        
+      Mob1: "&cZombie"
+
+  QuestOnlyMiner:
+  
+    Display: "&bMiner Quest"
+    
+    Lore:
+      - "&7<jobs>"
+      - "&7"
+      - "&7Complete&8:"
+      - "<types>" 
+      - "&a"
+      - "&7Reward&8: &a<reward> Dollars"
+      
+    ItemDisplays:
+        
+      Stone: "&6Stone"
+
+  QuestAnyJob2:
+  
+    Display: "&6Global Quest #2"
+    
+    Lore:
+      - "&7No specific Job needed"
+      - "&7"
+      - "&7Complete&8:"
+      - "<types>" 
+      - "&a"
+      - "&7Reward&8: &a<reward> Dollars"
+      
+    ItemDisplays:
+       
+      Break: "&6Oak Log"
+      Place: "&6Stone"
+
+  QuestAnyJob1:
+  
+    Display: "&6Global Quest #1"
+    
+    Lore:
+      - "&7No specific Job needed"
+      - "&7"
+      - "&7Complete&8:"
+      - "<types>" 
+      - "&a"
+      - "&7Reward&8: &a<reward> Dollars"
+      
+    ItemDisplays:
+      
+      BlockOne: "&7Stone"
+      BlockTwo: "&fIron Ore"
+      BlockThree: "&bDiamond Ore"

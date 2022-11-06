@@ -17,10 +17,7 @@
 # Join our Discord -> https://dcto.mc-plugins.org
 # Visit out Website -> https://mc-plugins.org
 #
-
-#Do you want to get a message when there is a new Update?
-CheckForUpdates: true
-
+ 
 #creates a backup of the data file every start and stopp into a zip file
 CreateBackupsOfFiles: false
 

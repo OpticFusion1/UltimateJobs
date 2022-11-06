@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -18,7 +20,9 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import de.warsteiner.jobs.api.DailyQuestsAPI;
 import de.warsteiner.jobs.api.DataBaseAPI;
 import de.warsteiner.jobs.api.EffectAPI;
 import de.warsteiner.jobs.api.ItemAPI;
@@ -94,8 +98,7 @@ import de.warsteiner.jobs.manager.GuiAddonManager;
 import de.warsteiner.jobs.manager.GuiManager;
 import de.warsteiner.jobs.manager.GuiOpenManager;
 import de.warsteiner.jobs.manager.JobWorkManager;
-import de.warsteiner.jobs.manager.PluginManager;
-import de.warsteiner.jobs.manager.WebManager;
+import de.warsteiner.jobs.manager.PluginManager; 
 import de.warsteiner.jobs.utils.BossBarHandler;
 import de.warsteiner.jobs.utils.JsonMessage;
 import de.warsteiner.jobs.utils.Metrics;
@@ -107,6 +110,7 @@ import de.warsteiner.jobs.utils.database.statements.SQLStatementAPI;
 import de.warsteiner.jobs.utils.objects.DataMode;
 import de.warsteiner.jobs.utils.objects.PluginColor;
 import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 import de.warsteiner.jobs.utils.playercommand.SubCommandRegistry;
 import net.milkbowl.vault.economy.Economy;
 
@@ -130,7 +134,7 @@ public class UltimateJobs extends JavaPlugin {
 	private ClickManager click;
 	private SubCommandRegistry cmdmanager;
 	private AdminSubCommandRegistry admincmdmanager;
-	private PlayerDataFile datafile;
+	 
 	private JobWorkManager work;
 	private PluginManager plapi;
 	private FileManager filemanager;
@@ -147,8 +151,7 @@ public class UltimateJobs extends JavaPlugin {
 	private LocationAPI locapi;
 	public DataMode mode = null;
 	private ItemAPI i;
-	private DatabaseInit init;
-	private WebManager web;
+	private DatabaseInit init; 
 	private GuiOpenManager ogui;
 
 	private PlayerDataFile chunk;
@@ -158,7 +161,15 @@ public class UltimateJobs extends JavaPlugin {
 	private NoteBlockManager ntb;
 	
 	private EffectAPI ef;
-
+	private DailyQuestsAPI qapi;
+	
+	private PlayerDataFile data_global;
+	private PlayerDataFile data_stats;
+	private PlayerDataFile data_earnings;
+	private PlayerDataFile data_current_owned;
+	private PlayerDataFile data_other;
+	private PlayerDataFile data_multi;
+	
 	/**
 	 * Loading Data, Config-Files and checking for Updates
 	 */
@@ -169,8 +180,7 @@ public class UltimateJobs extends JavaPlugin {
 		plapi = new PluginManager();
 		langapi = new LanguageAPI();
 		filemanager = new FileManager();
-		web = new WebManager();
-
+ 
 		createFolders();
 
 		filemanager.generateFiles();
@@ -192,11 +202,7 @@ public class UltimateJobs extends JavaPlugin {
 			WorldGuardManager.setClass();
 			WorldGuardManager.load();
 		}
-
-		if (filemanager.getConfig().getBoolean("CheckForUpdates")) {
-			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Checking for Updates...");
-			web.checkVersion();
-		}
+ 
 	}
 
 	/**
@@ -220,9 +226,20 @@ public class UltimateJobs extends JavaPlugin {
 
 			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading Files...");
 
-			datafile = new PlayerDataFile("jobs");
+			data_global = new PlayerDataFile("jobs");
 
-			datafile.create();
+			data_stats = new PlayerDataFile("stats");
+			data_earnings = new PlayerDataFile("earnings");
+			data_current_owned = new PlayerDataFile("cr_ow_jobs");
+			data_other = new PlayerDataFile("other");
+			data_multi = new PlayerDataFile("multipliers");
+			 
+			data_multi.create();
+			data_global.create();
+			data_stats.create();
+			data_earnings.create();
+			data_current_owned.create();
+			data_other.create();
 		}
 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading Vault...");
@@ -275,10 +292,7 @@ public class UltimateJobs extends JavaPlugin {
 		createBackups();
 
 		new Metrics(this, 15424);
-
-		getPlayerAPI().calculateRanking();
-		getPlayerAPI().startUtil();
-		 
+ 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading Job Events...");
 
 		loadEvents();
@@ -289,10 +303,17 @@ public class UltimateJobs extends JavaPlugin {
 		i.loadItems();
 
 		getLanguageAPI().loadLanguages();
+		
+		getDailyQuestsAPI().loadQuests();
  
 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading basic Events...");
 		loadBasicEvents();
+		
+	  
+ 
+		
+		 
 	 
 		if (getLanguageAPI().getLoadedLanguagesAsArray().size() != 0 && getItemAPI().fails.size() == 0 && getAPI().fails.size() == 0) {
 			Bukkit.getConsoleSender().sendMessage("§7");
@@ -318,6 +339,32 @@ public class UltimateJobs extends JavaPlugin {
 			 printFailed();
 		}
 
+	 
+
+		List<String> players = plugin.getPlayerOfflineAPI().getAllPlayersFromData();
+		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading data for "+players.size()+" Players!");
+		players.forEach((uuid) -> {
+			
+			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Checking Data for "+uuid+"...");
+			
+			String name = plugin.getPlayerOfflineAPI().getANameFromUUID(uuid);
+			String display = plugin.getPlayerOfflineAPI().getADisplayNameFromUUID(uuid);
+			
+			plugin.getPlayerAPI().LoadDataForServerStart(name, display, UUID.fromString(uuid.toString()));
+			
+		});
+		
+		Bukkit.getOnlinePlayers().forEach((p) -> {
+			plugin.getPlayerAPI().checkAndLoadIntoOnlineCache(p, p.getName().toLowerCase(), p.getName(), ""+p.getUniqueId());
+		});
+	 
+		BossBarHandler.g.forEach((d1, d2) -> {
+			BossBarHandler.removeBossBar(d1);
+		});
+		
+		getPlayerAPI().calculateRanking();
+		getPlayerAPI().startUtil();
+		
 	}
 
 	public void printFailed() {
@@ -368,11 +415,7 @@ public class UltimateJobs extends JavaPlugin {
 		}
 
 	}
-
-	public WebManager getWebManager() {
-		return web;
-	}
-
+ 
 	public PlayerDataFile getChunkData() {
 		return chunk;
 	}
@@ -414,12 +457,25 @@ public class UltimateJobs extends JavaPlugin {
 	 */
 
 	public void onDisable() {
-
-		plugin.getPlayerAPI().getCacheJobPlayers().forEach((id, jb) -> {
-			plugin.getPlayerOfflineAPI().savePlayer(jb, id);
-			Bukkit.getConsoleSender().sendMessage(PluginColor.WARNING.getPrefix() + "Saving Players...");
+		
+		BossBarHandler.g.forEach((d1, d2) -> {
+			BossBarHandler.removeBossBar(d1);
 		});
-
+		 
+		HashMap<String, JobsPlayer> players = plugin.getPlayerAPI().getOfflineCachePlayers(); 
+		players.forEach((uuid, jb) -> {
+			
+			plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, jb.getName(), jb.getDisplayName()); 
+		});
+		 
+		HashMap<String, JobsPlayer> players2 = plugin.getPlayerAPI().getOnlinePlayersListed(); 
+		players2.forEach((uuid, jb) -> {
+			
+			plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, jb.getName(), jb.getDisplayName()); 
+		}); 
+	 
+		 
+		
 		createBackups();
 
 		if (mode.equals(DataMode.SQL)) {
@@ -428,8 +484,7 @@ public class UltimateJobs extends JavaPlugin {
 				Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Closed SQL Connection...");
 			}
 		}
-
-		plugin.getPlayerAPI().getCacheJobPlayers().clear();
+ 
 		plugin.getItemAPI().items.clear(); 
 	}
 
@@ -555,10 +610,15 @@ public class UltimateJobs extends JavaPlugin {
 		capi = new PlayerChunkAPI();
 		
 		ef = new EffectAPI();
+		qapi = new DailyQuestsAPI();
 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Classes...");
 
 		 
+	}
+	
+	public DailyQuestsAPI getDailyQuestsAPI() {
+		return qapi;
 	}
 	
 	public EffectAPI getEffectAPI() {
@@ -593,10 +653,30 @@ public class UltimateJobs extends JavaPlugin {
 		return work;
 	}
 
-	public PlayerDataFile getPlayerDataFile() {
-		return datafile;
+	public PlayerDataFile getGlobalDataFile() {
+		return data_global;
 	}
-
+	
+	public PlayerDataFile getMultipliersDataFile() {
+		return data_multi;
+	}
+	
+	public PlayerDataFile getStatsDataFile() {
+		return data_stats;
+	}
+	
+	public PlayerDataFile getEarningsDataFile() {
+		return data_earnings;
+	}
+	
+	public PlayerDataFile getCrAndOwDataFile() {
+		return data_current_owned;
+	}
+	
+	public PlayerDataFile getOtherDataFile() {
+		return data_other;
+	}
+ 
 	public LanguageAPI getLanguageAPI() {
 		return langapi;
 	}
@@ -679,7 +759,7 @@ public class UltimateJobs extends JavaPlugin {
 		File folder_5 = new File(getDataFolder(), "addons");
 		
 		File folder_7 = new File(getDataFolder(), "guis");
-		
+		 
 		if (!folder_7.exists()) {
 			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Create GUIs folder...");
 			folder_7.mkdir();
@@ -695,6 +775,12 @@ public class UltimateJobs extends JavaPlugin {
 				folder_6.mkdir();
 
 				getLocalFileManager().createDefaultSongs();
+			}
+			
+			File folder_8 = new File(getDataFolder() + "/addons/", "dailyquests");
+			if (!folder_8.exists()) {
+				Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Create Daily-Quests folder...");
+				folder_8.mkdir(); 
 			}
 		}
 

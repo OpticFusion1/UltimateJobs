@@ -310,8 +310,8 @@ public class ItemAPI {
 
 				if(!ignore) {
 					if(type == null) {
-						Bukkit.getConsoleSender().sendMessage(
-								PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+mat+" for Job "+cfgid+"!");
+						//	Bukkit.getConsoleSender().sendMessage(
+						//		PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+mat+" for Job "+cfgid+"!");
 					} else {
 						
 						String pr = cfgid+"_Material";
@@ -320,12 +320,12 @@ public class ItemAPI {
 						
 						items.put(pr, it);
 				 
-						Bukkit.getConsoleSender().sendMessage(
-								PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+mat+" for Job "+cfgid+"!");
+						//Bukkit.getConsoleSender().sendMessage(
+						//PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+mat+" for Job "+cfgid+"!");
 					}
 				} else {
-					Bukkit.getConsoleSender().sendMessage(
-							PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+mat+" for Job "+cfgid+"...");
+					//	Bukkit.getConsoleSender().sendMessage(
+					//	PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+mat+" for Job "+cfgid+"...");
 				}
 				
 			}
@@ -387,8 +387,8 @@ public class ItemAPI {
 
 					if(!ignore) {
 						if(type == null) {
-							Bukkit.getConsoleSender().sendMessage(
-									PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+mat+" for Job "+cfgid+"!");
+							//Bukkit.getConsoleSender().sendMessage(
+									//PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+mat+" for Job "+cfgid+"!");
 							fails.add("Failed");
 						} else {
 							
@@ -398,12 +398,12 @@ public class ItemAPI {
 							
 							items.put(pr, it);
 					 
-							Bukkit.getConsoleSender().sendMessage(
-									PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+mat+" for Job "+cfgid+"!");
+							//	Bukkit.getConsoleSender().sendMessage(
+									//PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+mat+" for Job "+cfgid+"!");
 						}
 					} else {
-						Bukkit.getConsoleSender().sendMessage(
-								PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+mat+" for Job "+cfgid+"...");
+						//	Bukkit.getConsoleSender().sendMessage(
+								//PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+mat+" for Job "+cfgid+"...");
 					}
 				}
 				
@@ -467,8 +467,8 @@ public class ItemAPI {
 
 							if(!ignore) {
 								if(type == null) {
-									Bukkit.getConsoleSender().sendMessage(
-											PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+icon+" for Job "+cfgid+"!");
+									//Bukkit.getConsoleSender().sendMessage(
+											//	PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+icon+" for Job "+cfgid+"!");
 								} else {
 									
 									String pr = cfgid+"_JobItems_"+i;
@@ -481,8 +481,8 @@ public class ItemAPI {
 											PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+icon+" for Job "+cfgid+"!");
 								}
 							} else {
-								Bukkit.getConsoleSender().sendMessage(
-										PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+icon+" for Job "+cfgid+"...");
+								//Bukkit.getConsoleSender().sendMessage(
+										//PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+icon+" for Job "+cfgid+"...");
 							}
 						 
 					}
@@ -495,11 +495,11 @@ public class ItemAPI {
 
 		if(fails.size() == 0) {
 			 
-			Bukkit.getConsoleSender().sendMessage(
-					PluginColor.ITEM_RELATED_INFO.getPrefix() + "Successfully loaded Items!");
+			//Bukkit.getConsoleSender().sendMessage(
+					//		PluginColor.ITEM_RELATED_INFO.getPrefix() + "Successfully loaded Items!");
 		} else {
-			Bukkit.getConsoleSender().sendMessage(
-					PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to load Items with "+fails.size()+" Issues!");
+			//Bukkit.getConsoleSender().sendMessage(
+					//PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to load Items with "+fails.size()+" Issues!");
 		 
 		}
 		
@@ -508,8 +508,8 @@ public class ItemAPI {
 	public void checkOtherItems(String path, String named, FileConfiguration cfg) {
 		
 		if(!cfg.contains(path)) {
-			Bukkit.getConsoleSender().sendMessage(
-					PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to get icon for Item " + path + ".");
+			//Bukkit.getConsoleSender().sendMessage(
+					//PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to get icon for Item " + path + ".");
 			fails.add(path);
 		}
 		
@@ -564,29 +564,29 @@ public class ItemAPI {
 		
 		if(!ignore) {
 			if(type == null) {
-				Bukkit.getConsoleSender().sendMessage(
-						PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+path+" named; "+named+"!");
+				//Bukkit.getConsoleSender().sendMessage(
+						//PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+path+" named; "+named+"!");
 				fails.add("Failed");
 			}   else {
 				Item it = new Item(path, named, type, item, null);
 				
 				other_items.put(named, it);
 				 
-				Bukkit.getConsoleSender().sendMessage(
-						PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+named+"!");
+				//Bukkit.getConsoleSender().sendMessage(
+						//PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+named+"!");
 			}
 		}
 	}
 
 	public void checkCustomItems(String prefix, String named, FileConfiguration cfg) {
-		Bukkit.getConsoleSender()
-				.sendMessage(PluginColor.ITEM_RELATED_INFO.getPrefix() + "Loading Custom Item " + named + "...");
+		//Bukkit.getConsoleSender()
+		//.sendMessage(PluginColor.ITEM_RELATED_INFO.getPrefix() + "Loading Custom Item " + named + "...");
 
 		String actions_path = prefix + "." + named + ".ActionList";
 
 		if (cfg.getStringList(actions_path) == null) {
-			Bukkit.getConsoleSender().sendMessage(
-					PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to get ActionList for Item " + named + ".");
+			//	Bukkit.getConsoleSender().sendMessage(
+					//	PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to get ActionList for Item " + named + ".");
 			fails.add(actions_path);
 		}
 
@@ -595,8 +595,8 @@ public class ItemAPI {
 		String b = prefix + "." + named + ".Material";
 		  
 		if (!cfg.contains(b)) {
-			Bukkit.getConsoleSender().sendMessage(
-					PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to get Material for Item " + prefix+"."+named + ".");
+			//Bukkit.getConsoleSender().sendMessage(
+					//	PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to get Material for Item " + prefix+"."+named + ".");
 			fails.add(actions_path);
 		}
 		
@@ -652,8 +652,8 @@ public class ItemAPI {
 			
 			if(!ignore) {
 				if(type == null) {
-					Bukkit.getConsoleSender().sendMessage(
-							PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+prefix+"."+named+" MaterialPath; "+material+"!");
+					//Bukkit.getConsoleSender().sendMessage(
+							//		PluginColor.ITEM_RELATED_ERROR.getPrefix() + "Failed to create Item "+prefix+"."+named+" MaterialPath; "+material+"!");
 					fails.add("Failed");
 				} else {
 					
@@ -675,12 +675,12 @@ public class ItemAPI {
 					
 					custom_items.put(prefix, listed);
 					
-					Bukkit.getConsoleSender().sendMessage(
-							PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+named+"!");
+				//	Bukkit.getConsoleSender().sendMessage(
+					//	PluginColor.ITEM_RELATED_INFO.getPrefix() + "Created and Saved Item "+named+"!");
 				}
 			} else {
-				Bukkit.getConsoleSender().sendMessage(
-						PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+named+"...");
+				//	Bukkit.getConsoleSender().sendMessage(
+				//PluginColor.ITEM_RELATED_WARNING.getPrefix() +"Ignoring Item "+named+"...");
 			}
 		}
 		

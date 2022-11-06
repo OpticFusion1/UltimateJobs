@@ -13,6 +13,7 @@ import de.warsteiner.jobs.utils.objects.Language;
 public class JobsPlayer {
 
 	private String name;
+	private String display;
 	private String UUID;
 	private UUID rUUID;
 	private ArrayList<String> current;
@@ -28,9 +29,10 @@ public class JobsPlayer {
 
 	private HashMap<String, String> settings;
 	
-	public JobsPlayer(String name, ArrayList<String> current2, ArrayList<String> owned2,  double points,
+	public JobsPlayer(String name, String display, ArrayList<String> current2, ArrayList<String> owned2,  double points,
 			int max, String UUID, UUID rUUID, Language lang, HashMap<String, JobStats> stats, double s, String saldate, ArrayList<JobsMultiplier> multis, HashMap<String, String> settings) {
 		this.name = name;
+		this.display = display;
 		this.UUID = UUID; 
 		this.points = points;
 		this.max = max; 
@@ -43,6 +45,10 @@ public class JobsPlayer {
 		this.saldate = saldate; 
 		this.multi = multis;
 		this.settings = settings;
+	}
+	
+	public String getDisplayName() {
+		return this.display;
 	}
 	
 	public void addSetting(String name, String val) {

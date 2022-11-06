@@ -23,6 +23,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.util.concurrent.AtomicDouble;
@@ -54,6 +55,7 @@ public class PlayerAPI {
 	private UltimateJobs plugin;
 
 	private HashMap<String, JobsPlayer> pllist = new HashMap<String, JobsPlayer>();
+	private HashMap<String, JobsPlayer> offline_loaded = new HashMap<String, JobsPlayer>();
 	private ArrayList<String> players = new ArrayList<String>();
 
 	public PlayerAPI(UltimateJobs main) {
@@ -64,20 +66,188 @@ public class PlayerAPI {
 	 * Get all Players
 	 * 
 	 * Key equals the UUID to String
+	 * 
+	 * @return
 	 */
 
-	public HashMap<String, JobsPlayer> getCacheJobPlayers() {
+	public HashMap<String, JobsPlayer> getOfflineCachePlayers() {
+		return offline_loaded;
+	}
+
+	public HashMap<String, JobsPlayer> getOnlinePlayersListed() {
 		return pllist;
+	}
+
+	public String getJobsPlayerByName(String name) {
+
+		AtomicReference<String> found = new AtomicReference<String>();
+
+		pllist.forEach((uuid, jb) -> {
+
+			if (jb.getName().toLowerCase().equals(name.toLowerCase())) {
+				found.set(uuid);
+			}
+
+		});
+
+		offline_loaded.forEach((uuid, jb) -> {
+
+			if (jb.getName().toLowerCase().equals(name.toLowerCase())) {
+				found.set(uuid);
+			}
+
+		});
+
+		return found.get();
+	}
+
+	public void saveAndLoadIntoOfflineCache(Player player, String name, String uuid) {
+		if (getOfflineCachePlayers().containsKey(uuid)) {
+			getOfflineCachePlayers().remove(uuid);
+		}
+
+		JobsPlayer jb = getOnlinePlayersListed().get(uuid);
+
+		getOfflineCachePlayers().put(uuid, jb);
+
+		plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, name, jb.getDisplayName());
+
+		if (getOnlinePlayersListed().containsKey(uuid)) {
+			getOnlinePlayersListed().remove(uuid);
+		}
+
+	}
+
+	public void checkAndLoadIntoOnlineCache(Player player, String name, String display, String uuid) {
+
+		FileConfiguration config = UltimateJobs.getPlugin().getLocalFileManager().getConfig();
+
+		if (getOfflineCachePlayers().containsKey(uuid)) {
+
+			// loading from existing data
+
+			JobsPlayer g = getOfflineCachePlayers().get(uuid);
+
+			if (config.getBoolean("EnableMaxJobPermissions")) {
+
+				if (config.getBoolean("UpdateOnServerJoin")) {
+
+					for (PermissionAttachmentInfo perms : player.getEffectivePermissions()) {
+
+						if (perms.getPermission().startsWith("ultimatejobs.max.")) {
+
+							int real = Integer.valueOf(perms.getPermission().split("ultimatejobs.max.")[1]) - 1;
+
+							g.updateCacheMax(real);
+						}
+
+					}
+				}
+			}
+
+			getOnlinePlayersListed().put(uuid, g);
+			players.add(uuid);
+
+		} else {
+
+			// creating a temp new user
+
+			getOnlinePlayersListed().put(uuid, createDefaultUser(player, display, name, uuid));
+			players.add(uuid);
+
+		}
+
+	}
+
+	public JobsPlayer createDefaultUser(Player player, String name, String display, String uuid) {
+
+		FileConfiguration config = UltimateJobs.getPlugin().getLocalFileManager().getConfig();
+
+		ArrayList<String> current = new ArrayList<String>();
+		ArrayList<String> owned = new ArrayList<String>();
+
+		if (config.getBoolean("EnabledDefaultJobs")) {
+			if (config.getStringList("DefaultJobs") != null) {
+				for (String job : config.getStringList("DefaultJobs")) {
+
+					if (plugin.getJobCache().get(job) != null) {
+
+						if (!owned.contains(job)) {
+							owned.add(job);
+
+							if (config.getBoolean("AutoJoinDefaultJobs")) {
+								current.add(job);
+							}
+
+						}
+					}
+
+				}
+			}
+		}
+
+		int max = UltimateJobs.getPlugin().getLocalFileManager().getConfig().getInt("MaxDefaultJobs") - 1;
+
+		if (config.getBoolean("EnableMaxJobPermissions")) {
+
+			if (config.getBoolean("UpdateOnServerJoin")) {
+
+				for (PermissionAttachmentInfo perms : player.getEffectivePermissions()) {
+
+					if (perms.getPermission().startsWith("ultimatejobs.max.")) {
+
+						int real = Integer.valueOf(perms.getPermission().split("ultimatejobs.max.")[1]) - 1;
+
+						max = real;
+					}
+
+				}
+			}
+		}
+
+		HashMap<String, String> s1 = new HashMap<String, String>();
+		ArrayList<JobsMultiplier> s2 = new ArrayList<JobsMultiplier>();
+		HashMap<String, JobStats> s3 = new HashMap<String, JobStats>();
+
+		String lang = plugin.getLocalFileManager().getLanguageConfig().getString("PlayerDefaultLanguage");
+
+		JobsPlayer jp = new JobsPlayer(name, display, current, owned, 0.0, max, uuid, UUID.fromString(uuid.toString()),
+				plugin.getLanguageAPI().getLanguageFromID(lang), s3, 0.0, uuid, s2, s1);
+		return jp;
 	}
 
 	public JobsPlayer getRealJobPlayer(String ID) {
 
-		return pllist.get(ID);
+		if (getOnlinePlayersListed().containsKey(ID)) {
+			return getOnlinePlayersListed().get(ID);
+		}
+
+		if (getOfflineCachePlayers().containsKey(ID)) {
+			return getOfflineCachePlayers().get(ID);
+		}
+		return null;
 	}
 
 	public JobsPlayer getRealJobPlayer(UUID ID) {
 
-		return pllist.get("" + ID);
+		if (getOnlinePlayersListed().containsKey("" + ID)) {
+			return getOnlinePlayersListed().get("" + ID);
+		}
+
+		if (getOfflineCachePlayers().containsKey("" + ID)) {
+			return getOfflineCachePlayers().get("" + ID);
+		}
+		return null;
+	}
+
+	public boolean existInCacheByUUID(String uuid) {
+		if (getOfflineCachePlayers().containsKey(uuid)) {
+			return true;
+		}
+		if (getOnlinePlayersListed().containsKey(uuid)) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -101,15 +271,17 @@ public class PlayerAPI {
 							String UUID = "" + player.getUniqueId();
 							if (existInCacheByUUID(UUID)) {
 
-								for (JobsMultiplier multi : getMultipliers(UUID)) {
+								if (getMultipliers(UUID) != null && !getMultipliers(UUID).isEmpty()) {
+									for (JobsMultiplier multi : getMultipliers(UUID)) {
 
-									if (!multi.getUntil().equalsIgnoreCase("X")) {
-										Date today = new Date(plugin.getPluginManager().getDateTodayFromCalWith());
+										if (!multi.getUntil().equalsIgnoreCase("X")) {
+											Date today = new Date(plugin.getPluginManager().getDateTodayFromCalWith());
 
-										Date un = new Date(multi.getUntil());
+											Date un = new Date(multi.getUntil());
 
-										if (today.after(un)) {
-											removeMultiplier(UUID, multi.getName());
+											if (today.after(un)) {
+												removeMultiplier(UUID, multi.getName());
+											}
 										}
 									}
 								}
@@ -210,7 +382,7 @@ public class PlayerAPI {
 		if (existInCacheByUUID(ID)) {
 			return Bukkit.getPlayer(UUID.fromString(ID.toString())).getName();
 		} else {
-			return plugin.getPlayerOfflineAPI().getDisplayByUUID(ID);
+			return plugin.getPlayerOfflineAPI().getADisplayNameFromUUID(ID);
 		}
 	}
 
@@ -243,8 +415,8 @@ public class PlayerAPI {
 			c.forEach((date, val) -> {
 				ranked.add(date);
 			});
-			 
-		} 
+
+		}
 		return ranked;
 	}
 
@@ -253,9 +425,9 @@ public class PlayerAPI {
 		AtomicReference<String> at = new AtomicReference<String>();
 
 		if (calculateSortedEarningsOf(UUID, job) != null && !calculateSortedEarningsOf(UUID, job).isEmpty()) {
-			
+
 			ArrayList<String> listed = calculateSortedEarningsOf(UUID, job);
-			
+
 			return listed.get(0);
 		}
 
@@ -273,7 +445,7 @@ public class PlayerAPI {
 
 		}
 	}
-	
+
 	public void updateAverageExp(String UUID, Job job, String date, double val) {
 		if (existInCacheByUUID(UUID)) {
 
@@ -322,7 +494,7 @@ public class PlayerAPI {
 		}
 		return 0.0;
 	}
-	
+
 	public double calculateAverageExpPerMinute(String UUID, Job job) {
 
 		JobsPlayer jb = getRealJobPlayer(UUID);
@@ -359,8 +531,7 @@ public class PlayerAPI {
 		}
 		return 0.0;
 	}
-	
-	
+
 	public int calculateAverageWorkPerMinute(String UUID, Job job) {
 
 		JobsPlayer jb = getRealJobPlayer(UUID);
@@ -441,6 +612,21 @@ public class PlayerAPI {
 		return 0.0;
 	}
 
+	public ArrayList<String> getEveryPlayerWhichCanExist() {
+
+		ArrayList<String> ids = new ArrayList<String>();
+
+		getOnlinePlayersListed().forEach((uuid, jb) -> {
+			ids.add(uuid);
+		});
+
+		getOfflineCachePlayers().forEach((uuid, jb) -> {
+			ids.add(uuid);
+		});
+
+		return ids;
+	}
+
 	public void calculateRanking() {
 		FileConfiguration cfg = plugin.getLocalFileManager().getConfig();
 		if (cfg.getBoolean("CalculateRanking")) {
@@ -456,15 +642,15 @@ public class PlayerAPI {
 						@Override
 						public void run() {
 
-							if (plugin.getPlayerOfflineAPI().getUltimatePlayers() != null) {
+							if (getEveryPlayerWhichCanExist() != null && !getEveryPlayerWhichCanExist().isEmpty()) {
 
-								if (plugin.getPlayerOfflineAPI().getUltimatePlayers().size() != 0) {
+								if (getEveryPlayerWhichCanExist().size() != 0) {
 									today_ranked.clear();
 									blocks_ranked.clear();
 									level_ranked.clear();
 									ranked_points.clear();
 
-									List<String> players = plugin.getPlayerOfflineAPI().getUltimatePlayers();
+									List<String> players = getEveryPlayerWhichCanExist();
 
 									if (plugin.getLocalFileManager().getRankingGlobalConfig()
 											.getBoolean("EnabledGlobalRanking")) {
@@ -473,7 +659,9 @@ public class PlayerAPI {
 
 										for (String member : players) {
 
-											map.put(member, getPoints(member));
+											if (existInCacheByUUID(member)) {
+												map.put(member, getPoints(member));
+											}
 
 										}
 
@@ -520,20 +708,26 @@ public class PlayerAPI {
 											HashMap<Double, String> ma3 = new HashMap<Double, String>();
 
 											for (String member : players) {
-												if (plugin.getPlayerAPI().getOwnedJobs(member)
-														.contains(real.getConfigID())) {
-													double earnings_all = plugin.getPlayerAPI()
-															.getEarningsOfToday(member, real);
+												if (existInCacheByUUID(member)) {
+													if (plugin.getPlayerAPI().getOwnedJobs(member) != null
+															&& !plugin.getPlayerAPI().getOwnedJobs(member).isEmpty()) {
+														if (plugin.getPlayerAPI().getOwnedJobs(member)
+																.contains(real.getConfigID())) {
+															double earnings_all = plugin.getPlayerAPI()
+																	.getEarningsOfToday(member, real);
 
-													ma.put(earnings_all, member);
+															ma.put(earnings_all, member);
 
-													double d3 = plugin.getPlayerAPI().getBrokenTimes(member, real);
+															double d3 = plugin.getPlayerAPI().getBrokenTimes(member,
+																	real);
 
-													ma2.put(d3, member);
+															ma2.put(d3, member);
 
-													double d4 = plugin.getPlayerAPI().getLevelOF(member, real);
+															double d4 = plugin.getPlayerAPI().getLevelOF(member, real);
 
-													ma3.put(d4, member);
+															ma3.put(d4, member);
+														}
+													}
 												}
 											}
 
@@ -899,7 +1093,7 @@ public class PlayerAPI {
 
 		ArrayList<String> list = new ArrayList<String>();
 
-		for (String ud : plugin.getPlayerOfflineAPI().getUltimatePlayers()) {
+		for (String ud : getEveryPlayerWhichCanExist()) {
 
 			ArrayList<String> d = getCurrentJobs(ud);
 
@@ -931,10 +1125,6 @@ public class PlayerAPI {
 
 		return f;
 
-	}
-
-	public boolean existInCacheByUUID(String uuid) {
-		return getRealJobPlayer(uuid) != null;
 	}
 
 	public void executeCustomEvent(String UUID, String job, boolean online) {
@@ -999,7 +1189,7 @@ public class PlayerAPI {
 
 	public void updateSalary(String UUID, double d) {
 		if (existInCacheByUUID(UUID)) {
-			getCacheJobPlayers().get(UUID).updateCacheSalary(d);
+			getRealJobPlayer(UUID).updateCacheSalary(d);
 			executeCustomEvent(UUID, null, true);
 		} else {
 			plugin.getPlayerOfflineAPI().updateSalary(UUID, d);
@@ -1008,7 +1198,7 @@ public class PlayerAPI {
 
 	public void updateSalaryDate(String UUID, String d) {
 		if (existInCacheByUUID(UUID)) {
-			getCacheJobPlayers().get(UUID).updateCacheSalaryDate(d);
+			getRealJobPlayer(UUID).updateCacheSalaryDate(d);
 			executeCustomEvent(UUID, null, true);
 		} else {
 			plugin.getPlayerOfflineAPI().updateSalaryDate(UUID, d);
@@ -1017,7 +1207,7 @@ public class PlayerAPI {
 
 	public double getSalary(String uuid) {
 		if (existInCacheByUUID(uuid)) {
-			return getCacheJobPlayers().get(uuid).getSalary();
+			return getRealJobPlayer(uuid).getSalary();
 		} else {
 			return plugin.getPlayerOfflineAPI().getSalary(uuid);
 		}
@@ -1025,7 +1215,7 @@ public class PlayerAPI {
 
 	public void updateDateJoinedOfJob(String UUID, String job, String date) {
 		if (existInCacheByUUID(UUID)) {
-			getCacheJobPlayers().get(UUID).getStatsOf(job).updateCacheJoinedDate(date);
+			getRealJobPlayer(UUID).getStatsOf(job).updateCacheJoinedDate(date);
 			executeCustomEvent(UUID, job, true);
 		} else {
 			plugin.getPlayerOfflineAPI().updateDateJoinedOfJob(UUID, job, date);
@@ -1034,7 +1224,7 @@ public class PlayerAPI {
 
 	public ArrayList<JobsMultiplier> getMultipliers(String uuid) {
 		if (existInCacheByUUID(uuid)) {
-			return getCacheJobPlayers().get(uuid).getMultipliers();
+			return getRealJobPlayer(uuid).getMultipliers();
 		} else {
 			return plugin.getPlayerOfflineAPI().getMultipliers(uuid);
 		}
@@ -1070,11 +1260,11 @@ public class PlayerAPI {
 
 	public void removeMultiplier(String UUID, String name) {
 		if (existInCacheByUUID(UUID)) {
-			ArrayList<JobsMultiplier> listed = getCacheJobPlayers().get(UUID).getMultipliers();
+			ArrayList<JobsMultiplier> listed = getRealJobPlayer(UUID).getMultipliers();
 
 			listed.remove(getMultiplierByName(UUID, name));
 
-			getCacheJobPlayers().get(UUID).updateMultiList(listed);
+			getRealJobPlayer(UUID).updateMultiList(listed);
 		} else {
 			plugin.getPlayerOfflineAPI().removeMultiplier(UUID, name);
 		}
@@ -1091,11 +1281,11 @@ public class PlayerAPI {
 
 	public void addMultiplier(String UUID, JobsMultiplier m) {
 		if (existInCacheByUUID(UUID)) {
-			ArrayList<JobsMultiplier> listed = getCacheJobPlayers().get(UUID).getMultipliers();
+			ArrayList<JobsMultiplier> listed = getRealJobPlayer(UUID).getMultipliers();
 
 			listed.add(m);
 
-			getCacheJobPlayers().get(UUID).updateMultiList(listed);
+			getRealJobPlayer(UUID).updateMultiList(listed);
 
 		} else {
 			if (plugin.getPlayerOfflineAPI().existMultiplier(UUID, m.getName())) {
@@ -1110,7 +1300,7 @@ public class PlayerAPI {
 
 	public ArrayList<String> getOwnedJobs(String uuid) {
 		if (existInCacheByUUID(uuid)) {
-			return getCacheJobPlayers().get(uuid).getOwnJobs();
+			return getRealJobPlayer(uuid).getOwnJobs();
 		} else {
 			return plugin.getPlayerOfflineAPI().getOwnedJobs(uuid);
 		}
@@ -1118,7 +1308,7 @@ public class PlayerAPI {
 
 	public ArrayList<String> getCurrentJobs(String uuid) {
 		if (existInCacheByUUID(uuid)) {
-			return getCacheJobPlayers().get(uuid).getCurrentJobs();
+			return getRealJobPlayer(uuid).getCurrentJobs();
 		} else {
 			return plugin.getPlayerOfflineAPI().getCurrentJobs(uuid);
 		}
@@ -1126,7 +1316,7 @@ public class PlayerAPI {
 
 	public double getExpOf(String uuid, Job job) {
 		if (existInCacheByUUID(uuid)) {
-			return getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).getExp();
+			return getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getExp();
 		} else {
 			return plugin.getPlayerOfflineAPI().getExpOf(uuid, job.getConfigID());
 		}
@@ -1134,7 +1324,7 @@ public class PlayerAPI {
 
 	public double getExpOf(String uuid, String job) {
 		if (existInCacheByUUID(uuid)) {
-			return getCacheJobPlayers().get(uuid).getStatsOf(job).getExp();
+			return getRealJobPlayer(uuid).getStatsOf(job).getExp();
 		} else {
 			return plugin.getPlayerOfflineAPI().getExpOf(uuid, job);
 		}
@@ -1143,15 +1333,15 @@ public class PlayerAPI {
 	public int getBrokenTimesOfID(String uuid, Job job, String id, String ac) {
 		if (existInCacheByUUID(uuid)) {
 
-			if (getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()) == null) {
+			if (getRealJobPlayer(uuid).getStatsOf(job.getConfigID()) == null) {
 				return 0;
 			}
 
-			if (getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).getWorkedTimesOf(id) == null) {
+			if (getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getWorkedTimesOf(id) == null) {
 				return 0;
 			}
 
-			return getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).getWorkedTimesOf(id);
+			return getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getWorkedTimesOf(id);
 		} else {
 
 			return plugin.getPlayerOfflineAPI().getBrokenTimesOfBlock(uuid, job.getConfigID(), id, ac);
@@ -1161,15 +1351,15 @@ public class PlayerAPI {
 	public double getEarnedFrom(String uuid, Job job, String id, String ac) {
 		if (existInCacheByUUID(uuid)) {
 
-			if (getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()) == null) {
+			if (getRealJobPlayer(uuid).getStatsOf(job.getConfigID()) == null) {
 				return 0.0;
 			}
 
-			if (getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).getWorkedTimesOf(id) == null) {
+			if (getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getWorkedTimesOf(id) == null) {
 				return 0.0;
 			}
 
-			return getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).getWorkedTimesOf(id);
+			return getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getWorkedTimesOf(id);
 		} else {
 			return plugin.getPlayerOfflineAPI().getEarnedOfBlock(uuid, job.getConfigID(), id, ac);
 		}
@@ -1177,7 +1367,7 @@ public class PlayerAPI {
 
 	public void updateBrokenTimes(String uuid, Job job, int times) {
 		if (existInCacheByUUID(uuid)) {
-			getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).updateHowmanyTimesWorked(times);
+			getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).updateHowmanyTimesWorked(times);
 			executeCustomEvent(uuid, job.getConfigID(), true);
 		} else {
 			plugin.getPlayerOfflineAPI().updateBrokenTimes(uuid, job.getConfigID(), times);
@@ -1186,7 +1376,7 @@ public class PlayerAPI {
 
 	public void updateBrokenTimesOf(String uuid, Job job, String id, int d, String ac) {
 		if (existInCacheByUUID(uuid)) {
-			getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).updateCacheBrokenTimesOf(id, d);
+			getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).updateCacheBrokenTimesOf(id, d);
 			executeCustomEvent(uuid, job.getConfigID(), true);
 		} else {
 			plugin.getPlayerOfflineAPI().updateEarningsTimesOf(uuid, job.getConfigID(), id, d, ac);
@@ -1195,7 +1385,7 @@ public class PlayerAPI {
 
 	public void updateBrokenMoneyOf(String uuid, Job job, String id, double d, String ac) {
 		if (existInCacheByUUID(uuid)) {
-			getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).updateTimesExecutedMoneyOf(id, d);
+			getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).updateTimesExecutedMoneyOf(id, d);
 			executeCustomEvent(uuid, job.getConfigID(), true);
 		} else {
 			plugin.getPlayerOfflineAPI().updateEarningsAmountOf(uuid, job.getConfigID(), id, d, ac);
@@ -1204,7 +1394,7 @@ public class PlayerAPI {
 
 	public void updateEarningsAtDate(String uuid, Job job, double v, String date) {
 		if (existInCacheByUUID(uuid)) {
-			getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).updateDateEarningsOf(date, v);
+			getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).updateDateEarningsOf(date, v);
 			executeCustomEvent(uuid, job.getConfigID(), true);
 		} else {
 			plugin.getPlayerOfflineAPI().updateEarnings(uuid, job.getConfigID(), date, v);
@@ -1214,7 +1404,7 @@ public class PlayerAPI {
 	public void updateEarningsOfToday(String uuid, Job job, double v) {
 		String date = plugin.getDate();
 		if (existInCacheByUUID(uuid)) {
-			getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).updateDateEarningsOf(date, v);
+			getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).updateDateEarningsOf(date, v);
 			executeCustomEvent(uuid, job.getConfigID(), true);
 		} else {
 			plugin.getPlayerOfflineAPI().updateEarnings(uuid, job.getConfigID(), date, v);
@@ -1223,7 +1413,7 @@ public class PlayerAPI {
 
 	public void updateExp(String uuid, Job job, double val) {
 		if (existInCacheByUUID(uuid)) {
-			getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).changeCacheExp(val);
+			getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).changeCacheExp(val);
 			executeCustomEvent(uuid, job.getConfigID(), true);
 		} else {
 			plugin.getPlayerOfflineAPI().getExpOf(uuid, job.getConfigID());
@@ -1232,7 +1422,7 @@ public class PlayerAPI {
 
 	public void updateExp(String uuid, String job, double val) {
 		if (existInCacheByUUID(uuid)) {
-			getCacheJobPlayers().get(uuid).getStatsOf(job).changeCacheExp(val);
+			getRealJobPlayer(uuid).getStatsOf(job).changeCacheExp(val);
 			executeCustomEvent(uuid, job, true);
 		} else {
 			plugin.getPlayerOfflineAPI().getExpOf(uuid, job);
@@ -1241,7 +1431,7 @@ public class PlayerAPI {
 
 	public void updatePoints(String uuid, double val) {
 		if (existInCacheByUUID(uuid)) {
-			getCacheJobPlayers().get(uuid).updateCachePoints(val);
+			getRealJobPlayer(uuid).updateCachePoints(val);
 			executeCustomEvent(uuid, null, true);
 		} else {
 			plugin.getPlayerOfflineAPI().updatePoints(uuid, val);
@@ -1250,7 +1440,7 @@ public class PlayerAPI {
 
 	public void updateMax(String uuid, int val) {
 		if (existInCacheByUUID(uuid)) {
-			getCacheJobPlayers().get(uuid).updateCacheMax(val);
+			getRealJobPlayer(uuid).updateCacheMax(val);
 			executeCustomEvent(uuid, null, true);
 		} else {
 			plugin.getPlayerOfflineAPI().updateMax(uuid, val);
@@ -1260,7 +1450,7 @@ public class PlayerAPI {
 	public double getEarnedAt(String uuid, Job job, String date) {
 		if (existInCacheByUUID(uuid)) {
 
-			return getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).getEarningsofDate(date);
+			return getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getEarningsofDate(date);
 
 		} else {
 			return plugin.getPlayerOfflineAPI().getEarnedAt(uuid, job.getConfigID(), date);
@@ -1269,7 +1459,7 @@ public class PlayerAPI {
 
 	public int getBrokenTimes(String uuid, Job job) {
 		if (existInCacheByUUID(uuid)) {
-			return getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).getHowManyTimesWorked();
+			return getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getHowManyTimesWorked();
 		} else {
 			return plugin.getPlayerOfflineAPI().getBrokenOf(uuid, job.getConfigID());
 		}
@@ -1277,7 +1467,7 @@ public class PlayerAPI {
 
 	public int getLevelOF(String uuid, Job job) {
 		if (existInCacheByUUID(uuid)) {
-			return getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).getLevel();
+			return getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getLevel();
 		} else {
 			return plugin.getPlayerOfflineAPI().getLevelOf(uuid, job.getConfigID());
 		}
@@ -1285,7 +1475,7 @@ public class PlayerAPI {
 
 	public void updateLevelOf(String uuid, Job job, int lvl) {
 		if (existInCacheByUUID(uuid)) {
-			getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).changeCacheLevel(lvl);
+			getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).changeCacheLevel(lvl);
 			executeCustomEvent(uuid, job.getConfigID(), true);
 		} else {
 			plugin.getPlayerOfflineAPI().updateLevel(uuid, lvl, job.getConfigID());
@@ -1294,7 +1484,9 @@ public class PlayerAPI {
 
 	public double getPoints(String uuid) {
 		if (existInCacheByUUID(uuid)) {
-			return getCacheJobPlayers().get(uuid).getPoints();
+
+			return getRealJobPlayer(uuid).getPoints();
+
 		} else {
 			return plugin.getPlayerOfflineAPI().getPoints(uuid);
 		}
@@ -1302,23 +1494,15 @@ public class PlayerAPI {
 
 	public String getBoughtDate(String uuid, String job) {
 		if (existInCacheByUUID(uuid)) {
-			return getCacheJobPlayers().get(uuid).getStatsOf(job).getDate();
+			return getRealJobPlayer(uuid).getStatsOf(job).getDate();
 		} else {
 			return plugin.getPlayerOfflineAPI().getDateOf(uuid, job);
 		}
 	}
 
-	public String getUUIDByName(String name) {
-		if (Bukkit.getPlayer(name) != null) {
-			return "" + Bukkit.getPlayer(name).getUniqueId();
-		} else {
-			return plugin.getPlayerOfflineAPI().getUUIDByName(name);
-		}
-	}
-
 	public String getBoughtDate(String uuid, Job job) {
 		if (existInCacheByUUID(uuid)) {
-			return getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).getDate();
+			return getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getDate();
 		} else {
 			return plugin.getPlayerOfflineAPI().getDateOf(uuid, job.getConfigID());
 		}
@@ -1327,66 +1511,16 @@ public class PlayerAPI {
 	public double getEarningsOfToday(String uuid, Job job) {
 		String date = plugin.getDate();
 		if (existInCacheByUUID(uuid)) {
-			return getCacheJobPlayers().get(uuid).getStatsOf(job.getConfigID()).getEarningsofDate(date);
+			return getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getEarningsofDate(date);
 		} else {
 			return plugin.getPlayerOfflineAPI().getEarnedAt(uuid, job.getConfigID(), date);
 		}
 	}
 
-	public JobStats loadSingleJobData(UUID UUID, String job) {
+	public void LoadDataForServerStart(String name, String display, UUID UUID) {
 
-		OfflinePlayerAPI plm = UltimateJobs.getPlugin().getPlayerOfflineAPI();
-
-		Job j = plugin.getJobCache().get(job);
-
-		int level = plm.getLevelOf("" + UUID, job);
-		double exp = plm.getExpOf("" + UUID, job);
-		String date = plm.getDateOf("" + UUID, job);
-		int broken = plm.getBrokenOf("" + UUID, job);
-		String joined = plm.getJobDateJoined("" + UUID, job);
-
-		HashMap<String, Double> listedofearned = new HashMap<String, Double>();
-		plm.getAllEarnings("" + UUID, j.getConfigID()).forEach((ddd) -> {
-
-			double earned = plm.getEarnedAt("" + UUID, j.getConfigID(), ddd);
-
-			listedofearned.put(ddd, earned);
-
-		});
-
-		plugin.getPlayerChunkAPI().loadChunks("" + UUID, j);
-
-		HashMap<String, Double> money = new HashMap<String, Double>();
-		HashMap<String, Integer> broken2 = new HashMap<String, Integer>();
-
-		for (JobAction action : j.getActionList()) {
-
-			j.getIDsOf(action).forEach((INT, type) -> {
-				double moneyearned = plm.getEarnedOfBlock("" + UUID, job, INT, "" + action);
-				int brokentimes = plm.getBrokenTimesOfBlock("" + UUID, job, INT, "" + action);
-
-				money.put(INT, moneyearned);
-				broken2.put(INT, brokentimes);
-			});
-
-		}
-
-		HashMap<String, Integer> list04 = new HashMap<String, Integer>();
-		HashMap<String, Double> list05 = new HashMap<String, Double>();
-		HashMap<String, Double> list06 = new HashMap<String, Double>();
-		
-		JobStats sz = new JobStats(j, j.getConfigID(), exp, level, broken, date, money, broken2, listedofearned, joined,
-				list04, list05, list06);
-
-		plugin.getPlayerAPI().getRealJobPlayer("" + UUID).getStatsList().put(date, sz);
-
-		return sz;
-	}
-
-	public JobsPlayer loadData(String name, UUID UUID) {
-
-		if (existInCacheByUUID("" + UUID)) {
-			removePlayerFromCache("" + UUID);
+		if (getOfflineCachePlayers().containsKey("" + UUID)) {
+			getOfflineCachePlayers().remove("" + UUID);
 		}
 
 		OfflinePlayerAPI plm = UltimateJobs.getPlugin().getPlayerOfflineAPI();
@@ -1484,14 +1618,15 @@ public class PlayerAPI {
 
 		Language langusged = plugin.getLanguageAPI().getLanguages().get(lused);
 
-		JobsPlayer jp = new JobsPlayer(name, current, owned, points,
+		JobsPlayer jp = new JobsPlayer(name, display, current, owned, points,
 
 				plm.getMaxJobs("" + UUID), "" + UUID, UUID, langusged, stats, sal, sat, multi, settings);
 
-		pllist.put("" + UUID, jp);
-		players.add("" + UUID);
+		getOfflineCachePlayers().put("" + UUID, jp);
 
-		return jp;
+		Bukkit.getConsoleSender().sendMessage(
+				PluginColor.INFO.getPrefix() + "Loaded " + name + " with UUID " + UUID + " into the offline cache!");
+
 	}
 
 }

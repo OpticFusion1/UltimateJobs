@@ -45,42 +45,6 @@ public class GuiAddonManager {
 	public GuiAddonManager(UltimateJobs plugin) {
 		this.plugin = plugin;
 	}
-
-	public void createFirstStartMenu(Player player) {
-
-		player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 1, 2);
-
-		ItemStack item = BookUtil.writtenBook().author("Warsteiner37").title("§fWelcome").pages(
-
-				new BaseComponent[] { new TextComponent(
-						"§aWelcome to the first launch of the Plugin UltimateJobs! \n§7\n§7\n§8First of all, §6thanks §8for deciding and buying my Plugin!\n§7\n§7\n§7\n"
-								+ "§b<< §8Visit the other pages for more information §b>>") },
-
-				new BookUtil.PageBuilder()
-
-						.add("§aPlugin Help\n§7\n§8You can get help at our Discord Server§8: §bhttps://dcto.mc-plugins.org §8or you can visit the Plugin's Official Docs Site§8: §9https://dto.mc-plugins.org")
-
-						.newLine().newLine()
-
-						.add(BookUtil.TextBuilder.of("Discord Invite")
-								.onHover(BookUtil.HoverAction.showText("Get the Discord Invite"))
-								.onClick(BookUtil.ClickAction.openUrl("https://dcto.mc-plugins.org"))
-								.color(ChatColor.GREEN).build())
-						.newLine()
-
-						.add(BookUtil.TextBuilder.of("Docs Website")
-								.onHover(BookUtil.HoverAction.showText("Visit the Docs Website"))
-								.onClick(BookUtil.ClickAction.openUrl("https://dto.mc-plugins.org"))
-								.color(ChatColor.BLUE).build())
-
-						.build()
-
-		)
-
-				.build();
-
-		BookUtil.openPlayer(player, item);
-	}
  
 	public void createJobRankingGUI(Player player, UpdateTypes t, Job job) {
 		FileConfiguration cfg = plugin.getLocalFileManager().getRankingPerJobConfig();

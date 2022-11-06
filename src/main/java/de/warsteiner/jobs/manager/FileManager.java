@@ -76,9 +76,15 @@ public class FileManager {
 	
 	private  FileConfiguration ef;
 	private  File ef_file;
-	 
+	
+	private  FileConfiguration q_settings;
+	private  File q_settings_file;
+	
+	private  FileConfiguration q_types;
+	private  File q_types_file;
+ 
 	private List<String> defaultlanguages = Arrays.asList("en-US");
-	private List<String> defaultlanguages_files = Arrays.asList("guis","jobs","language","messages");
+	private List<String> defaultlanguages_files = Arrays.asList("guis","jobs","language","messages","dailyquests");
 	private List<String> defaultjobs = Arrays.asList("Miner","Lumberjack","FarmGrow","Digger", "Killer","Fishman","Milkman"
 			, "Crafter", "Shear","Advancements","Eat","Honey","Tame","MythicMobs","Breed"
 			, "Berrys","Saplings","KillBow","FarmBreak","FindTreasure","Smelt","Explore","Enchant","DrinkPotion","VillagerTrade");
@@ -108,6 +114,9 @@ public class FileManager {
 		createEarningsAllFile();
 		createGlobalRankingFile();
 		createRankingPerJobFile();
+		
+		createDailyQuestsTypeFile();
+		createDailyQuestsSettingFile();
 	 
 		return true;
 	}
@@ -327,6 +336,56 @@ public class FileManager {
 	
 	public  File getRankingPerJobFile() {
 		return jobr_file;
+	}
+	
+	public  FileConfiguration getDailyQuestsTypesConfig() {
+		return q_types;
+	}
+	
+	public  File getDailyQuestsTypesFile() {
+		return q_types_file;
+	}
+	
+	public  FileConfiguration getDailyQuestsSettingsConfig() {
+		return q_settings;
+	}
+	
+	public  File getDailyQuestsSettingsFile() {
+		return q_settings_file;
+	}
+ 
+ public boolean createDailyQuestsSettingFile() {
+	 q_settings_file = new File(UltimateJobs.getPlugin().getDataFolder(), "addons"+ File.separatorChar + "dailyquests" + File.separatorChar + "quests_settings.yml");
+     if (!q_settings_file.exists()) {
+    	 q_settings_file.getParentFile().mkdirs();
+     	UltimateJobs.getPlugin().saveResource("addons"+ File.separatorChar + "dailyquests" + File.separatorChar + "quests_settings.yml", true);
+     }
+     
+     q_settings = new YamlConfiguration();
+     try {
+    	 q_settings.load(q_settings_file);
+     } catch (IOException | InvalidConfigurationException e) {
+         e.printStackTrace();
+         return false;
+     }
+     return true;
+	}
+	
+	public boolean createDailyQuestsTypeFile() {
+		q_types_file = new File(UltimateJobs.getPlugin().getDataFolder(), "addons"+ File.separatorChar + "dailyquests" + File.separatorChar + "quests_types.yml");
+        if (!q_types_file.exists()) {
+        	q_types_file.getParentFile().mkdirs();
+        	UltimateJobs.getPlugin().saveResource("addons"+ File.separatorChar + "dailyquests" + File.separatorChar + "quests_types.yml", true);
+        }
+        
+        q_types = new YamlConfiguration();
+        try {
+        	q_types.load(q_types_file);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
 	}
 	
 	public boolean createRankingPerJobFile() {

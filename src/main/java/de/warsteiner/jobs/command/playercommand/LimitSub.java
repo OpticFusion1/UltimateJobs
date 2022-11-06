@@ -32,13 +32,13 @@ public class LimitSub extends SubCommand {
 		if (args.length == 2) {
 			String pl = args[1].toUpperCase();
 
-			if (plugin.getPlayerAPI().getUUIDByName(pl.toUpperCase()) == null) {
+			if (plugin.getPlayerAPI().getJobsPlayerByName(pl.toLowerCase()) == null) {
 				plugin.getAPI().playSound("COMMAND_PLAYER_NOT_FOUND", player);
 				player.sendMessage(jb.getLanguage().getMessage("command_limit_not_found")
 						.replaceAll("<name>", args[1]));
 				return;
 			} else {
-				String uuid = plugin.getPlayerAPI().getUUIDByName(pl.toUpperCase());
+				String uuid = plugin.getPlayerAPI().getJobsPlayerByName(pl.toLowerCase());
 
 				plugin.getAPI().playSound("COMMAND_LIMIT_OTHER_SUCCES", player);
 

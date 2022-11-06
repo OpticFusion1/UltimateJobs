@@ -4,7 +4,7 @@
   <groupId>de.warsteiner</groupId>
   <artifactId>ultimatejobs</artifactId>
   <name>UltimateJobs</name>
-  <version>Iron-0.5.4</version>
+  <version>Iron-0.5.5</version>
   <build>
     <plugins>
       <plugin>
