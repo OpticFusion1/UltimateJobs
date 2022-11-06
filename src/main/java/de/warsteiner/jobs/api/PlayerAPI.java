@@ -110,7 +110,7 @@ public class PlayerAPI {
 
 		getOfflineCachePlayers().put(uuid, jb);
 
-		plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, name, jb.getDisplayName());
+		//plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, name, jb.getDisplayName());
 
 		if (getOnlinePlayersListed().containsKey(uuid)) {
 			getOnlinePlayersListed().remove(uuid);
@@ -1355,11 +1355,11 @@ public class PlayerAPI {
 				return 0.0;
 			}
 
-			if (getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getWorkedTimesOf(id) == null) {
+			if (getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getTimesExecutedMoneyOf(id) == null) {
 				return 0.0;
 			}
 
-			return getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getWorkedTimesOf(id);
+			return getRealJobPlayer(uuid).getStatsOf(job.getConfigID()).getTimesExecutedMoneyOf(id);
 		} else {
 			return plugin.getPlayerOfflineAPI().getEarnedOfBlock(uuid, job.getConfigID(), id, ac);
 		}

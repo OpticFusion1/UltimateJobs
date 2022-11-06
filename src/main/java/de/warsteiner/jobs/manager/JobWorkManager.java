@@ -687,8 +687,7 @@ public class JobWorkManager {
 							 plugin.getPlayerAPI().updateAverageWork(PUID, job, date_average, amount);
 							 plugin.getPlayerAPI().updateAverageExp(PUID, job, date_average, EPC1);
 	 
-							double earned_old = plugin.getPlayerAPI().getEarnedFrom(PUID, job, usedid, "" + ac);
-	 
+							 
 							double earnedcalc = plugin.getPlayerAPI().getEarnedAt(PUID, job, date) + od1;
 
 							if (job.hasVaultReward(iD, ac)) {
@@ -732,8 +731,11 @@ public class JobWorkManager {
 
 							int ol = plugin.getPlayerAPI().getBrokenTimesOfID(PUID, job, usedid, "" + ac);
 
+							double earned_old = plugin.getPlayerAPI().getEarnedFrom(PUID, job, usedid, "" + ac);
+							 
+							
 							plugin.getPlayerAPI().updateBrokenTimesOf(PUID, job, usedid, ol + amount, "" + ac);
-
+						 
 							if (can == false) {
 
 								if (cfg.getBoolean("Jobs.MaxEarnings.IfReached_Can_Earn_Exp")) {
@@ -755,8 +757,11 @@ public class JobWorkManager {
 
 								plugin.getPlayerAPI().updateEarningsOfToday(PUID, job, earnedcalc);
 
-								plugin.getPlayerAPI().updateBrokenMoneyOf(PUID, job, usedid, earned_old + od1,
+								double done = earned_old + od1;
+								
+								plugin.getPlayerAPI().updateBrokenMoneyOf(PUID, job, usedid, done,
 										"" + ac);
+								 
 							}
 
 							if (Bukkit.getPlayer(ID).isOnline()) {
