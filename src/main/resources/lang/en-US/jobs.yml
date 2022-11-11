@@ -20,6 +20,286 @@
 
 Jobs:
 
+  CARVE:
+  
+    Display: "&6Carve Pumpkins"
+    
+    DisplayID: "carve"
+    
+    BossBar: "&a&l+ &7<money> Dollars from <id> &8(&7Example BossBar, &b<amount>x&8)"
+    
+    Lore:
+      - "&7Earn Money by carving Pumpkins!"
+    
+    Stats:
+      - "&7"
+      - "&aStats&8:"
+      - "&7Bought on &8: &b<stats_args_1>"
+      - "&7Joined &8: &a&l<joined>"
+      - "&7Times carved &8: &b<stats_args_2>" 
+      - "&7"
+      - "&7Earned Today&8: &a<earned> Dollars"
+      - "&7Highest Earnings&8: &b<highest_earnings_value> Dollars &8(&7<highest_earnings_date>&8)"
+      - "&7"
+      - "&7Average Earnings &8(&atotal&8) &8: &a<average_earnings> Dollars"
+      - "&7Average Earnings/Minute &8: &a<average_earnings_minute> Dollars"
+      - "&7Average Exp/Minute &8: &a<average_exp_minute> Exp"
+      - "&7Average Work/Minute &8: &a<average_work> Times"
+      - "&7"
+      - "&7Current Members (all)&8: &e<all_players> Players"
+      - "&7Current Members (online)&8: &e<online> Players"
+      - "&7" 
+      - "&7Level &8: &b<stats_args_3> &8/ <stats_args_4>"
+      - "&7Exp &8: &b<stats_args_5>&8/&c<stats_args_6>" 
+
+    StatsGUI:
+    
+       Display: "&8< | &6Carve Pumpkins &8| >"
+       
+       Lore:
+
+         Other: 
+           - "&7<name>'s Stats in this Job&8:"
+           - "&8&m--------------------------"
+           - "&7Bought on &8: &b<stats_args_1>"
+           - "&7Times carved &8: &b<stats_args_2>" 
+           - "&7Earned Today&8: &a<earned> Dollars"
+           - "&7" 
+           - "&7Level &8: &b<stats_args_3> &8/ <stats_args_4>"
+           - "&7Exp &8: &b<stats_args_5>&8/&c<stats_args_6>" 
+       
+         Self: 
+           - "&7Your Stats in this Job&8:"
+           - "&8&m--------------------------" 
+           - "&7Bought on &8: &b<stats_args_1>"
+           - "&7Times carved &8: &b<stats_args_2>" 
+           - "&7Earned Today&8: &a<earned> Dollars"
+           - "&7" 
+           - "&7Level &8: &b<stats_args_3> &8/ <stats_args_4>"
+           - "&7Exp &8: &b<stats_args_5>&8/&c<stats_args_6>" 
+      
+    Levels:
+    
+      1:  
+        Display: "&6Level I"
+     
+      2:  
+        Display: "&6Level II"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a250 Money"
+      
+      3:  
+        Display: "&6Level III"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a500 Money"
+      
+      4: 
+        Display: "&6Level IV"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
+      
+    IDS:
+
+      PMP:
+      
+        Display: "&6Pumpkin"
+        
+        Rewards:
+        
+          Display: "&8< &6Pumpkin &8>"
+          
+          Lore:
+            - "&8-----------"
+            - "&7Reward &8: &c$<money>"
+            - "&7Chance &8: &9<chance>%"
+            - "&7Exp &8: &a<exp>"
+            - "&7Points &8: &6<points>"
+            - "&7Action &8: &4<action>"
+            - "&7" 
+            - "&7Times carved &8: &6<times>"
+            - "&7Earned Money &8: &a<earned> Dollars"
+
+  PICKUPITEMS:
+  
+    Display: "&6Collect Items"
+    
+    DisplayID: "pickup"
+    
+    BossBar: "&a&l+ &7<money> Dollars from <id> &8(&7Example BossBar, &b<amount>x&8)"
+    
+    Lore:
+      - "&7Earn Money by picking up Items!"
+    
+    Stats:
+      - "&7"
+      - "&aStats&8:"
+      - "&7Bought on &8: &b<stats_args_1>"
+      - "&7Joined &8: &a&l<joined>"
+      - "&7Items Collected &8: &b<stats_args_2>" 
+      - "&7"
+      - "&7Earned Today&8: &a<earned> Dollars"
+      - "&7Highest Earnings&8: &b<highest_earnings_value> Dollars &8(&7<highest_earnings_date>&8)"
+      - "&7"
+      - "&7Average Earnings &8(&atotal&8) &8: &a<average_earnings> Dollars"
+      - "&7Average Earnings/Minute &8: &a<average_earnings_minute> Dollars"
+      - "&7Average Exp/Minute &8: &a<average_exp_minute> Exp"
+      - "&7Average Work/Minute &8: &a<average_work> Times"
+      - "&7"
+      - "&7Current Members (all)&8: &e<all_players> Players"
+      - "&7Current Members (online)&8: &e<online> Players"
+      - "&7" 
+      - "&7Level &8: &b<stats_args_3> &8/ <stats_args_4>"
+      - "&7Exp &8: &b<stats_args_5>&8/&c<stats_args_6>" 
+
+    StatsGUI:
+    
+       Display: "&8< | &6Collect Items &8| >"
+       
+       Lore:
+
+         Other: 
+           - "&7<name>'s Stats in this Job&8:"
+           - "&8&m--------------------------"
+           - "&7Bought on &8: &b<stats_args_1>"
+           - "&7Items Collected &8: &b<stats_args_2>" 
+           - "&7Earned Today&8: &a<earned> Dollars"
+           - "&7" 
+           - "&7Level &8: &b<stats_args_3> &8/ <stats_args_4>"
+           - "&7Exp &8: &b<stats_args_5>&8/&c<stats_args_6>" 
+       
+         Self: 
+           - "&7Your Stats in this Job&8:"
+           - "&8&m--------------------------" 
+           - "&7Bought on &8: &b<stats_args_1>"
+           - "&7Items Collected &8: &b<stats_args_2>" 
+           - "&7Earned Today&8: &a<earned> Dollars"
+           - "&7" 
+           - "&7Level &8: &b<stats_args_3> &8/ <stats_args_4>"
+           - "&7Exp &8: &b<stats_args_5>&8/&c<stats_args_6>" 
+      
+    Levels:
+    
+      1:  
+        Display: "&6Level I"
+     
+      2:  
+        Display: "&6Level II"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a250 Money"
+      
+      3:  
+        Display: "&6Level III"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a500 Money"
+      
+      4: 
+        Display: "&6Level IV"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      5: 
+        Display: "&6Level V"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a2000 Money"
+
+      6: 
+        Display: "&6Level VI"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a1000 Money"
+
+      7: 
+        Display: "&6Level VII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a3000 Money"
+
+      8: 
+        Display: "&6Level VIII"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a4000 Money"
+
+      9: 
+        Display: "&6Level IX"
+        
+        Lore:
+          - "&7Rewards of this Level&8:"
+          - "&8-> &a5000 Money"
+      
+    IDS:
+
+      Item1:
+      
+        Display: "&6Blaze Rods"
+        
+        Rewards:
+        
+          Display: "&8< &6Blaze Rods &8>"
+          
+          Lore:
+            - "&8-----------"
+            - "&7Reward &8: &c$<money>"
+            - "&7Chance &8: &9<chance>%"
+            - "&7Exp &8: &a<exp>"
+            - "&7Points &8: &6<points>"
+            - "&7Action &8: &4<action>"
+            - "&7" 
+            - "&7Times Collected &8: &6<times>"
+            - "&7Earned Money &8: &a<earned> Dollars"
+
   VILBUX:
   
     Display: "&aVillager Trade"
@@ -2917,6 +3197,25 @@ Jobs:
           - "&8-> &a5000 Money"
       
     IDS:
+
+      MUSHROOM_COW:
+      
+        Display: "&cMushroom Cow"
+        
+        Rewards:
+        
+          Display: "&8< &cMushroom Cow &8>"
+          
+          Lore:
+            - "&8-----------"
+            - "&7Reward &8: &c$<money>"
+            - "&7Chance &8: &9<chance>%"
+            - "&7Exp &8: &a<exp>"
+            - "&7Points &8: &6<points>"
+            - "&7Action &8: &4<action>"
+            - "&7"
+            - "&7Times milked &8: &6<times> "
+            - "&7Earned Money &8: &a<earned> Dollars"
 
       COW:
       

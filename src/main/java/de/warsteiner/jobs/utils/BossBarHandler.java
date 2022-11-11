@@ -20,9 +20,20 @@ public class BossBarHandler {
 
 	public static HashMap<String, BossBar> g = new HashMap<String, BossBar>();
 
-	public static void createBar(Player p, String name, BarColor color, String ID, double pr) { 
+	public static void createBar(Player p, String name, BarColor color, String ID, double d) { 
 		BossBar b = Bukkit.createBossBar(name, color, BarStyle.SOLID, new BarFlag[] {});
-		b.setProgress(pr);
+		
+		double real = d;
+		
+		if(d >= 1.0) {
+			real = 1.0;
+		}
+		
+		if(d <= 0.1) {
+			real = 0.1;
+		}
+		
+		b.setProgress(real);
 		b.setVisible(true);
 		g.put(ID, b);
 	 
@@ -45,13 +56,16 @@ public class BossBarHandler {
 	}
 
 	public static void updateProgress(double pr, String ID) {
-		double real = 0.0;
+		double real = pr;
 
-		if (pr >= 1.0 || pr <= 0.0) {
+		if(pr >= 1.0) {
 			real = 1.0;
-		} else {
-			real = pr;
 		}
+		
+		if(pr <= 0.1) {
+			real = 0.1;
+		}
+		
 
 		((BossBar) g.get(ID)).setProgress(real);
 	}

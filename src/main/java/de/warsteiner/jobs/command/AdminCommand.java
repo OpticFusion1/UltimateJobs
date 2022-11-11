@@ -80,7 +80,7 @@ public class AdminCommand implements CommandExecutor {
 		int pageLength = 8;
 
 		int calc = pageLength * page + 1; 
-		int min = calc - 5;
+		int min = calc - 7;
 		if(commands.size() >= min) {
 			
 			sender.sendMessage("§7");

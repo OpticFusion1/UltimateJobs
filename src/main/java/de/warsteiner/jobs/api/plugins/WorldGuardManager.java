@@ -48,6 +48,9 @@ public class WorldGuardManager {
 	public static StateFlag IA_BREAK; 
 	public static StateFlag IA_KILL; 
 	
+	public static StateFlag PICKUP; 
+	public static StateFlag CARVE; 
+	
 	public WorldGuardManager getManager() {
 		return this;
 	}
@@ -65,36 +68,49 @@ public class WorldGuardManager {
 		WorldGuard worldGuard = WorldGuard.getInstance();
 		FlagRegistry flagRegistry = worldGuard.getFlagRegistry();
 		
-		flagRegistry.register((Flag) (IA_KILL = new StateFlag("ia-kill-action", false)));
-		flagRegistry.register((Flag) (IA_BREAK = new StateFlag("ia-break-action", false)));
+		try {
+			 
+			flagRegistry.register((Flag) (IA_KILL = new StateFlag("ia-kill-action", false)));
+			flagRegistry.register((Flag) (IA_BREAK = new StateFlag("ia-break-action", false)));
+			
+			flagRegistry.register((Flag) (ENCHANT = new StateFlag("enchant-action", false)));
+			flagRegistry.register((Flag) (EXPLORE = new StateFlag("explore-action", false)));
+			flagRegistry.register((Flag) (SMELT = new StateFlag("smelt-action", false)));
+			flagRegistry.register((Flag) (TRADE_EMERALDS = new StateFlag("villager-trade-action", false)));
+			flagRegistry.register((Flag) (BREAK_ACTION = new StateFlag("break-action", false)));
+			flagRegistry.register((Flag) (PLACE_ACTION = new StateFlag("place-action", false)));
+			flagRegistry.register((Flag) (KILL_ACTION = new StateFlag("kill-action", false)));
+			flagRegistry.register((Flag) (FARM_ACTION = new StateFlag("farm-break-action", false)));
+			flagRegistry.register((Flag) (FISH_ACTION = new StateFlag("fish-action", false)));
+			flagRegistry.register((Flag) (MILK_ACTION = new StateFlag("milk-action", false))); 
+			flagRegistry.register((Flag) (CRAFT_ACTION = new StateFlag("craft-action", false))); 
+			flagRegistry.register((Flag) (CRAFT_ACTION = new StateFlag("shear-action", false))); 
+			flagRegistry.register((Flag) (AD_ACTION = new StateFlag("advancement-action", false))); 
+			flagRegistry.register((Flag) (EAT_ACTION = new StateFlag("eat-action", false))); 
+			flagRegistry.register((Flag) (HONEY_ACTION = new StateFlag("honey-action", false))); 
+			flagRegistry.register((Flag) (STRIP_ACTION = new StateFlag("strip-action", false))); 
+			flagRegistry.register((Flag) (TAME_ACTION = new StateFlag("tame-action", false))); 
+			flagRegistry.register((Flag) (BREED_ACTION = new StateFlag("breed-action", false))); 
+			flagRegistry.register((Flag) (MMKILL_ACTION = new StateFlag("mmkill-action", false)));  
+			flagRegistry.register((Flag) (BERRY_ACTION = new StateFlag("collectberrys-action", false)));  
+			flagRegistry.register((Flag) (KILLBYBOW = new StateFlag("killbybow-action", false))); 
+			flagRegistry.register((Flag) (GROWSAP = new StateFlag("grow-saplings-action", false))); 
+			flagRegistry.register((Flag) (FARM_GROW_ACTION = new StateFlag("farm-grow-action", false))); 
+			flagRegistry.register((Flag) (TR = new StateFlag("find-treasure-action", false)));
+			
+			flagRegistry.register((Flag) (PICKUP = new StateFlag("pickup-action", false)));
+			flagRegistry.register((Flag) (CARVE = new StateFlag("carve-action", false)));
+			
+		} catch (Exception e) { 
+		}
 		
-		flagRegistry.register((Flag) (ENCHANT = new StateFlag("enchant-action", false)));
-		flagRegistry.register((Flag) (EXPLORE = new StateFlag("explore-action", false)));
-		flagRegistry.register((Flag) (SMELT = new StateFlag("smelt-action", false)));
-		flagRegistry.register((Flag) (TRADE_EMERALDS = new StateFlag("villager-trade-action", false)));
-		flagRegistry.register((Flag) (BREAK_ACTION = new StateFlag("break-action", false)));
-		flagRegistry.register((Flag) (PLACE_ACTION = new StateFlag("place-action", false)));
-		flagRegistry.register((Flag) (KILL_ACTION = new StateFlag("kill-action", false)));
-		flagRegistry.register((Flag) (FARM_ACTION = new StateFlag("farm-break-action", false)));
-		flagRegistry.register((Flag) (FISH_ACTION = new StateFlag("fish-action", false)));
-		flagRegistry.register((Flag) (MILK_ACTION = new StateFlag("milk-action", false))); 
-		flagRegistry.register((Flag) (CRAFT_ACTION = new StateFlag("craft-action", false))); 
-		flagRegistry.register((Flag) (CRAFT_ACTION = new StateFlag("shear-action", false))); 
-		flagRegistry.register((Flag) (AD_ACTION = new StateFlag("advancement-action", false))); 
-		flagRegistry.register((Flag) (EAT_ACTION = new StateFlag("eat-action", false))); 
-		flagRegistry.register((Flag) (HONEY_ACTION = new StateFlag("honey-action", false))); 
-		flagRegistry.register((Flag) (STRIP_ACTION = new StateFlag("strip-action", false))); 
-		flagRegistry.register((Flag) (TAME_ACTION = new StateFlag("tame-action", false))); 
-		flagRegistry.register((Flag) (BREED_ACTION = new StateFlag("breed-action", false))); 
-		flagRegistry.register((Flag) (MMKILL_ACTION = new StateFlag("mmkill-action", false)));  
-		flagRegistry.register((Flag) (BERRY_ACTION = new StateFlag("collectberrys-action", false)));  
-		flagRegistry.register((Flag) (KILLBYBOW = new StateFlag("killbybow-action", false))); 
-		flagRegistry.register((Flag) (GROWSAP = new StateFlag("grow-saplings-action", false))); 
-		flagRegistry.register((Flag) (FARM_GROW_ACTION = new StateFlag("farm-grow-action", false))); 
-		flagRegistry.register((Flag) (TR = new StateFlag("find-treasure-action", false)));
+		 
 	}
 	
 	public static StateFlag getFlagFromName(String b) {
+		
+		if(b.equalsIgnoreCase("pickup-action")) { return PICKUP; }
+		if(b.equalsIgnoreCase("carve-action")) { return CARVE; }
 		
 		if(b.equalsIgnoreCase("ia-kill-action")) { return IA_KILL; }
 		if(b.equalsIgnoreCase("ia-break-action")) { return IA_BREAK; }

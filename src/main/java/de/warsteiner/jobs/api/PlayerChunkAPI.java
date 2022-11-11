@@ -58,6 +58,11 @@ public class PlayerChunkAPI {
 	*/
 
 	public void addChunk(String UUID, Job job, String c) {
+		
+		if(!players.get(UUID).containsKey(job)) {
+			loadChunks(UUID, job);
+		}
+		
 		List<String> old = players.get(UUID).get(job);
 
 		old.add(c);

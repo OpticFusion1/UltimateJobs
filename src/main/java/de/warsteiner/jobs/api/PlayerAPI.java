@@ -109,9 +109,7 @@ public class PlayerAPI {
 		JobsPlayer jb = getOnlinePlayersListed().get(uuid);
 
 		getOfflineCachePlayers().put(uuid, jb);
-
-		//plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, name, jb.getDisplayName());
-
+ 
 		if (getOnlinePlayersListed().containsKey(uuid)) {
 			getOnlinePlayersListed().remove(uuid);
 		}
@@ -123,7 +121,7 @@ public class PlayerAPI {
 		FileConfiguration config = UltimateJobs.getPlugin().getLocalFileManager().getConfig();
 
 		if (getOfflineCachePlayers().containsKey(uuid)) {
-
+	
 			// loading from existing data
 
 			JobsPlayer g = getOfflineCachePlayers().get(uuid);
@@ -250,6 +248,37 @@ public class PlayerAPI {
 		return false;
 	}
 
+	public void startSavingData(int time) {
+
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				new BukkitRunnable() {
+
+					@Override
+					public void run() {
+						
+						HashMap<String, JobsPlayer> players = plugin.getPlayerAPI().getOfflineCachePlayers(); 
+						players.forEach((uuid, jb) -> {
+							
+							plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, jb.getName(), jb.getDisplayName()); 
+						});
+						 
+						HashMap<String, JobsPlayer> players2 = plugin.getPlayerAPI().getOnlinePlayersListed(); 
+						players2.forEach((uuid, jb) -> {
+							
+							plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, jb.getName(), jb.getDisplayName()); 
+						}); 
+						
+					 
+					cancel();
+				}
+			}.runTaskAsynchronously(plugin);
+		}
+	}.runTaskTimer(plugin, 0, time*60);
+}
+	
 	/**
 	 * Checking and removing old Multipliers
 	 */
@@ -1100,7 +1129,9 @@ public class PlayerAPI {
 			if (d != null && !d.isEmpty()) {
 
 				if (getCurrentJobs(ud).contains(job.getConfigID())) {
-					list.add(ud);
+					if(!list.contains(ud)) {
+						list.add(ud);
+					}
 				}
 			}
 
@@ -1623,10 +1654,11 @@ public class PlayerAPI {
 				plm.getMaxJobs("" + UUID), "" + UUID, UUID, langusged, stats, sal, sat, multi, settings);
 
 		getOfflineCachePlayers().put("" + UUID, jp);
-
+		if (plugin.getLocalFileManager().getUtilsConfig()
+				.getBoolean("Plugin.DebugMessagesOnStart.PlayerInfo")) {
 		Bukkit.getConsoleSender().sendMessage(
 				PluginColor.INFO.getPrefix() + "Loaded " + name + " with UUID " + UUID + " into the offline cache!");
-
+		}
 	}
 
 }

@@ -1,15 +1,15 @@
 Action:
-  - "FISH" 
+  - "CARVE" 
  
-ID: "FISHMAN"
-
-Material: "FISHING_ROD"
+ID: "CARVE"
+ 
+Material: "PUMPKIN"
 
 ColorOfBossBar: "BLUE"
 
-CustomGlassPlateColor: "BLUE_STAINED_GLASS_PANE"
+CustomGlassPlateColor: "ORANGE_STAINED_GLASS_PANE"
 
-Slot: 14
+Slot: 35
 
 Price: 350
 
@@ -19,61 +19,22 @@ Worlds:
 
 IDS:
 
-  FISH:
+  CARVE:
     List:
-      - "COD" 
-      - "PUFFERFISH" 
-      - "TROPICAL_FISH"
-      - "SALMON"
-
-    SALMON:
-
-      Chance: 85
-      ID: "RAW_SALMON"
-      Money: 2
-      Exp: 5
-      Points: 0.05
-      RewardsGUI:
-    
-        See: true
-        Icon: "SALMON"
-
-    COD:
-
-      Chance: 85
-      ID: "RAW_COD"
-      Money: 2
-      Exp: 5
-      Points: 0.05
-      RewardsGUI:
-    
-        See: true
-        Icon: "COD"
-
-    PUFFERFISH:
-
-      Chance: 85
-      ID: "PUFFERFISH"
-      Money: 2
-      Exp: 5
-      Points: 0.05
-      RewardsGUI:
-    
-        See: true
-        Icon: "PUFFERFISH"
+      - "PMP"   
  
-    TROPICAL_FISH:
+    PMP:
 
-      Chance: 85
-      ID: "TROPICAL_FISH"
-      Money: 2
+      Chance: 80
+      ID: "PUMPKIN"
+      Money: 50
       Exp: 5
       Points: 0.05
       RewardsGUI:
     
         See: true
-        Icon: "TROPICAL_FISH"
- 
+        Icon: "PUMPKIN"
+
 LEVELS:
  
   1:

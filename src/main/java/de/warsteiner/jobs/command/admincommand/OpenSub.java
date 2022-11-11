@@ -13,6 +13,7 @@ import de.warsteiner.jobs.utils.admincommand.AdminSubCommand;
 import de.warsteiner.jobs.utils.objects.commands.AdminCommandOptions;
 import de.warsteiner.jobs.utils.objects.guis.GUIType;
 import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.multipliers.MultiplierType;
 
 public class OpenSub extends AdminSubCommand {
 
@@ -42,17 +43,20 @@ public class OpenSub extends AdminSubCommand {
 				}
 				sender.sendMessage(AdminCommand.prefix + "§cPlayer is not online!");
 			}
+			 
+			GUIType f;
 			
-			if (GUIType.valueOf(type.toUpperCase()) == null) {
+			try {
+				f = GUIType.valueOf(type.toUpperCase());
+			} catch (IllegalArgumentException ex) {
 				if (sender instanceof Player) {
 					Player player3 = (Player) sender;
 					player3.playSound(player3.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 2);
 				}
 				sender.sendMessage(AdminCommand.prefix + "§cError: GUI Type does not exist");
+				return;
 			}
-
-			GUIType f = GUIType.valueOf(type.toUpperCase());
-			
+ 
 			UltimateJobs.getPlugin().getGUIOpenManager().openGuiByGuiID(sender, f, Bukkit.getPlayer(name), null, null, true, listed);
   
 		} else if (args.length == 4) {
@@ -69,29 +73,32 @@ public class OpenSub extends AdminSubCommand {
 				sender.sendMessage(AdminCommand.prefix + "§cPlayer is not online!");
 			}
 			
-			if (GUIType.valueOf(type.toUpperCase()) == null) {
+			GUIType f;
+			
+			try {
+				f = GUIType.valueOf(type.toUpperCase());
+			} catch (IllegalArgumentException ex) {
 				if (sender instanceof Player) {
 					Player player3 = (Player) sender;
 					player3.playSound(player3.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 2);
 				}
 				sender.sendMessage(AdminCommand.prefix + "§cError: GUI Type does not exist");
+				return;
 			}
 
-			GUIType f2 = GUIType.valueOf(type.toUpperCase());
-
-			Job f = null;
+			Job fd = null;
 
 			for (String jobs : UltimateJobs.getPlugin().getLoaded()) {
 
 				Job j = UltimateJobs.getPlugin().getJobCache().get(jobs);
 
 				if (j.getConfigID().equalsIgnoreCase(job)) {
-					f = j;
+					fd = j;
 				}
 			}
 
-			if (f != null) {
-				UltimateJobs.getPlugin().getGUIOpenManager().openGuiByGuiID(sender, f2, Bukkit.getPlayer(name), f,
+			if (fd != null) {
+				UltimateJobs.getPlugin().getGUIOpenManager().openGuiByGuiID(sender, f, Bukkit.getPlayer(name), fd,
 						null, true, listed);
 
 				if (sender instanceof Player) {
@@ -115,15 +122,18 @@ public class OpenSub extends AdminSubCommand {
 				sender.sendMessage(AdminCommand.prefix + "§cPlayer is not online!");
 			}
 			
-			if (GUIType.valueOf(type.toUpperCase()) == null) {
+			GUIType f2;
+			
+			try {
+				f2 = GUIType.valueOf(type.toUpperCase());
+			} catch (IllegalArgumentException ex) {
 				if (sender instanceof Player) {
 					Player player3 = (Player) sender;
 					player3.playSound(player3.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 2);
 				}
 				sender.sendMessage(AdminCommand.prefix + "§cError: GUI Type does not exist");
+				return;
 			}
-
-			GUIType f2 = GUIType.valueOf(type.toUpperCase());
 
 			Job f = null;
 
@@ -179,15 +189,19 @@ public class OpenSub extends AdminSubCommand {
 				sender.sendMessage(AdminCommand.prefix + "§cPlayer is not online!");
 			}
 			
-			if (GUIType.valueOf(type.toUpperCase()) == null) {
+
+			GUIType f2;
+			
+			try {
+				f2 = GUIType.valueOf(type.toUpperCase());
+			} catch (IllegalArgumentException ex) {
 				if (sender instanceof Player) {
 					Player player3 = (Player) sender;
 					player3.playSound(player3.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 2);
 				}
 				sender.sendMessage(AdminCommand.prefix + "§cError: GUI Type does not exist");
+				return;
 			}
-
-			GUIType f2 = GUIType.valueOf(type.toUpperCase());
 
 			Job f = null;
 

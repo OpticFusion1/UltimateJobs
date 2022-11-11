@@ -1,15 +1,15 @@
 Action:
-  - "FISH" 
+  - "PICKUP" 
  
-ID: "FISHMAN"
-
-Material: "FISHING_ROD"
+ID: "PICKUPITEMS"
+ 
+Material: "PAPER"
 
 ColorOfBossBar: "BLUE"
 
-CustomGlassPlateColor: "BLUE_STAINED_GLASS_PANE"
+CustomGlassPlateColor: "ORANGE_STAINED_GLASS_PANE"
 
-Slot: 14
+Slot: 34
 
 Price: 350
 
@@ -19,61 +19,22 @@ Worlds:
 
 IDS:
 
-  FISH:
+  PICKUP:
     List:
-      - "COD" 
-      - "PUFFERFISH" 
-      - "TROPICAL_FISH"
-      - "SALMON"
-
-    SALMON:
-
-      Chance: 85
-      ID: "RAW_SALMON"
-      Money: 2
-      Exp: 5
-      Points: 0.05
-      RewardsGUI:
-    
-        See: true
-        Icon: "SALMON"
-
-    COD:
-
-      Chance: 85
-      ID: "RAW_COD"
-      Money: 2
-      Exp: 5
-      Points: 0.05
-      RewardsGUI:
-    
-        See: true
-        Icon: "COD"
-
-    PUFFERFISH:
-
-      Chance: 85
-      ID: "PUFFERFISH"
-      Money: 2
-      Exp: 5
-      Points: 0.05
-      RewardsGUI:
-    
-        See: true
-        Icon: "PUFFERFISH"
+      - "Item1"   
  
-    TROPICAL_FISH:
+    Item1:
 
-      Chance: 85
-      ID: "TROPICAL_FISH"
-      Money: 2
+      Chance: 80
+      ID: "BLAZE_ROD"
+      Money: 50
       Exp: 5
       Points: 0.05
       RewardsGUI:
     
         See: true
-        Icon: "TROPICAL_FISH"
- 
+        Icon: "BLAZE_ROD"
+
 LEVELS:
  
   1:

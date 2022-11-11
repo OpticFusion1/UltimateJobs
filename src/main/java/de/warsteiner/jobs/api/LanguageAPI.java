@@ -72,16 +72,16 @@ public class LanguageAPI {
 		return null;
 	}
 
-	public List<String> known_strings = List.of(
-			"prefix", "job_not_found", "noperm", "placeholder_no_job", "placeholder_no_level", "placeholder_no_exp",
-			"placeholder_no_levelname", "command_notfound", "command_usage", "command_language_NotFound",
-			"command_language_Already", "command_language_Changed", "command_join_Joined", "command_join_max",
-			"command_join_already", "command_join_not_own", "command_leaveall_message", "command_leaveall_already",
-			"command_leave_message", "command_leave_already", "command_limit_other", "command_limit_not_found",
-			"command_limit_self", "command_points_not_found", "command_points_self", "command_points_other",
-			"command_stats_not_found", "command_levels_no_data_found", "Other.Bought_Job", "Other.Not_Enough_Money",
-			"Other.Full", "Other.Joined", "Other.Left_Job", "Other.Leave_All", "Other.Already_Left_All",
-			"Levels.BoardCastMessage", "Levels.Ttitle_1", "Levels.Ttitle_2", "Levels.Message", "Levels.Actionbar",
+	public List<String> known_strings = List.of("prefix", "job_not_found", "noperm", "placeholder_no_job",
+			"placeholder_no_level", "placeholder_no_exp", "placeholder_no_levelname", "command_notfound",
+			"command_usage", "command_language_NotFound", "command_language_Already", "command_language_Changed",
+			"command_join_Joined", "command_join_max", "command_join_already", "command_join_not_own",
+			"command_leaveall_message", "command_leaveall_already", "command_leave_message", "command_leave_already",
+			"command_limit_other", "command_limit_not_found", "command_limit_self", "command_points_not_found",
+			"command_points_self", "command_points_other", "command_stats_not_found", "command_levels_no_data_found",
+			"Other.Bought_Job", "Other.Not_Enough_Money", "Other.Full", "Other.Joined", "Other.Left_Job",
+			"Other.Leave_All", "Other.Already_Left_All", "Levels.BoardCastMessage", "Levels.Ttitle_1",
+			"Levels.Ttitle_2", "Levels.Message", "Levels.Actionbar",
 
 			"Commands.Ranking.Usage", "Commands.Ranking.UsageMessage", "Commands.Ranking.Description",
 			"Commands.Withdraw.Usage", "Commands.Withdraw.UsageMessage", "Commands.Withdraw.Description",
@@ -117,8 +117,8 @@ public class LanguageAPI {
 			"RankingCategories.Today.Display", "PerJobRanking.OwnSkull.Display", "Levels_Name",
 			"Levels_Custom.Previous.Display", "Levels_Custom.Previous.Message_NotFound", "Levels_Custom.Next.Display",
 			"Levels_Custom.Next.Message_NotFound", "Self_Name", "Other_Name", "Self_Custom.NotFound.Display",
-			"Self_Custom.Skull.Display", "Other_Custom.Skull.Display", "Other_Custom.NotFound.Display", "Withdraw_Reset_Salary_Message",
-			"Withdraw_Remove_Percent_Of_Salary_Message");
+			"Self_Custom.Skull.Display", "Other_Custom.Skull.Display", "Other_Custom.NotFound.Display",
+			"Withdraw_Reset_Salary_Message", "Withdraw_Remove_Percent_Of_Salary_Message");
 
 	public List<String> guis_known_lists = List.of("Main_Job_Items.Lore.Bought", "Main_Job_Items.Lore.In",
 			"Main_Job_Items.Lore.Price", "LeaveConfirm.Button_NO.Lore", "LeaveConfirm.Button_YES.Lore",
@@ -135,7 +135,6 @@ public class LanguageAPI {
 			"Self_Custom.NotFound.Lore", "Self_Custom.Skull.Lore", "Other_Custom.NotFound.Lore",
 			"Other_Custom.Skull.Lore");
 
- 
 	public void loadLanguages() {
 
 		FileManager fm = plugin.getLocalFileManager();
@@ -144,20 +143,19 @@ public class LanguageAPI {
 		File[] folders = dataFolder.listFiles();
 
 		if (folders != null) {
-			 
-			
+
 			for (int i = 0; i < folders.length; i++) {
 				String name = folders[i].getName();
-				
-				File dataFolder2 = new File("plugins/UltimateJobs/lang/"+name+"/");
-				
-				File[] files = dataFolder2.listFiles();
-				
-				Bukkit.getConsoleSender().sendMessage(
-						PluginColor.LANG_RELATED_INFO.getPrefix() + "Checking Language Folder; " + name + "...");
 
+				File dataFolder2 = new File("plugins/UltimateJobs/lang/" + name + "/");
+
+				File[] files = dataFolder2.listFiles();
+				if (plugin.getLocalFileManager().getUtilsConfig().getBoolean("Plugin.DebugMessagesOnStart.Info")) {
+					Bukkit.getConsoleSender().sendMessage(
+							PluginColor.LANG_RELATED_INFO.getPrefix() + "Checking Language Folder; " + name + "...");
+				}
 				Collection<String> fails = new ArrayList<String>();
-				
+
 				HashMap<String, String> gui_languages_strings = new HashMap<String, String>();
 				HashMap<String, List<String>> gui_languages_lists = new HashMap<String, List<String>>();
 				HashMap<String, String> jobs_languages_strings = new HashMap<String, String>();
@@ -165,70 +163,84 @@ public class LanguageAPI {
 
 				HashMap<String, String> languages_strings = new HashMap<String, String>();
 				HashMap<String, List<String>> languages_lists = new HashMap<String, List<String>>();
-				
-				String lang_named = null; 
-				String lang_icon = null; 
-				String lang_display = null; 
-				int lang_model = 0; 
-		 
-				if(files != null) {
-					
+
+				String lang_named = null;
+				String lang_icon = null;
+				String lang_display = null;
+				int lang_model = 0;
+
+				if (files != null) {
+
 					for (int i2 = 0; i2 < files.length; i2++) {
 						String filenamed = files[i2].getName();
-						
-						Bukkit.getConsoleSender().sendMessage(
-								PluginColor.LANG_RELATED_INFO.getPrefix() + "Checking Language file; " + filenamed + "...");
+						if (plugin.getLocalFileManager().getUtilsConfig()
+								.getBoolean("Plugin.DebugMessagesOnStart.Info")) {
+							Bukkit.getConsoleSender().sendMessage(PluginColor.LANG_RELATED_INFO.getPrefix()
+									+ "Checking Language file; " + filenamed + "...");
+						}
 
-						
 						File filed = files[i2];
-						
-						 
-						
-						if(filenamed.toLowerCase().equalsIgnoreCase("language.yml")) { 
-							
+
+						if (filenamed.toLowerCase().equalsIgnoreCase("language.yml")) {
+
 							YamlConfiguration cfg = YamlConfiguration.loadConfiguration(filed);
-							
-							String lang_display_path = "LanguageDisplay"; 
-							
+
+							String lang_display_path = "LanguageDisplay";
+
 							lang_model = cfg.getInt("CustomModelData");
-							
+
 							if (!cfg.contains(lang_display_path)) {
-								Bukkit.getConsoleSender().sendMessage(PluginColor.LANG_RELATED_ERROR.getPrefix()
-										+ "Failed to get String " + lang_display_path + " from language " + name + "!");
+								if (plugin.getLocalFileManager().getUtilsConfig()
+										.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+									Bukkit.getConsoleSender().sendMessage(
+											PluginColor.LANG_RELATED_ERROR.getPrefix() + "Failed to get String "
+													+ lang_display_path + " from language " + name + "!");
+								}
 								fails.add(lang_display_path);
 							}
 
 							lang_display = cfg.getString(lang_display_path);
-							
-							String lang_named_path = "LanguageName"; 
-							
+
+							String lang_named_path = "LanguageName";
+
 							if (!cfg.contains(lang_named_path)) {
-								Bukkit.getConsoleSender().sendMessage(PluginColor.LANG_RELATED_ERROR.getPrefix()
-										+ "Failed to get String " + lang_named_path + " from language " + name + "!");
+								if (plugin.getLocalFileManager().getUtilsConfig()
+										.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+									Bukkit.getConsoleSender().sendMessage(
+											PluginColor.LANG_RELATED_ERROR.getPrefix() + "Failed to get String "
+													+ lang_named_path + " from language " + name + "!");
+								}
 								fails.add(lang_named_path);
 							}
 
 							lang_named = cfg.getString(lang_named_path);
-							
-							String lang_icon_path = "LanguageIcon"; 
-							
+
+							String lang_icon_path = "LanguageIcon";
+
 							if (!cfg.contains(lang_icon_path)) {
-								Bukkit.getConsoleSender().sendMessage(PluginColor.LANG_RELATED_ERROR.getPrefix()
-										+ "Failed to get String " + lang_icon_path + " from language " + name + "!");
+								if (plugin.getLocalFileManager().getUtilsConfig()
+										.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+									Bukkit.getConsoleSender().sendMessage(
+											PluginColor.LANG_RELATED_ERROR.getPrefix() + "Failed to get String "
+													+ lang_icon_path + " from language " + name + "!");
+								}
 								fails.add(lang_icon_path);
 							}
 
 							lang_icon = cfg.getString(lang_icon_path);
-							
-						} else	if(filenamed.toLowerCase().equalsIgnoreCase("messages.yml")) {
+
+						} else if (filenamed.toLowerCase().equalsIgnoreCase("messages.yml")) {
 
 							YamlConfiguration cfg = YamlConfiguration.loadConfiguration(filed);
 
 							known_strings.forEach((string) -> {
 
 								if (!cfg.contains(string)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.LANG_RELATED_ERROR.getPrefix()
-											+ "Failed to get String " + string + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender().sendMessage(PluginColor.LANG_RELATED_ERROR.getPrefix()
+												+ "Failed to get String " + string + " from language " + name + "!");
+									}
 									fails.add(string);
 								}
 
@@ -239,8 +251,13 @@ public class LanguageAPI {
 							known_lists.forEach((string) -> {
 
 								if (cfg.getStringList(string) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.LANG_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + string + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.LANG_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + string + " from language "
+														+ name + "!");
+									}
 									fails.add(string);
 								}
 
@@ -248,106 +265,133 @@ public class LanguageAPI {
 
 							});
 
-							
-						} else if(filenamed.toLowerCase().equalsIgnoreCase("jobs.yml")) {
-							
+						} else if (filenamed.toLowerCase().equalsIgnoreCase("jobs.yml")) {
+
 							YamlConfiguration cfg = YamlConfiguration.loadConfiguration(filed);
-							
+
 							plugin.getJobCache().forEach((named, type) -> {
 
 								String job_display = "Jobs." + type.getConfigID() + ".Display";
 
 								if (!cfg.contains(job_display)) {
-									//Bukkit.getConsoleSender()
-									//.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-									//	+ "Failed to get String Display from language " + name + " for "
-									//	+ type.getConfigID() + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+														+ "Failed to get String Display from language " + name + " for "
+														+ type.getConfigID() + "!");
+									}
 									fails.add(job_display);
 								}
-							  
+
 								jobs_languages_strings.put(job_display, cfg.getString(job_display));
 
-								String job_broadcast_levelup = "Jobs." + type.getConfigID() + ".BroadCastMessageOnLevelUp";
+								String job_broadcast_levelup = "Jobs." + type.getConfigID()
+										+ ".BroadCastMessageOnLevelUp";
 
 								if (cfg.contains(job_broadcast_levelup)) {
-									jobs_languages_strings.put(job_broadcast_levelup, cfg.getString(job_broadcast_levelup));
+									jobs_languages_strings.put(job_broadcast_levelup,
+											cfg.getString(job_broadcast_levelup));
 								}
 
 								String job_display_id = "Jobs." + type.getConfigID() + ".DisplayID";
 
 								if (!cfg.contains(job_display_id)) {
-									//Bukkit.getConsoleSender()
-									//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-									//	+ "Failed to get String DisplayID from language " + name + " for "
-									//+ type.getConfigID() + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+														+ "Failed to get String DisplayID from language " + name
+														+ " for " + type.getConfigID() + "!");
+									}
 									fails.add(job_display_id);
 								}
-							 
+
 								jobs_languages_strings.put(job_display_id, cfg.getString(job_display_id));
-								
-								
-								if(type.hasMaxEarningsPerDay()) {
+
+								if (type.hasMaxEarningsPerDay()) {
 									String bossbar = "Jobs." + type.getConfigID() + ".MaxEarningsBossBar";
 
 									if (!cfg.contains(bossbar)) {
-										//Bukkit.getConsoleSender()
-										//.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
-										//+ "Loading Job " + type.getConfigID() + " without Max Earnings BossBar Message... "); 
+										if (plugin.getLocalFileManager().getUtilsConfig()
+												.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+											Bukkit.getConsoleSender()
+													.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
+															+ "Loading Job " + type.getConfigID()
+															+ " without Max Earnings BossBar Message... ");
+										}
 									}
 
 									jobs_languages_strings.put(bossbar, cfg.getString(bossbar));
-									
+
 									String actionbar = "Jobs." + type.getConfigID() + ".MaxEarningsActionbar";
 
 									if (!cfg.contains(actionbar)) {
-										//	Bukkit.getConsoleSender()
-										//.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
-										//+ "Loading Job " + type.getConfigID() + " without Max Earnings ActionBar Message... "); 
+										if (plugin.getLocalFileManager().getUtilsConfig()
+												.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+											Bukkit.getConsoleSender()
+													.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
+															+ "Loading Job " + type.getConfigID()
+															+ " without Max Earnings ActionBar Message... ");
+										}
 									}
 
 									jobs_languages_strings.put(actionbar, cfg.getString(actionbar));
-									
+
 									String message = "Jobs." + type.getConfigID() + ".MaxEarningsMessage";
 
 									if (!cfg.contains(message)) {
-										//	Bukkit.getConsoleSender()
-										//.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
-										//	+ "Loading Job " + type.getConfigID() + " without Max Earnings Message... "); 
+										if (plugin.getLocalFileManager().getUtilsConfig()
+												.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+											Bukkit.getConsoleSender()
+													.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
+															+ "Loading Job " + type.getConfigID()
+															+ " without Max Earnings Message... ");
+										}
 									}
 
 									jobs_languages_strings.put(message, cfg.getString(message));
 								}
-								
+
 								String bossbar = "Jobs." + type.getConfigID() + ".BossBar";
 
 								if (!cfg.contains(bossbar)) {
-									//Bukkit.getConsoleSender()
-									//	.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
-									//+ "Loading Job " + type.getConfigID() + " without BossBar Message... "); 
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender().sendMessage(
+												PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading Job "
+														+ type.getConfigID() + " without BossBar Message... ");
+									}
 								}
 
 								jobs_languages_strings.put(bossbar, cfg.getString(bossbar));
-								
+
 								String actionbar = "Jobs." + type.getConfigID() + ".Actionbar";
 
 								if (!cfg.contains(actionbar)) {
-									//	Bukkit.getConsoleSender()
-									//	.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
-									//+ "Loading Job " + type.getConfigID() + " without ActionBar Message... "); 
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
+														+ "Loading Job " + type.getConfigID()
+														+ " without ActionBar Message... ");
+									}
 								}
 
 								jobs_languages_strings.put(actionbar, cfg.getString(actionbar));
-								
+
 								String message = "Jobs." + type.getConfigID() + ".Message";
 
 								if (!cfg.contains(message)) {
-									//	Bukkit.getConsoleSender()
-									//.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
-									//	+ "Loading Job " + type.getConfigID() + " without Reward Message... "); 
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender().sendMessage(
+												PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading Job "
+														+ type.getConfigID() + " without Reward Message... ");
+									}
 								}
 
 								jobs_languages_strings.put(message, cfg.getString(message));
-								 
 
 								if (type.getPermission() != null) {
 
@@ -355,20 +399,26 @@ public class LanguageAPI {
 									String path_message = "Jobs." + type.getConfigID() + ".NoPermMessage";
 
 									if (cfg.getStringList(path_lore) == null) {
-										//Bukkit.getConsoleSender()
-										//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-										//+ "Failed to get Stringlist NoPermLore from language " + name + " for "
-										//+ type.getConfigID() + "!");
+										if (plugin.getLocalFileManager().getUtilsConfig()
+												.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+											Bukkit.getConsoleSender()
+													.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+															+ "Failed to get Stringlist NoPermLore from language "
+															+ name + " for " + type.getConfigID() + "!");
+										}
 										fails.add(path_lore);
 									}
 
 									jobs_languages_lists.put(path_lore, cfg.getStringList(path_lore));
 
 									if (!cfg.contains(path_message)) {
-										//	Bukkit.getConsoleSender()
-										//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-										//	+ "Failed to get String NoPermMessage from language " + name + " for "
-										//	+ type.getConfigID() + "!");
+										if (plugin.getLocalFileManager().getUtilsConfig()
+												.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+											Bukkit.getConsoleSender()
+													.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+															+ "Failed to get String NoPermMessage from language " + name
+															+ " for " + type.getConfigID() + "!");
+										}
 										fails.add(path_message);
 									}
 
@@ -380,10 +430,13 @@ public class LanguageAPI {
 									String path_message = "Jobs." + type.getConfigID() + ".CannotLeaveJobMessage";
 
 									if (!cfg.contains(path_message)) {
-										//	Bukkit.getConsoleSender()
-										//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-										//	+ "Failed to get String CannotLeaveJobMessage from language " + name
-										//	+ " for " + type.getConfigID() + "!");
+										if (plugin.getLocalFileManager().getUtilsConfig()
+												.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+											Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_ERROR
+													.getPrefix()
+													+ "Failed to get String CannotLeaveJobMessage from language " + name
+													+ " for " + type.getConfigID() + "!");
+										}
 										fails.add(path_message);
 									}
 
@@ -393,10 +446,13 @@ public class LanguageAPI {
 								String job_lore = "Jobs." + type.getConfigID() + ".Lore";
 
 								if (cfg.getStringList(job_lore) == null) {
-									//	Bukkit.getConsoleSender()
-									//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-									//		+ "Failed to get Stringlist Lore from language " + name + " for "
-									//	+ type.getConfigID() + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist Lore from language " + name
+														+ " for " + type.getConfigID() + "!");
+									}
 									fails.add(job_lore);
 								}
 
@@ -405,10 +461,13 @@ public class LanguageAPI {
 								String job_stats_main = "Jobs." + type.getConfigID() + ".Stats";
 
 								if (cfg.getStringList(job_stats_main) == null) {
-									//	Bukkit.getConsoleSender()
-									//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-									//	+ "Failed to get Stringlist Stats from language " + name + " for "
-									//	+ type.getConfigID() + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist Stats from language " + name
+														+ " for " + type.getConfigID() + "!");
+									}
 									fails.add(job_stats_main);
 								}
 
@@ -417,10 +476,13 @@ public class LanguageAPI {
 								String job_stats_display = "Jobs." + type.getConfigID() + ".StatsGUI.Display";
 
 								if (!cfg.contains(job_stats_display)) {
-									//	Bukkit.getConsoleSender()
-									//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-													//			+ "Failed to get String StatsGUI.Display from language " + name + " for "
-									//	+ type.getConfigID() + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+														+ "Failed to get String StatsGUI.Display from language " + name
+														+ " for " + type.getConfigID() + "!");
+									}
 									fails.add(job_stats_display);
 								}
 
@@ -429,10 +491,13 @@ public class LanguageAPI {
 								String job_stats_self = "Jobs." + type.getConfigID() + ".StatsGUI.Lore.Self";
 
 								if (cfg.getStringList(job_stats_self) == null) {
-									//	Bukkit.getConsoleSender()
-									//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-									//	+ "Failed to get Stringlist StatsGUI.Lore.Self from language " + name
-									//	+ " for " + type.getConfigID() + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist StatsGUI.Lore.Self from language "
+														+ name + " for " + type.getConfigID() + "!");
+									}
 									fails.add(job_stats_self);
 								}
 
@@ -441,10 +506,13 @@ public class LanguageAPI {
 								String job_stats_other = "Jobs." + type.getConfigID() + ".StatsGUI.Lore.Other";
 
 								if (cfg.getStringList(job_stats_other) == null) {
-									//Bukkit.getConsoleSender()
-									//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-									//		+ "Failed to get Stringlist StatsGUI.Lore.Other from language " + name
-									//	+ " for " + type.getConfigID() + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist StatsGUI.Lore.Other from language "
+														+ name + " for " + type.getConfigID() + "!");
+									}
 									fails.add(job_stats_other);
 								}
 
@@ -452,13 +520,18 @@ public class LanguageAPI {
 
 								type.getLevels().forEach((lvl, ty) -> {
 
-									String job_levels_display = "Jobs." + type.getConfigID() + ".Levels." + lvl + ".Display";
+									String job_levels_display = "Jobs." + type.getConfigID() + ".Levels." + lvl
+											+ ".Display";
 
 									if (!cfg.contains(job_levels_display)) {
-										//Bukkit.getConsoleSender()
-										//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-										//	+ "Failed to get String Levels." + lvl + ".Display from language "
-										//	+ name + " for " + type.getConfigID() + "!");
+										if (plugin.getLocalFileManager().getUtilsConfig()
+												.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+											Bukkit.getConsoleSender()
+													.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+															+ "Failed to get String Levels." + lvl
+															+ ".Display from language " + name + " for "
+															+ type.getConfigID() + "!");
+										}
 										fails.add(job_levels_display);
 									}
 
@@ -467,10 +540,14 @@ public class LanguageAPI {
 									String job_levels_lore = "Jobs." + type.getConfigID() + ".Levels." + lvl + ".Lore";
 
 									if (cfg.getStringList(job_levels_lore) == null) {
-										//	Bukkit.getConsoleSender()
-										//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-										//	+ "Failed to get Stringlist Levels." + lvl + ".Lore from language "
-										//	+ name + " for " + type.getConfigID() + "!");
+										if (plugin.getLocalFileManager().getUtilsConfig()
+												.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+											Bukkit.getConsoleSender()
+													.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+															+ "Failed to get Stringlist Levels." + lvl
+															+ ".Lore from language " + name + " for "
+															+ type.getConfigID() + "!");
+										}
 										fails.add(job_levels_lore);
 									}
 
@@ -479,9 +556,13 @@ public class LanguageAPI {
 									String job_rank_display = "Jobs." + type.getConfigID() + ".Levels." + lvl + ".Rank";
 
 									if (!cfg.contains(job_rank_display)) {
-										//Bukkit.getConsoleSender()
-										//	.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading Level "
-										//	+ lvl + " without Level Rank for " + type.getConfigID() + "!");
+										if (plugin.getLocalFileManager().getUtilsConfig()
+												.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+											Bukkit.getConsoleSender()
+													.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
+															+ "Loading Level " + lvl + " without Level Rank for "
+															+ type.getConfigID() + "!");
+										}
 									} else {
 										jobs_languages_strings.put(job_rank_display, cfg.getString(job_rank_display));
 									}
@@ -490,12 +571,17 @@ public class LanguageAPI {
 											+ ".BroadCastMessageOnLevelUp";
 
 									if (!cfg.contains(job_level_broascast)) {
-										//	Bukkit.getConsoleSender()
-										//	.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix() + "Loading Level "
-										//	+ lvl + " without Level Broadcast Message for " + type.getConfigID()
-										//+ "!");
+										if (plugin.getLocalFileManager().getUtilsConfig()
+												.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+											Bukkit.getConsoleSender()
+													.sendMessage(PluginColor.JOB_RELATED_WARNING.getPrefix()
+															+ "Loading Level " + lvl
+															+ " without Level Broadcast Message for "
+															+ type.getConfigID() + "!");
+										}
 									} else {
-										jobs_languages_strings.put(job_level_broascast, cfg.getString(job_level_broascast));
+										jobs_languages_strings.put(job_level_broascast,
+												cfg.getString(job_level_broascast));
 									}
 
 								});
@@ -505,25 +591,35 @@ public class LanguageAPI {
 									type.getIDsOf(action).forEach((iid, tyd) -> {
 										String internal = tyd.getInternalID();
 
-										String job_id_display = "Jobs." + type.getConfigID() + ".IDS." + internal + ".Display";
+										String job_id_display = "Jobs." + type.getConfigID() + ".IDS." + internal
+												+ ".Display";
 
 										if (!cfg.contains(job_id_display)) {
-											//Bukkit.getConsoleSender()
-											//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-											//	+ "Failed to get String IDS." + internal + ".Display from language "
-											//+ name + " for " + type.getConfigID() + "!");
+											if (plugin.getLocalFileManager().getUtilsConfig()
+													.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+												Bukkit.getConsoleSender()
+														.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+																+ "Failed to get String IDS." + internal
+																+ ".Display from language " + name + " for "
+																+ type.getConfigID() + "!");
+											}
 											fails.add(job_id_display);
 										}
 
 										jobs_languages_strings.put(job_id_display, cfg.getString(job_id_display));
 
-										String job_id_rewards_display = "Jobs." + type.getConfigID() + ".IDS." + internal
-												+ ".Rewards.Display";
+										String job_id_rewards_display = "Jobs." + type.getConfigID() + ".IDS."
+												+ internal + ".Rewards.Display";
 
 										if (!cfg.contains(job_id_rewards_display)) {
-											//Bukkit.getConsoleSender().sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-											//	+ "Failed to get String IDS." + internal + ".Rewards.Display from language "
-											//+ name + " for " + type.getConfigID() + "!");
+											if (plugin.getLocalFileManager().getUtilsConfig()
+													.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+												Bukkit.getConsoleSender()
+														.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+																+ "Failed to get String IDS." + internal
+																+ ".Rewards.Display from language " + name + " for "
+																+ type.getConfigID() + "!");
+											}
 											fails.add(job_id_rewards_display);
 										}
 
@@ -534,15 +630,19 @@ public class LanguageAPI {
 												+ ".Rewards.Lore";
 
 										if (cfg.getStringList(job_id_rewards_lore) == null) {
-											//Bukkit.getConsoleSender()
-											//	.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
-											//	+ "Failed to get Stringlist IDS." + internal
-											//	+ ".Rewards.Lore from language " + name + " for "
-											//	+ type.getConfigID() + "!");
+											if (plugin.getLocalFileManager().getUtilsConfig()
+													.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+												Bukkit.getConsoleSender()
+														.sendMessage(PluginColor.JOB_RELATED_ERROR.getPrefix()
+																+ "Failed to get Stringlist IDS." + internal
+																+ ".Rewards.Lore from language " + name + " for "
+																+ type.getConfigID() + "!");
+											}
 											fails.add(job_id_rewards_lore);
 										}
 
-										jobs_languages_lists.put(job_id_rewards_lore, cfg.getStringList(job_id_rewards_lore));
+										jobs_languages_lists.put(job_id_rewards_lore,
+												cfg.getStringList(job_id_rewards_lore));
 
 									});
 
@@ -550,16 +650,20 @@ public class LanguageAPI {
 
 							});
 
-							
-						} else if(filenamed.toLowerCase().equalsIgnoreCase("guis.yml")) {
-							 
+						} else if (filenamed.toLowerCase().equalsIgnoreCase("guis.yml")) {
+
 							YamlConfiguration cfg = YamlConfiguration.loadConfiguration(filed);
- 
+
 							guis_known_names.forEach((string) -> {
 
 								if (!cfg.contains(string)) {
-									//	Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-									//		+ "Failed to get Stringlist " + string + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + string + " from language "
+														+ name + "!");
+									}
 									fails.add(string);
 								}
 
@@ -570,8 +674,13 @@ public class LanguageAPI {
 							guis_known_lists.forEach((string) -> {
 
 								if (cfg.getStringList(string) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + string + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + string + " from language "
+														+ name + "!");
+									}
 									fails.add(string);
 								}
 
@@ -585,16 +694,25 @@ public class LanguageAPI {
 								String get_lore = "Main_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -607,16 +725,25 @@ public class LanguageAPI {
 								String get_lore = "LeaveConfirm_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -629,43 +756,63 @@ public class LanguageAPI {
 								String get_lore = "Withdraw_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
 
 							});
 
-							fm.getWithdrawConfirmConfig().getStringList("ConfirmWithdraw_Custom.List").forEach((named) -> {
+							fm.getWithdrawConfirmConfig().getStringList("ConfirmWithdraw_Custom.List")
+									.forEach((named) -> {
 
-								String get_display = "ConfirmWithdraw_Custom." + named + ".Display";
-								String get_lore = "ConfirmWithdraw_Custom." + named + ".Lore";
+										String get_display = "ConfirmWithdraw_Custom." + named + ".Display";
+										String get_lore = "ConfirmWithdraw_Custom." + named + ".Lore";
 
-								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
-									fails.add(get_display);
-								}
+										if (!cfg.contains(get_display)) {
+											if (plugin.getLocalFileManager().getUtilsConfig()
+													.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+												Bukkit.getConsoleSender()
+														.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+																+ "Failed to get Stringlist " + get_display
+																+ " from language " + name + "!");
+											}
+											fails.add(get_display);
+										}
 
-								gui_languages_strings.put(get_display, cfg.getString(get_display));
+										gui_languages_strings.put(get_display, cfg.getString(get_display));
 
-								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
-								} else {
-									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
-								}
+										if (cfg.getStringList(get_lore) == null) {
+											if (plugin.getLocalFileManager().getUtilsConfig()
+													.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+												Bukkit.getConsoleSender()
+														.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
+																+ "Loading " + named + " from language " + name
+																+ " without Lore...");
+											}
+										} else {
+											gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
+										}
 
-							});
+									});
 
 							fm.getLanguageGUIConfig().getStringList("Custom.List").forEach((named) -> {
 
@@ -673,16 +820,25 @@ public class LanguageAPI {
 								String get_lore = "Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -695,16 +851,25 @@ public class LanguageAPI {
 								String get_lore = "Job_Earnings_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -717,16 +882,25 @@ public class LanguageAPI {
 								String get_lore = "All_Earnings_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -739,16 +913,25 @@ public class LanguageAPI {
 								String get_lore = "Help_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -761,16 +944,25 @@ public class LanguageAPI {
 								String get_lore = "AreYouSureGUI_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -783,16 +975,26 @@ public class LanguageAPI {
 								String get_lore = "Settings_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -805,16 +1007,25 @@ public class LanguageAPI {
 								String get_lore = "Rewards_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -827,16 +1038,25 @@ public class LanguageAPI {
 								String get_lore = "Global_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -848,16 +1068,25 @@ public class LanguageAPI {
 								String get_lore = "Global_RankingItems." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -870,16 +1099,25 @@ public class LanguageAPI {
 								String get_lore = "PerJobRanking_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -891,16 +1129,25 @@ public class LanguageAPI {
 								String get_lore = "PerJobRanking." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -913,16 +1160,25 @@ public class LanguageAPI {
 								String get_lore = "Levels_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -935,16 +1191,25 @@ public class LanguageAPI {
 								String get_lore = "Other_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -957,16 +1222,25 @@ public class LanguageAPI {
 								String get_lore = "Self_Custom." + named + ".Lore";
 
 								if (!cfg.contains(get_display)) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
-											+ "Failed to get Stringlist " + get_display + " from language " + name + "!");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_ERROR.getPrefix()
+														+ "Failed to get Stringlist " + get_display + " from language "
+														+ name + "!");
+									}
 									fails.add(get_display);
 								}
 
 								gui_languages_strings.put(get_display, cfg.getString(get_display));
 
 								if (cfg.getStringList(get_lore) == null) {
-									Bukkit.getConsoleSender().sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix()
-											+ "Loading " + named + " from language " + name + " without Lore...");
+									if (plugin.getLocalFileManager().getUtilsConfig()
+											.getBoolean("Plugin.DebugMessagesOnStart.Warning")) {
+										Bukkit.getConsoleSender()
+												.sendMessage(PluginColor.GUI_RELATED_WARNING.getPrefix() + "Loading "
+														+ named + " from language " + name + " without Lore...");
+									}
 								} else {
 									gui_languages_lists.put(get_lore, cfg.getStringList(get_lore));
 								}
@@ -974,36 +1248,34 @@ public class LanguageAPI {
 							});
 
 						}
-						
-						
-						
-						
+
 					}
-					
-					 
+
 					if (fails.size() != 0) {
-						Bukkit.getConsoleSender().sendMessage(PluginColor.LANG_RELATED_INFO.getPrefix()
-								+ "Failed to load language " + name + " with " + fails.size() + " missing options!");
+						if (plugin.getLocalFileManager().getUtilsConfig()
+								.getBoolean("Plugin.DebugMessagesOnStart.Error")) {
+							Bukkit.getConsoleSender()
+									.sendMessage(PluginColor.LANG_RELATED_ERROR.getPrefix() + "Failed to load language "
+											+ name + " with " + fails.size() + " missing options!");
+						}
 					} else {
- 
+
 						String newname = name.replaceAll(".yml", " ").replaceAll(" ", "");
 
-						Language lg = new Language(newname,  lang_named,
-								lang_icon, lang_display,
-								lang_model, languages_strings, languages_lists,
-								gui_languages_strings, gui_languages_lists, jobs_languages_strings,
-								jobs_languages_lists);
+						Language lg = new Language(newname, lang_named, lang_icon, lang_display, lang_model,
+								languages_strings, languages_lists, gui_languages_strings, gui_languages_lists,
+								jobs_languages_strings, jobs_languages_lists);
 
 						arraylangs.add(lg);
 						langs.put(newname, lg);
-
-						Bukkit.getConsoleSender().sendMessage(
-								PluginColor.LANG_LOADED.getPrefix() + "Successfully loaded language " + name + "!");
+						if (plugin.getLocalFileManager().getUtilsConfig()
+								.getBoolean("Plugin.DebugMessagesOnStart.Info")) {
+							Bukkit.getConsoleSender().sendMessage(
+									PluginColor.LANG_LOADED.getPrefix() + "Successfully loaded language " + name + "!");
+						}
 					}
-					
+
 				}
-		 
-				 
 
 			}
 		}

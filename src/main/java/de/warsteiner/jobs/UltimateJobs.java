@@ -43,7 +43,7 @@ import de.warsteiner.jobs.command.AdminCommand;
 import de.warsteiner.jobs.command.AdminTabComplete;
 import de.warsteiner.jobs.command.JobTabComplete;
 import de.warsteiner.jobs.command.JobsCommand;
-import de.warsteiner.jobs.command.admincommand.BoostSub;
+import de.warsteiner.jobs.command.admincommand.BoostSub; 
 import de.warsteiner.jobs.command.admincommand.ExpSub; 
 import de.warsteiner.jobs.command.admincommand.HelpSub;
 import de.warsteiner.jobs.command.admincommand.IDSub;
@@ -68,6 +68,7 @@ import de.warsteiner.jobs.jobs.DefaultJobActions;
 import de.warsteiner.jobs.jobs.JobActionAdvancement;
 import de.warsteiner.jobs.jobs.JobActionBreak;
 import de.warsteiner.jobs.jobs.JobActionBreed;
+import de.warsteiner.jobs.jobs.JobActionCarve;
 import de.warsteiner.jobs.jobs.JobActionCraft;
 import de.warsteiner.jobs.jobs.JobActionDrinkPotion;
 import de.warsteiner.jobs.jobs.JobActionEat;
@@ -79,6 +80,7 @@ import de.warsteiner.jobs.jobs.JobActionFindATreasure;
 import de.warsteiner.jobs.jobs.JobActionFish;
 import de.warsteiner.jobs.jobs.JobActionGrowSapling;
 import de.warsteiner.jobs.jobs.JobActionHoney;
+import de.warsteiner.jobs.jobs.JobActionItemPickUp;
 import de.warsteiner.jobs.jobs.JobActionKillByBow;
 import de.warsteiner.jobs.jobs.JobActionKillMob;
 import de.warsteiner.jobs.jobs.JobActionMMKill;
@@ -110,6 +112,7 @@ import de.warsteiner.jobs.utils.database.statements.SQLStatementAPI;
 import de.warsteiner.jobs.utils.objects.DataMode;
 import de.warsteiner.jobs.utils.objects.PluginColor;
 import de.warsteiner.jobs.utils.objects.jobs.Job;
+import de.warsteiner.jobs.utils.objects.jobs.JobAction;
 import de.warsteiner.jobs.utils.objects.jobs.JobsPlayer;
 import de.warsteiner.jobs.utils.playercommand.SubCommandRegistry;
 import net.milkbowl.vault.economy.Economy;
@@ -169,11 +172,7 @@ public class UltimateJobs extends JavaPlugin {
 	private PlayerDataFile data_current_owned;
 	private PlayerDataFile data_other;
 	private PlayerDataFile data_multi;
-	
-	/**
-	 * Loading Data, Config-Files and checking for Updates
-	 */
-
+ 
 	public void onLoad() {
 
 		plugin = this;
@@ -204,11 +203,7 @@ public class UltimateJobs extends JavaPlugin {
 		}
  
 	}
-
-	/**
-	 * Loading Events, Commands, starting Runnables
-	 */
-
+ 
 	@Override
 	public void onEnable() {
 
@@ -330,7 +325,7 @@ public class UltimateJobs extends JavaPlugin {
 					"§a `-----' `-----'`--'   `--'`--'   `--'`--' `--'  `--'   `------' `-----'  `-----' `------' `-----'  ");
 			Bukkit.getConsoleSender().sendMessage("       §aRunning plugin UltimateJobs "
 					+ getDescription().getVersion() + " (" + getDescription().getAPIVersion() + ")");
-			Bukkit.getConsoleSender().sendMessage("       §aRunning UltimateJobs with " + getLoaded().size() + " Jobs");
+			Bukkit.getConsoleSender().sendMessage("       §aRunning UltimateJobs with " + getLoaded().size() + " Jobs ");
 			Bukkit.getConsoleSender()
 					.sendMessage("       §aLoaded " + getLanguageAPI().getLanguages().size() + " Languages");
 			Bukkit.getConsoleSender().sendMessage("§7");
@@ -342,17 +337,24 @@ public class UltimateJobs extends JavaPlugin {
 	 
 
 		List<String> players = plugin.getPlayerOfflineAPI().getAllPlayersFromData();
-		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading data for "+players.size()+" Players!");
-		players.forEach((uuid) -> {
-			
-			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Checking Data for "+uuid+"...");
-			
-			String name = plugin.getPlayerOfflineAPI().getANameFromUUID(uuid);
-			String display = plugin.getPlayerOfflineAPI().getADisplayNameFromUUID(uuid);
-			
-			plugin.getPlayerAPI().LoadDataForServerStart(name, display, UUID.fromString(uuid.toString()));
-			
-		});
+		
+		if(!players.isEmpty() && players != null) {
+			if (plugin.getLocalFileManager().getUtilsConfig()
+					.getBoolean("Plugin.DebugMessagesOnStart.PlayerInfo")) {
+			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading data for "+players.size()+" Players!");
+			}
+			players.forEach((uuid) -> {
+				if (plugin.getLocalFileManager().getUtilsConfig()
+						.getBoolean("Plugin.DebugMessagesOnStart.PlayerInfo")) {
+				Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Checking Data for "+uuid+"...");
+				}
+				String name = plugin.getPlayerOfflineAPI().getANameFromUUID(uuid);
+				String display = plugin.getPlayerOfflineAPI().getADisplayNameFromUUID(uuid);
+				
+				plugin.getPlayerAPI().LoadDataForServerStart(name, display, UUID.fromString(uuid.toString()));
+				
+			});
+		}
 		
 		Bukkit.getOnlinePlayers().forEach((p) -> {
 			plugin.getPlayerAPI().checkAndLoadIntoOnlineCache(p, p.getName().toLowerCase(), p.getName(), ""+p.getUniqueId());
@@ -365,6 +367,10 @@ public class UltimateJobs extends JavaPlugin {
 		getPlayerAPI().calculateRanking();
 		getPlayerAPI().startUtil();
 		
+		if(getLocalFileManager().getDataConfig().getBoolean("EnableSaving")) {
+			int time = getLocalFileManager().getDataConfig().getInt("SaveDataEvery");
+			getPlayerAPI().startSavingData(time);
+		}
 	}
 
 	public void printFailed() {
@@ -466,6 +472,7 @@ public class UltimateJobs extends JavaPlugin {
 		players.forEach((uuid, jb) -> {
 			
 			plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, jb.getName(), jb.getDisplayName()); 
+			 
 		});
 		 
 		HashMap<String, JobsPlayer> players2 = plugin.getPlayerAPI().getOnlinePlayersListed(); 
@@ -567,7 +574,7 @@ public class UltimateJobs extends JavaPlugin {
 		getAdminSubCommandManager().getSubCommandList().add(new BoostSub());
 		getAdminSubCommandManager().getSubCommandList().add(new MaxSub());
 		getAdminSubCommandManager().getSubCommandList().add(new LevelSub());
-		getAdminSubCommandManager().getSubCommandList().add(new ExpSub());
+		getAdminSubCommandManager().getSubCommandList().add(new ExpSub()); 
 		getAdminSubCommandManager().getSubCommandList().add(new de.warsteiner.jobs.command.admincommand.PointsSub());
 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Sub-Commands...");
@@ -878,6 +885,14 @@ public class UltimateJobs extends JavaPlugin {
 		if (cfg.getBoolean("Actions.Enchant")) {
 			Bukkit.getPluginManager().registerEvents(new JobActionEnchant(), this);
 		}
+		
+		if (cfg.getBoolean("Actions.PickUp")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionItemPickUp(), this);
+		}
+		if (cfg.getBoolean("Actions.Carve")) {
+			Bukkit.getPluginManager().registerEvents(new JobActionCarve(), this);
+		}
+		
 		Bukkit.getPluginManager().registerEvents(new DefaultJobActions(), this);
 
 		if (getPluginManager().isInstalled("MythicMobs")) {

@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 import de.warsteiner.jobs.UltimateJobs;
 import de.warsteiner.jobs.utils.admincommand.AdminSubCommand;
-import de.warsteiner.jobs.utils.objects.Language;
+import de.warsteiner.jobs.utils.objects.Language; 
 import de.warsteiner.jobs.utils.objects.commands.AdminCommandOptions;
 import de.warsteiner.jobs.utils.objects.guis.GUIType;
 import de.warsteiner.jobs.utils.objects.multipliers.MultiplierType;
@@ -73,10 +73,10 @@ public class AdminTabComplete implements TabCompleter {
 									l.add("add");
 									l.add("remove");
 								} else if (type.equalsIgnoreCase("LEVEL_OPTIONS")) {
-									l.add("set"); 
+									l.add("set");
 								} else if (type.equalsIgnoreCase("LANGUAGE_OPTIONS")) {
-									l.add("set"); 
-								}    else if (type.equalsIgnoreCase("BOOST_TYPES")) {
+									l.add("set");
+								} else if (type.equalsIgnoreCase("BOOST_TYPES")) {
 									for (MultiplierType k : MultiplierType.values()) {
 										l.add(k.toString().toLowerCase());
 									}
@@ -91,8 +91,7 @@ public class AdminTabComplete implements TabCompleter {
 										l.add(k.toString().toLowerCase());
 									}
 									;
-								}
-
+								}  
 							}
 						}
 

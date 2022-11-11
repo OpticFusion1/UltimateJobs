@@ -9,7 +9,7 @@ ColorOfBossBar: "WHITE"
 
 CustomGlassPlateColor: "WHITE_STAINED_GLASS_PANE"
 
-Slot: 16
+Slot: 15
 
 Price: 350
 
@@ -21,7 +21,20 @@ IDS:
 
   MILK:
     List:
-      - "COW"  
+      - "COW"
+      - "MUSHROOM_COW"  
+
+    MUSHROOM_COW:
+
+      Chance: 85
+      ID: "MUSHROOM_COW"
+      Money: 2
+      Exp: 5
+      Points: 0.05
+      RewardsGUI:
+    
+        See: true
+        Icon: "COW_SPAWN_EGG"
 
     COW:
 

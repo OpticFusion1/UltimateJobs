@@ -68,7 +68,7 @@ public class OfflinePlayerAPI {
 
 				s.executeUpdate(
 						"CREATE TABLE IF NOT EXISTS earnings_stats_per_action (UUID varchar(200),IDACTION varchar(200), JOB varchar(200), ID varchar(200), TIMES int, MONEY double)");
- 
+
 				s.executeUpdate(
 						"CREATE TABLE IF NOT EXISTS job_dates_joined (UUID varchar(200), JOBID varchar(200), DATE varchar(200))");
 
@@ -505,7 +505,7 @@ public class OfflinePlayerAPI {
 		}
 		return false;
 	}
-  
+
 	public HashMap<String, String> getSettingsOfPlayer(String uuid) {
 
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
@@ -639,7 +639,7 @@ public class OfflinePlayerAPI {
 		}
 		return null;
 	}
- 
+
 	public void updateEarningsTimesOf(String UUID, String job, String id, int time, String action) {
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equals(DataMode.SQL)) {
@@ -920,13 +920,11 @@ public class OfflinePlayerAPI {
 		}
 		return false;
 	}
-	
-	
-	
+
 	public String getADisplayNameFromUUID(String UUID) {
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equals(DataMode.SQL)) {
- 
+
 			AtomicReference<String> a = new AtomicReference<String>();
 
 			mg.executeQuery("SELECT * FROM playernames WHERE UUID= '" + UUID + "'", rs -> {
@@ -946,11 +944,11 @@ public class OfflinePlayerAPI {
 		}
 		return null;
 	}
- 
+
 	public String getANameFromUUID(String UUID) {
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
 		if (mode.equals(DataMode.SQL)) {
- 
+
 			AtomicReference<String> a = new AtomicReference<String>();
 
 			mg.executeQuery("SELECT * FROM playernames WHERE UUID= '" + UUID + "'", rs -> {
@@ -970,7 +968,7 @@ public class OfflinePlayerAPI {
 		}
 		return null;
 	}
- 
+
 	public void savePlayerAsFinal(JobsPlayer pl, String UUID, String named, String display) {
 
 		DataMode mode = UltimateJobs.getPlugin().getPluginMode();
@@ -1154,10 +1152,11 @@ public class OfflinePlayerAPI {
 						+ "' AND JOBID= '" + job + "'";
 				mg.executeUpdate(insertQuery);
 
-				final String insertQuery_date = "UPDATE `job_stats` SET `DATE`='" + date + "' AND SET `BROKEN`='" + broken + "' AND SET `EXP`='" + exp + "' AND SET `LEVEL`='" + level + "' WHERE UUID='" + UUID
+				final String insertQuery_date = "UPDATE `job_stats` SET `DATE`='" + date + "' AND SET `BROKEN`='"
+						+ broken + "' AND SET `EXP`='" + exp + "' AND SET `LEVEL`='" + level + "' WHERE UUID='" + UUID
 						+ "' AND JOB='" + j.getConfigID() + "'";
 				mg.executeUpdate(insertQuery_date);
-  
+
 				for (JobAction action : j.getActionList()) {
 
 					stats.getTimesExecutedMoneyList().forEach((key, value) -> {
@@ -1181,23 +1180,22 @@ public class OfflinePlayerAPI {
 				}
 
 			}
-			 
+
 		} else if (mode.equals(DataMode.FILE)) {
-		 
+
 			PlayerDataFile global = plugin.getGlobalDataFile();
 			PlayerDataFile statsf = plugin.getStatsDataFile();
 			PlayerDataFile earnings = plugin.getEarningsDataFile();
 			PlayerDataFile crow = plugin.getCrAndOwDataFile();
 			PlayerDataFile other = plugin.getOtherDataFile();
 			PlayerDataFile multi = plugin.getMultipliersDataFile();
-	 
+
 			FileConfiguration globalcfg = global.get();
 			FileConfiguration statscfg = statsf.get();
 			FileConfiguration earningscfg = earnings.get();
 			FileConfiguration crowcfg = crow.get();
 			FileConfiguration othercfg = other.get();
 			FileConfiguration multicfg = multi.get();
-	 
 
 			Collection<String> current = pl.getCurrentJobs();
 			Collection<String> owned = pl.getOwnJobs();
@@ -1209,7 +1207,7 @@ public class OfflinePlayerAPI {
 
 			List<String> g = globalcfg.getStringList("JobPlayers");
 
-			if(!g.contains(UUID)) {
+			if (!g.contains(UUID)) {
 				g.add(UUID);
 
 				globalcfg.set("JobPlayers", g);
@@ -1227,7 +1225,7 @@ public class OfflinePlayerAPI {
 				statscfg.set("Player." + UUID + ".Date", dated);
 				crowcfg.set("Player." + UUID + ".Owned", list);
 				crowcfg.set("Player." + UUID + ".Current", list);
- 
+
 			} else {
 
 				statscfg.set("Player." + UUID + ".Points", points);
@@ -1330,14 +1328,16 @@ public class OfflinePlayerAPI {
 
 					stats.getTimesExecutedMoneyList().forEach((key, value) -> {
 
-						earningscfg.set("Earnings." + UUID + "." + job + "." + key + ".Action." + action.toString() + ".Money",
+						earningscfg.set(
+								"Earnings." + UUID + "." + job + "." + key + ".Action." + action.toString() + ".Money",
 								value);
 
 					});
 
 					stats.getWorkedTimesOfIDList().forEach((key, value) -> {
 
-						earningscfg.set("Earnings." + UUID + "." + job + "." + key + ".Action." + action.toString() + ".Times",
+						earningscfg.set(
+								"Earnings." + UUID + "." + job + "." + key + ".Action." + action.toString() + ".Times",
 								value);
 
 					});
@@ -1348,7 +1348,7 @@ public class OfflinePlayerAPI {
 
 			crowcfg.set("Player." + UUID + ".Owned", newowned);
 			crowcfg.set("Player." + UUID + ".Current", current);
-		 
+
 			global.save();
 			statsf.save();
 			earnings.save();
@@ -1356,7 +1356,11 @@ public class OfflinePlayerAPI {
 			other.save();
 			multi.save();
 		}
-		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Saved "+UUID+" with the Name "+display+"!");
+
+		if (plugin.getLocalFileManager().getUtilsConfig().getBoolean("Plugin.DebugMessagesOnStart.PlayerInfo")) {
+			Bukkit.getConsoleSender()
+					.sendMessage(PluginColor.INFO.getPrefix() + "Saved " + UUID + " with the Name " + display + "!");
+		}
 	}
 
 	public void updateEarnings(String UUID, String job, String date, double money) {

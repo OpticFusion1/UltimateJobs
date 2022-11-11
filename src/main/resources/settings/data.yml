@@ -24,6 +24,13 @@
 #
 Mode: "FILE"
 
+#save all active players to prevent it to loose on a server crash
+#value in minutes
+
+EnableSaving: false
+
+SaveDataEvery: 10
+
 # .----------------.  .----------------.  .----------------. 
 #| .--------------. || .--------------. || .--------------. |
 #| |    _______   | || |    ___       | || |   _____      | |

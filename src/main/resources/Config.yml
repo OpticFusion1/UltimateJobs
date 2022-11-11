@@ -117,6 +117,11 @@ LeaveJobNeedsToBeConfirmed: true
 
 SendMessageOnLeave: true
 
+#when defined every job can work in these worlds
+GlobalJobWorlds:
+  - "world1"
+  - "world2"
+
 #options to the job items
 Jobs:
 

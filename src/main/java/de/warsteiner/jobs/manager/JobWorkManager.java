@@ -10,12 +10,15 @@ import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.block.Action;
@@ -77,18 +80,27 @@ public class JobWorkManager {
 			return;
 		}
 
-		UUID UUID = player.getUniqueId();
-		String type = "" + event.getClickedBlock().getType();
+		new BukkitRunnable() {
 
-		if (getJobOnWork("" + UUID, JobAction.HONEY, "" + type) != null) {
+			@Override
+			public void run() {
 
-			Job job = getJobOnWork("" + UUID, JobAction.HONEY, "" + type);
+				UUID UUID = player.getUniqueId();
+				String type = "" + event.getClickedBlock().getType();
 
-			finalWork(type, player.getUniqueId(), JobAction.HONEY, "honey-action", 1, event.getClickedBlock(), null,
-					false, true, false, job);
-		}
-		return;
+				if (getJobOnWork("" + UUID, JobAction.HONEY, "" + type) != null) {
 
+					Job job = getJobOnWork("" + UUID, JobAction.HONEY, "" + type);
+
+					finalWork(type, player.getUniqueId(), JobAction.HONEY, "honey-action", 1, event.getClickedBlock(),
+							null, false, true, false, job);
+
+					return;
+				}
+
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
 	}
 
 	public void executeEatAction(FoodLevelChangeEvent event) {
@@ -104,75 +116,114 @@ public class JobWorkManager {
 
 		Material item = event.getItem().getType();
 
-		UUID UUID = ((Player) event.getEntity()).getUniqueId();
+		Player player = ((Player) event.getEntity());
+		UUID UUID = player.getUniqueId();
 
-		if (getJobOnWork("" + UUID, JobAction.EAT, "" + item) != null) {
+		new BukkitRunnable() {
 
-			Job job = getJobOnWork("" + UUID, JobAction.EAT, "" + item);
+			@Override
+			public void run() {
 
-			finalWork("" + item, ((Player) event.getEntity()).getUniqueId(), JobAction.EAT, "eat-action", 1, null, null,
-					true, false, false, job);
-			return;
-		}
+				if (getJobOnWork("" + UUID, JobAction.EAT, "" + item) != null) {
+
+					Job job = getJobOnWork("" + UUID, JobAction.EAT, "" + item);
+
+					finalWork("" + item, ((Player) event.getEntity()).getUniqueId(), JobAction.EAT, "eat-action", 1,
+							null, null, true, false, false, job);
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
 	}
 
 	public void executeSaplingGrowAction(String type, UUID UUID, Block block) {
 
-		if (getJobOnWork("" + UUID, JobAction.GROWSAPLINGS, "" + type) != null) {
+		new BukkitRunnable() {
 
-			Job job = getJobOnWork("" + UUID, JobAction.GROWSAPLINGS, "" + type);
+			@Override
+			public void run() {
 
-			finalWork(type, UUID, JobAction.GROWSAPLINGS, "grow-saplings-action", 1, block, null, false, true, false,
-					job);
-			return;
-		}
+				if (getJobOnWork("" + UUID, JobAction.GROWSAPLINGS, "" + type) != null) {
+
+					Job job = getJobOnWork("" + UUID, JobAction.GROWSAPLINGS, "" + type);
+
+					finalWork(type, UUID, JobAction.GROWSAPLINGS, "grow-saplings-action", 1, block, null, false, true,
+							false, job);
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
 	}
 
 	public void executeBerrysEvent(Player player, String id, Block block) {
-		 
-		UUID UUID = player.getUniqueId();
 
-		if (getJobOnWork("" + UUID, JobAction.COLLECTBERRYS, "" + id.toUpperCase()) != null) {
+		new BukkitRunnable() {
 
-			Job job = getJobOnWork("" + UUID, JobAction.COLLECTBERRYS, "" + id.toUpperCase());
+			@Override
+			public void run() {
 
-			finalWork(id.toUpperCase(), player.getUniqueId(), JobAction.COLLECTBERRYS, "collectberrys-action", 1, block,
-					null, false, true, false, job);
-			return;
-		}
+				UUID UUID = player.getUniqueId();
+
+				if (getJobOnWork("" + UUID, JobAction.COLLECTBERRYS, "" + id.toUpperCase()) != null) {
+
+					Job job = getJobOnWork("" + UUID, JobAction.COLLECTBERRYS, "" + id.toUpperCase());
+
+					finalWork(id.toUpperCase(), player.getUniqueId(), JobAction.COLLECTBERRYS, "collectberrys-action",
+							1, block, null, false, true, false, job);
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
 	}
 
 	public void executeKillByBowEvent(Player player, String id, Entity et) {
 
-		String type = id.toUpperCase();
+		new BukkitRunnable() {
 
-		UUID UUID = player.getUniqueId();
+			@Override
+			public void run() {
 
-		if (getJobOnWork("" + UUID, JobAction.KILL_BY_BOW, "" + type) != null) {
+				String type = id.toUpperCase();
 
-			Job job = getJobOnWork("" + UUID, JobAction.KILL_BY_BOW, "" + type);
+				UUID UUID = player.getUniqueId();
 
-			finalWork(type, player.getUniqueId(), JobAction.KILL_BY_BOW, "killbybow-action", 1, null, et, true, false,
-					true, job);
-			return;
-		}
+				if (getJobOnWork("" + UUID, JobAction.KILL_BY_BOW, "" + type) != null) {
+
+					Job job = getJobOnWork("" + UUID, JobAction.KILL_BY_BOW, "" + type);
+
+					finalWork(type, player.getUniqueId(), JobAction.KILL_BY_BOW, "killbybow-action", 1, null, et, true,
+							false, true, job);
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
 	}
 
 	public void executeAchWork(PlayerAdvancementDoneEvent event) {
-		String type = event.getAdvancement().getKey().getKey().replaceAll("story/", "   ").replaceAll(" ", "")
-				.toUpperCase();
+		new BukkitRunnable() {
 
-		UUID UUID = event.getPlayer().getUniqueId();
+			@Override
+			public void run() {
+				String type = event.getAdvancement().getKey().getKey().replaceAll("story/", "   ").replaceAll(" ", "")
+						.toUpperCase();
 
-		if (getJobOnWork("" + UUID, JobAction.ADVANCEMENT, "" + type) != null) {
+				UUID UUID = event.getPlayer().getUniqueId();
 
-			Job job = getJobOnWork("" + UUID, JobAction.ADVANCEMENT, "" + type);
+				if (getJobOnWork("" + UUID, JobAction.ADVANCEMENT, "" + type) != null) {
 
-			finalWork(type, event.getPlayer().getUniqueId(), JobAction.ADVANCEMENT, "advancement-action", 1, null, null,
-					true, false, false, job);
-			return;
-		}
+					Job job = getJobOnWork("" + UUID, JobAction.ADVANCEMENT, "" + type);
 
+					finalWork(type, event.getPlayer().getUniqueId(), JobAction.ADVANCEMENT, "advancement-action", 1,
+							null, null, true, false, false, job);
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
 	}
 
 	public void executeShearWork(PlayerShearEntityEvent event) {
@@ -189,17 +240,26 @@ public class JobWorkManager {
 				return;
 			}
 
-			UUID UUID = event.getPlayer().getUniqueId();
+			new BukkitRunnable() {
 
-			if (getJobOnWork("" + UUID, JobAction.SHEAR, "" + color) != null) {
+				@Override
+				public void run() {
 
-				Job job = getJobOnWork("" + UUID, JobAction.SHEAR, "" + color);
+					UUID UUID = event.getPlayer().getUniqueId();
 
-				finalWork("" + color, event.getPlayer().getUniqueId(), JobAction.SHEAR, "shear-action", 1, null,
-						event.getEntity(), true, false, true, job);
+					if (getJobOnWork("" + UUID, JobAction.SHEAR, "" + color) != null) {
 
-				return;
-			}
+						Job job = getJobOnWork("" + UUID, JobAction.SHEAR, "" + color);
+
+						finalWork("" + color, event.getPlayer().getUniqueId(), JobAction.SHEAR, "shear-action", 1, null,
+								event.getEntity(), true, false, true, job);
+
+						return;
+					}
+
+					cancel();
+				}
+			}.runTaskAsynchronously(plugin);
 		}
 	}
 
@@ -214,17 +274,25 @@ public class JobWorkManager {
 			return;
 		}
 
-		UUID UUID = event.getWhoClicked().getUniqueId();
+		new BukkitRunnable() {
 
-		if (getJobOnWork("" + UUID, JobAction.CRAFT, "" + type) != null) {
+			@Override
+			public void run() {
 
-			Job job = getJobOnWork("" + UUID, JobAction.CRAFT, "" + type);
+				UUID UUID = event.getWhoClicked().getUniqueId();
 
-			finalWork("" + type, ((Player) event.getWhoClicked()).getUniqueId(), JobAction.CRAFT, "craft-action",
-					amount, null, null, true, false, false, job);
+				if (getJobOnWork("" + UUID, JobAction.CRAFT, "" + type) != null) {
 
-			return;
-		}
+					Job job = getJobOnWork("" + UUID, JobAction.CRAFT, "" + type);
+
+					finalWork("" + type, ((Player) event.getWhoClicked()).getUniqueId(), JobAction.CRAFT,
+							"craft-action", amount, null, null, true, false, false, job);
+
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
 	}
 
 	public void executeStripLogWork(PlayerInteractEvent event) {
@@ -235,70 +303,175 @@ public class JobWorkManager {
 			return;
 		}
 
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getMaterial().toString().contains("_AXE"))
-			if (event.getClickedBlock() != null)
-				if (event.getClickedBlock().toString().contains("LOG")) {
-					if (!event.getClickedBlock().toString().contains("STRIPPED")) {
+		if (event.getClickedBlock() == null) {
+			return;
+		}
 
-						String type = "" + event.getClickedBlock().getType();
+		Action action = event.getAction();
+		Material item = event.getMaterial();
+		Block block = event.getClickedBlock();
+		Material mat = block.getType();
+
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+
+				if (action == Action.RIGHT_CLICK_BLOCK && item.toString().contains("_AXE")) {
+
+					if (block.toString().contains("LOG")) {
+
 						UUID UUID = event.getPlayer().getUniqueId();
 
-						if (getJobOnWork("" + UUID, JobAction.STRIPLOG, "" + type) != null) {
+						if (getJobOnWork("" + UUID, JobAction.STRIPLOG, "" + mat) != null) {
 
-							Job job = getJobOnWork("" + UUID, JobAction.STRIPLOG, "" + type);
+							Job job = getJobOnWork("" + UUID, JobAction.STRIPLOG, "" + mat);
 
-							finalWork(type, event.getPlayer().getUniqueId(), JobAction.STRIPLOG, "strip-action", 1,
-									event.getClickedBlock(), null, true, true, false, job);
+							finalWork(mat.toString(), event.getPlayer().getUniqueId(), JobAction.STRIPLOG,
+									"strip-action", 1, event.getClickedBlock(), null, true, true, false, job);
+							return;
 						}
+
 					}
 				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
+	}
+	
+	public void executeCarveWork(PlayerInteractEvent event) {
+		if (event.isCancelled()) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
+				event.setCancelled(true);
+			}
+			return;
+		}
 
-		return;
+		if (event.getClickedBlock() == null) {
+			return;
+		}
+
+		Action action = event.getAction();
+		Material item = event.getMaterial();
+		Block block = event.getClickedBlock();
+		Material mat = block.getType();
+
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+
+				if (action == Action.RIGHT_CLICK_BLOCK && item.equals(Material.SHEARS)) {
+		 
+					if (mat.equals(Material.PUMPKIN)) {
+						 
+						UUID UUID = event.getPlayer().getUniqueId();
+
+						if (getJobOnWork("" + UUID, JobAction.CARVE, "" + mat) != null) {
+
+							Job job = getJobOnWork("" + UUID, JobAction.CARVE, "" + mat);
+
+							finalWork(mat.toString(), event.getPlayer().getUniqueId(), JobAction.CARVE,
+									"carve-action", 1, event.getClickedBlock(), null, true, true, false, job);
+							return;
+						}
+
+					}
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
+	}
+	
+	public void executePickUpWork(Player player, String item) {
+   
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+
+				UUID UUID = player.getUniqueId();
+
+				if (getJobOnWork("" + UUID, JobAction.PICKUP, item) != null) {
+
+					Job job = getJobOnWork("" + UUID, JobAction.PICKUP, "" + item);
+
+					finalWork(item, UUID, JobAction.PICKUP, "pickup-action", 1, null, null, true, false,
+							false, job);
+
+					 
+					return;
+				} 
+
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
+
 	}
 
 	public void executeBlockBreakWork(BlockBreakEvent event) {
+
 		final Block block = event.getBlock();
 		final Material type = event.getBlock().getType();
 
 		if (block.hasMetadata("placed-by-player")) {
 			return;
 		}
-	
+
 		if (event.isCancelled()) {
 			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
-				
+
 				event.setCancelled(true);
 			}
 			return;
 		}
-	
-		UUID UUID = event.getPlayer().getUniqueId();
 
-		if (getJobOnWork("" + UUID, JobAction.BREAK, "" + type) != null) {
-	
-			Job job = getJobOnWork("" + UUID, JobAction.BREAK, "" + type);
+		new BukkitRunnable() {
 
-			finalWork("" + type, UUID, JobAction.BREAK, "break-action", 1, event.getBlock(), null, true, true, false,
-					job);
+			@Override
+			public void run() {
 
-			block.removeMetadata("placed-by-player", UltimateJobs.getPlugin());
+				UUID UUID = event.getPlayer().getUniqueId();
 
-			return;
-		}
+				if (getJobOnWork("" + UUID, JobAction.BREAK, "" + type) != null) {
+
+					Job job = getJobOnWork("" + UUID, JobAction.BREAK, "" + type);
+
+					finalWork("" + type, UUID, JobAction.BREAK, "break-action", 1, event.getBlock(), null, true, true,
+							false, job);
+
+					block.removeMetadata("placed-by-player", UltimateJobs.getPlugin());
+
+					return;
+				}
+
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
+
 	}
 
 	public void executeTreasureEvent(String type, Player player) {
-		 
-		UUID UUID = player.getUniqueId();
 
-		if (getJobOnWork("" + UUID, JobAction.FIND_TREASURE, "" + type) != null) {
+		new BukkitRunnable() {
 
-			Job job = getJobOnWork("" + UUID, JobAction.FIND_TREASURE, "" + type);
+			@Override
+			public void run() {
+				UUID UUID = player.getUniqueId();
 
-			finalWork("" + type, UUID, JobAction.FIND_TREASURE, "find-treasure-action", 1, null, null, true, false,
-					false, job);
-			return;
-		}
+				if (getJobOnWork("" + UUID, JobAction.FIND_TREASURE, "" + type) != null) {
+
+					Job job = getJobOnWork("" + UUID, JobAction.FIND_TREASURE, "" + type);
+
+					finalWork("" + type, UUID, JobAction.FIND_TREASURE, "find-treasure-action", 1, null, null, true,
+							false, false, job);
+					return;
+				}
+
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
+
 	}
 
 	public void executeBlockPlaceWork(BlockPlaceEvent event) {
@@ -311,41 +484,48 @@ public class JobWorkManager {
 			return;
 		}
 
-		UUID UUID = event.getPlayer().getUniqueId();
+		new BukkitRunnable() {
 
-		if (getJobOnWork("" + UUID, JobAction.PLACE, "" + type) != null) {
+			@Override
+			public void run() {
+				UUID UUID = event.getPlayer().getUniqueId();
 
-			Job job = getJobOnWork("" + UUID, JobAction.PLACE, "" + type);
+				if (getJobOnWork("" + UUID, JobAction.PLACE, "" + type) != null) {
 
-			finalWork("" + type, UUID, JobAction.PLACE, "place-action", 1, event.getBlock(), null, true, true, false,
-					job);
-			return;
-		}
+					Job job = getJobOnWork("" + UUID, JobAction.PLACE, "" + type);
+
+					finalWork("" + type, UUID, JobAction.PLACE, "place-action", 1, event.getBlock(), null, true, true,
+							false, job);
+					return;
+				}
+
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
 	}
 
-	public void executeFishWork(PlayerFishEvent event) {
-		if (event.isCancelled()) {
-			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
-				event.setCancelled(true);
+	public void executeFishWork(Entity cought, Player player) {
+		  
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				String id = cought.getName().toUpperCase().replaceAll(" ", "_");
+ 
+				UUID UUID = player.getUniqueId();
+
+				if (getJobOnWork("" + UUID, JobAction.FISH, "" + id) != null) {
+
+					Job job = getJobOnWork("" + UUID, JobAction.FISH, "" + id);
+
+					finalWork("" + id, UUID, JobAction.FISH, "fish-action", 1, null, null, true, false, false, job);
+					return;
+				}
+
+				cancel();
 			}
-			return;
-		}
+		}.runTaskAsynchronously(plugin);
 
-		if (event.getCaught() == null) {
-			return;
-		}
-
-		String id = event.getCaught().getName().toUpperCase().replaceAll(" ", "_");
-
-		UUID UUID = event.getPlayer().getUniqueId();
-
-		if (getJobOnWork("" + UUID, JobAction.FISH, "" + id) != null) {
-
-			Job job = getJobOnWork("" + UUID, JobAction.FISH, "" + id);
-
-			finalWork("" + id, UUID, JobAction.FISH, "fish-action", 1, null, null, true, false, false, job);
-			return;
-		}
 	}
 
 	public void executeBreedWork(EntityBreedEvent event) {
@@ -362,17 +542,25 @@ public class JobWorkManager {
 			return;
 		}
 
-		UUID UUID = ((Player) event.getBreeder()).getUniqueId();
+		new BukkitRunnable() {
 
-		if (getJobOnWork("" + UUID, JobAction.BREED, "" + type) != null) {
+			@Override
+			public void run() {
+				UUID UUID = ((Player) event.getBreeder()).getUniqueId();
 
-			Job job = getJobOnWork("" + UUID, JobAction.BREED, "" + type);
+				if (getJobOnWork("" + UUID, JobAction.BREED, "" + type) != null) {
 
-			finalWork("" + type, UUID, JobAction.BREED, "breed-action", 1, null, event.getEntity(), true, false, true,
-					job);
+					Job job = getJobOnWork("" + UUID, JobAction.BREED, "" + type);
 
-			return;
-		}
+					finalWork("" + type, UUID, JobAction.BREED, "breed-action", 1, null, event.getEntity(), true, false,
+							true, job);
+
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
+
 	}
 
 	public void executeTameWork(EntityTameEvent event) {
@@ -389,47 +577,86 @@ public class JobWorkManager {
 			return;
 		}
 
-		UUID UUID = ((Player) event.getOwner()).getUniqueId();
+		new BukkitRunnable() {
 
-		if (getJobOnWork("" + UUID, JobAction.TAME, "" + type) != null) {
+			@Override
+			public void run() {
 
-			Job job = getJobOnWork("" + UUID, JobAction.TAME, "" + type);
+				UUID UUID = ((Player) event.getOwner()).getUniqueId();
 
-			finalWork("" + type, UUID, JobAction.TAME, "tame-action", 1, null, event.getEntity(), true, false, true,
-					job);
-			return;
-		}
+				if (getJobOnWork("" + UUID, JobAction.TAME, "" + type) != null) {
+
+					Job job = getJobOnWork("" + UUID, JobAction.TAME, "" + type);
+
+					finalWork("" + type, UUID, JobAction.TAME, "tame-action", 1, null, event.getEntity(), true, false,
+							true, job);
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
+
 	}
 
-	public void executeKillWork(EntityDeathEvent event) {
+	public void executeKillWork(Entity ent, Player player) {
+ 
+		 
+	  
+		new BukkitRunnable() {
 
-		Player player = event.getEntity().getKiller();
-		UUID UUID = player.getUniqueId();
-		String type = "" + event.getEntity().getType();
+			@Override
+			public void run() {
+			 
+				UUID UUID = player.getUniqueId();
+				String type = "" + ent.getType();
+				
+				if (getJobOnWork("" + UUID, JobAction.KILL_MOB, "" + type) != null) { 
+					Job job = getJobOnWork("" + UUID, JobAction.KILL_MOB, "" + type);
 
-		if (getJobOnWork("" + UUID, JobAction.KILL_MOB, "" + type) != null) {
+					finalWork(type, player.getUniqueId(), JobAction.KILL_MOB, "kill-action", 1, null, ent,
+							true, false, true, job);
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
 
-			Job job = getJobOnWork("" + UUID, JobAction.KILL_MOB, "" + type);
-
-			finalWork(type, player.getUniqueId(), JobAction.KILL_MOB, "kill-action", 1, null, event.getEntity(), true,
-					false, true, job);
-			return;
-		}
 	}
 
 	public void executeMilkWork(PlayerInteractAtEntityEvent event) {
 
 		String type = "" + event.getRightClicked().getType();
-		UUID UUID = event.getPlayer().getUniqueId();
 
-		if (getJobOnWork("" + UUID, JobAction.MILK, "" + type) != null) {
-
-			Job job = getJobOnWork("" + UUID, JobAction.MILK, "" + type);
-
-			finalWork(type, UUID, JobAction.MILK, "milk-action", 1, null, event.getRightClicked(), true, false, true,
-					job);
+		if (event.getPlayer() == null) {
 			return;
 		}
+
+		if (event.getPlayer().getItemInHand() == null) {
+			return;
+		}
+
+		if (event.getPlayer().getItemInHand().getType() != Material.BUCKET) {
+			return;
+		}
+
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				UUID UUID = event.getPlayer().getUniqueId();
+
+				if (getJobOnWork("" + UUID, JobAction.MILK, "" + type) != null) {
+
+					Job job = getJobOnWork("" + UUID, JobAction.MILK, "" + type);
+
+					finalWork(type, UUID, JobAction.MILK, "milk-action", 1, null, event.getRightClicked(), true, false,
+							true, job);
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
+
 	}
 
 	private List<Material> breakingMaterials = List.of(Material.SUGAR_CANE, Material.CACTUS, Material.BAMBOO);
@@ -437,6 +664,10 @@ public class JobWorkManager {
 	public void executeFarmWork(BlockBreakEvent event) {
 		final Block block = event.getBlock();
 		final Material type = event.getBlock().getType();
+
+		List<Block> blocks = new ArrayList<>();
+		List<Block> blocksingle = new ArrayList<>();
+		List<Block> blockstocheck = new ArrayList<>();
 
 		if (!plugin.getPluginManager().isFullyGrown(block)) {
 			return;
@@ -448,155 +679,223 @@ public class JobWorkManager {
 			}
 			return;
 		}
-		 
-		UUID UUID = event.getPlayer().getUniqueId();
 
-		if (getJobOnWork("" + UUID, JobAction.FARM_BREAK, "" + type) != null) {
+		blocksingle.add(block);
 
-			Job job = getJobOnWork("" + UUID, JobAction.FARM_BREAK, "" + type);
+		if (breakingMaterials.contains(type)) {
 
-			List<Block> blocks = new ArrayList<>();
+			for (int i = 0; i <= 16; i++) {
+				Block bl = block.getLocation().add(0, i, 0).getBlock();
+				Material d = bl.getType();
+				if (breakingMaterials.contains(d)) {
 
-			List<Block> blockstocheck = new ArrayList<>();
+					if (!bl.hasMetadata("placed-by-player")) {
+						blocks.add(bl);
 
-			if (job.getOptionValue("CheckIfThereAreOtherCanesAbove")) {
+					}
+					blockstocheck.add(bl);
+				}
 
-				if (breakingMaterials.contains(type)) {
+			}
 
-					for (int i = 0; i <= 16; i++) {
-						Block bl = block.getLocation().add(0, i, 0).getBlock();
-						Material d = bl.getType();
-						if (breakingMaterials.contains(d)) {
+		} else {
+			blocks.add(block);
+		}
 
-							if (!bl.hasMetadata("placed-by-player")) {
-								blocks.add(bl);
-								 
-								 
-							}
-							blockstocheck.add(bl);
-						}  
-					 
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				UUID UUID = event.getPlayer().getUniqueId();
+
+				if (getJobOnWork("" + UUID, JobAction.FARM_BREAK, "" + type) != null) {
+
+					Job job = getJobOnWork("" + UUID, JobAction.FARM_BREAK, "" + type);
+
+					if (job.getOptionValue("CheckIfThereAreOtherCanesAbove")) {
+						if (blocks.size() != 0) {
+							finalWork("" + type, UUID, JobAction.FARM_BREAK, "farm-break-action", blocks.size(),
+									event.getBlock(), null, true, true, false, job);
+
+							Bukkit.getScheduler().runTask(UltimateJobs.getPlugin(), () -> {
+								blockstocheck.forEach(b -> {
+									b.removeMetadata("placed-by-player", UltimateJobs.getPlugin());
+								});
+							});
+						}
+					} else {
+						if (blocksingle.size() != 0) {
+							finalWork("" + type, UUID, JobAction.FARM_BREAK, "farm-break-action", blocksingle.size(),
+									event.getBlock(), null, true, true, false, job);
+
+							blocksingle.get(0).removeMetadata("placed-by-player", UltimateJobs.getPlugin());
+						}
 					}
 
-				} else {
-					blocks.add(block);  
+					return;
 				}
-			} else {
-				blocks.add(block);
+				cancel();
 			}
-		
-			
-			if(blocks.size() != 0) {
-				finalWork("" + type, UUID, JobAction.FARM_BREAK, "farm-break-action", blocks.size(), event.getBlock(), null,
-						true, true, false, job);
+		}.runTaskAsynchronously(plugin);
 
-				Bukkit.getScheduler().runTask(UltimateJobs.getPlugin(), () -> {
-					blockstocheck.forEach(b -> {
-						b.removeMetadata("placed-by-player", UltimateJobs.getPlugin());
-					});
-				});
-			}
-			
-
-			return;
-		}
 	}
 
 	public void executeFarmGrowWork(Block block, UUID UUID) {
 
-		final Material type = block.getType();
+		new BukkitRunnable() {
 
-		if (getJobOnWork("" + UUID, JobAction.FARM_GROW, "" + type) != null) {
+			@Override
+			public void run() {
+				final Material type = block.getType();
 
-			Job job = getJobOnWork("" + UUID, JobAction.FARM_GROW, "" + type);
+				if (getJobOnWork("" + UUID, JobAction.FARM_GROW, "" + type) != null) {
 
-			if (job.getOptionValue("GetMoneyOnlyWhenFullyGrown")) {
-				if (!plugin.getPluginManager().isFullyGrown(block)) {
+					Job job = getJobOnWork("" + UUID, JobAction.FARM_GROW, "" + type);
+
+					if (job.getOptionValue("GetMoneyOnlyWhenFullyGrown")) {
+						if (!plugin.getPluginManager().isFullyGrown(block)) {
+							return;
+						}
+					}
+
+					finalWork("" + type, UUID, JobAction.FARM_GROW, "farm-grow-action", 1, block, null, true, true,
+							false, job);
+
 					return;
 				}
+				cancel();
 			}
+		}.runTaskAsynchronously(plugin);
 
-			finalWork("" + type, UUID, JobAction.FARM_GROW, "farm-grow-action", 1, block, null, true, true, false, job);
-
-			return;
-		}
 	}
 
 	public void executeSmelt(String type, UUID UUID, int amount) {
 
-		if (getJobOnWork("" + UUID, JobAction.SMELT, "" + type) != null) {
+		new BukkitRunnable() {
 
-			Job job = getJobOnWork("" + UUID, JobAction.SMELT, "" + type);
+			@Override
+			public void run() {
+				if (getJobOnWork("" + UUID, JobAction.SMELT, "" + type) != null) {
 
-			finalWork("" + type, UUID, JobAction.SMELT, "smelt-action", amount, null, null, true, false, false, job);
+					Job job = getJobOnWork("" + UUID, JobAction.SMELT, "" + type);
 
-			return;
-		}
+					finalWork("" + type, UUID, JobAction.SMELT, "smelt-action", amount, null, null, true, false, false,
+							job);
+
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
+
 	}
 
 	public void executeMoveAction(UUID UUID, PlayerMoveEvent e) {
 
-		if (getJobOnWork("" + UUID, JobAction.EXPLORE_CHUNK, "CHUNK") != null) {
+		new BukkitRunnable() {
 
-			Job job = getJobOnWork("" + UUID, JobAction.EXPLORE_CHUNK, "CHUNK");
+			@Override
+			public void run() {
 
-			HashMap<Job, List<String>> l = plugin.getPlayerChunkAPI().players.get("" + UUID);
-			List<String> playerChunks = l.get(job);
+				if (getJobOnWork("" + UUID, JobAction.EXPLORE_CHUNK, "CHUNK") != null) {
 
-			Chunk from = e.getFrom().getChunk();
-			Chunk to = e.getTo().getChunk();
-			if (!from.equals(to)) {
-				int x = to.getX(), z = to.getZ();
-				for (String s : playerChunks) {
-					if (s.equals(x + ";" + z)) {
-						return;
+					Job job = getJobOnWork("" + UUID, JobAction.EXPLORE_CHUNK, "CHUNK");
+
+					HashMap<Job, List<String>> l = plugin.getPlayerChunkAPI().players.get("" + UUID);
+
+					List<String> playerChunks = null;
+
+					if (!l.containsKey(job)) {
+						playerChunks = new ArrayList<String>();
+					} else {
+						playerChunks = l.get(job);
 					}
+
+					Chunk from = e.getFrom().getChunk();
+					Chunk to = e.getTo().getChunk();
+					if (!from.equals(to)) {
+						int x = to.getX(), z = to.getZ();
+						for (String s : playerChunks) {
+							if (s.equals(x + ";" + z)) {
+								return;
+							}
+						}
+						plugin.getPlayerChunkAPI().addChunk("" + UUID, job, x + ";" + z);
+
+						finalWork("CHUNK", UUID, JobAction.EXPLORE_CHUNK, "explore-action", 1, null, null, true, false,
+								false, job);
+					}
+
+					return;
 				}
-				plugin.getPlayerChunkAPI().addChunk("" + UUID, job, x + ";" + z);
 
-				finalWork("CHUNK", UUID, JobAction.EXPLORE_CHUNK, "explore-action", 1, null, null, true, false, false,
-						job);
+				cancel();
 			}
+		}.runTaskAsynchronously(plugin);
 
-			return;
-		}
 	}
 
 	public void executeEnchant(String type, UUID UUID) {
 
-		if (getJobOnWork("" + UUID, JobAction.ENCHANT, "" + type) != null) {
+		new BukkitRunnable() {
 
-			Job job = getJobOnWork("" + UUID, JobAction.ENCHANT, "" + type);
+			@Override
+			public void run() {
+				if (getJobOnWork("" + UUID, JobAction.ENCHANT, "" + type) != null) {
 
-			finalWork("" + type, UUID, JobAction.ENCHANT, "enchant-action", 1, null, null, true, false, false, job);
+					Job job = getJobOnWork("" + UUID, JobAction.ENCHANT, "" + type);
 
-			return;
-		}
+					finalWork("" + type, UUID, JobAction.ENCHANT, "enchant-action", 1, null, null, true, false, false,
+							job);
+
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
+
 	}
 
 	public void executePotionDrink(String type, UUID UUID) {
 
-		if (getJobOnWork("" + UUID, JobAction.DRINK_POTION, "" + type) != null) {
+		new BukkitRunnable() {
 
-			Job job = getJobOnWork("" + UUID, JobAction.DRINK_POTION, "" + type);
+			@Override
+			public void run() {
+				if (getJobOnWork("" + UUID, JobAction.DRINK_POTION, "" + type) != null) {
 
-			finalWork("" + type, UUID, JobAction.DRINK_POTION, "drink-action", 1, null, null, true, false, false, job);
+					Job job = getJobOnWork("" + UUID, JobAction.DRINK_POTION, "" + type);
 
-			return;
-		}
+					finalWork("" + type, UUID, JobAction.DRINK_POTION, "drink-action", 1, null, null, true, false,
+							false, job);
+
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
+
 	}
 
 	public void executeVilBuyTrade(String type, UUID UUID, int amount) {
 
-		if (getJobOnWork("" + UUID, JobAction.VILLAGER_TRADE, "" + type) != null) {
+		new BukkitRunnable() {
 
-			Job job = getJobOnWork("" + UUID, JobAction.VILLAGER_TRADE, "" + type);
+			@Override
+			public void run() {
+				if (getJobOnWork("" + UUID, JobAction.VILLAGER_TRADE, "" + type) != null) {
 
-			finalWork("" + type, UUID, JobAction.VILLAGER_TRADE, "villager-trade-action", amount, null, null, true,
-					false, false, job);
+					Job job = getJobOnWork("" + UUID, JobAction.VILLAGER_TRADE, "" + type);
 
-			return;
-		}
+					finalWork("" + type, UUID, JobAction.VILLAGER_TRADE, "villager-trade-action", amount, null, null,
+							true, false, false, job);
+
+					return;
+				}
+				cancel();
+			}
+		}.runTaskAsynchronously(plugin);
+
 	}
 
 	public Job getJobOnWork(String id, JobAction ac, String real) {
@@ -624,7 +923,7 @@ public class JobWorkManager {
 			boolean checkplayer, boolean checkblock, boolean checkentity, Job job) {
 
 		new BukkitRunnable() {
-			
+
 			@Override
 			public void run() {
 				String PUID = "" + ID;
@@ -657,37 +956,37 @@ public class JobWorkManager {
 							}
 						}
 					}
-				
+
 					if (api.canReward(job, iD, ac)) {
-				
+
 						String usedid = job.getNotRealIDByRealOne(real.toUpperCase(), ac);
-						
-						if(usedid != null) {
-						
+
+						if (usedid != null) {
+
 							boolean can = api.checkforDailyMaxEarnings(PUID, job);
 
 							String date = plugin.getDate();
-	 
+
 							double reward = job.getRewardOf(iD, ac);
 
 							double exp_old = plugin.getPlayerAPI().getExpOf(PUID, job);
-							double EPC1 = plugin.getPlayerAPI().getRealCalculatedAmountOfExp(PUID, job, job.getExpOf(iD, ac) * amount);
+							double EPC1 = plugin.getPlayerAPI().getRealCalculatedAmountOfExp(PUID, job,
+									job.getExpOf(iD, ac) * amount);
 
 							Integer broken = plugin.getPlayerAPI().getBrokenTimes(PUID, job) + amount;
 							double points = job.getPointsOf(iD, ac) * amount;
 							double old_points = plugin.getPlayerAPI().getPoints(PUID);
 
 							double fixed = reward * amount;
-	 
+
 							double od1 = plugin.getPlayerAPI().getRealCalculatedAmountOfMoney(PUID, job, fixed);
-	 
-							 String date_average = plugin.getPluginManager().getDateTodayFromCalWithOutSeconds();
-							 
-							 plugin.getPlayerAPI().updateAverageEarnings(PUID, job, date_average, od1);
-							 plugin.getPlayerAPI().updateAverageWork(PUID, job, date_average, amount);
-							 plugin.getPlayerAPI().updateAverageExp(PUID, job, date_average, EPC1);
-	 
-							 
+
+							String date_average = plugin.getPluginManager().getDateTodayFromCalWithOutSeconds();
+
+							plugin.getPlayerAPI().updateAverageEarnings(PUID, job, date_average, od1);
+							plugin.getPlayerAPI().updateAverageWork(PUID, job, date_average, amount);
+							plugin.getPlayerAPI().updateAverageExp(PUID, job, date_average, EPC1);
+
 							double earnedcalc = plugin.getPlayerAPI().getEarnedAt(PUID, job, date) + od1;
 
 							if (job.hasVaultReward(iD, ac)) {
@@ -732,10 +1031,9 @@ public class JobWorkManager {
 							int ol = plugin.getPlayerAPI().getBrokenTimesOfID(PUID, job, usedid, "" + ac);
 
 							double earned_old = plugin.getPlayerAPI().getEarnedFrom(PUID, job, usedid, "" + ac);
-							 
-							
+
 							plugin.getPlayerAPI().updateBrokenTimesOf(PUID, job, usedid, ol + amount, "" + ac);
-						 
+
 							if (can == false) {
 
 								if (cfg.getBoolean("Jobs.MaxEarnings.IfReached_Can_Earn_Exp")) {
@@ -758,10 +1056,9 @@ public class JobWorkManager {
 								plugin.getPlayerAPI().updateEarningsOfToday(PUID, job, earnedcalc);
 
 								double done = earned_old + od1;
-								
-								plugin.getPlayerAPI().updateBrokenMoneyOf(PUID, job, usedid, done,
-										"" + ac);
-								 
+
+								plugin.getPlayerAPI().updateBrokenMoneyOf(PUID, job, usedid, done, "" + ac);
+
 							}
 
 							if (Bukkit.getPlayer(ID).isOnline()) {
@@ -775,7 +1072,7 @@ public class JobWorkManager {
 								new BukkitRunnable() {
 									public void run() {
 										new PlayerFinishedWorkEvent(player, d, job, iD, ac);
-									
+
 										cancel();
 									}
 								}.runTaskLater(plugin, 1);
@@ -792,14 +1089,11 @@ public class JobWorkManager {
 
 					}
 				}
-				
+
 				cancel();
 			}
 		}.runTaskAsynchronously(plugin);
-			  
-			
-			 
-		 
+
 	}
 
 }

@@ -13,7 +13,21 @@ public class JobActionFish implements Listener {
 	 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEvent(PlayerFishEvent event) {
-		plugin.getJobWorkManager().executeFishWork(event);
+		
+		if(event.getCaught() == null) {
+			return;
+		}
+		
+		if (event.isCancelled()) {
+			if (plugin.getLocalFileManager().getConfig().getBoolean("CancelEvents")) {
+				event.setCancelled(true);
+			}
+			return;
+		}
+
+		
+		
+		plugin.getJobWorkManager().executeFishWork(event.getCaught(), event.getPlayer());
 	}
 	 
 }

@@ -87,7 +87,7 @@ public class FileManager {
 	private List<String> defaultlanguages_files = Arrays.asList("guis","jobs","language","messages","dailyquests");
 	private List<String> defaultjobs = Arrays.asList("Miner","Lumberjack","FarmGrow","Digger", "Killer","Fishman","Milkman"
 			, "Crafter", "Shear","Advancements","Eat","Honey","Tame","MythicMobs","Breed"
-			, "Berrys","Saplings","KillBow","FarmBreak","FindTreasure","Smelt","Explore","Enchant","DrinkPotion","VillagerTrade");
+			, "Berrys","Saplings","KillBow","FarmBreak","FindTreasure","Smelt","Explore","Enchant","DrinkPotion","VillagerTrade","PickUpItems","Carve");
 	 
 	public  boolean generateFiles() {
 		createGUIFile();
@@ -115,8 +115,8 @@ public class FileManager {
 		createGlobalRankingFile();
 		createRankingPerJobFile();
 		
-		createDailyQuestsTypeFile();
-		createDailyQuestsSettingFile();
+	//	createDailyQuestsTypeFile();
+		//createDailyQuestsSettingFile();
 	 
 		return true;
 	}

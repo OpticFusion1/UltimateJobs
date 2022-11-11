@@ -18,6 +18,19 @@
 # Visit out Website -> https://mc-plugins.org
 #
 
+Plugin:
+
+  DebugMessagesOnStart:
+  
+    Info: true
+    
+    Warning: false
+    
+    Error: true
+    
+    #display for example if a player gets loaded or saved
+    PlayerInfo: false
+
 Actions:
 
   #
@@ -50,6 +63,8 @@ Actions:
   Smelt: true
   Explore: true
   Enchant: true
+  PickUp: true
+  Carve: true
   
   #ItemsAdder
   IABreak: true

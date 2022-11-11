@@ -2,6 +2,7 @@ package de.warsteiner.jobs.manager;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -14,11 +15,14 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import de.warsteiner.jobs.UltimateJobs;
-import de.warsteiner.jobs.utils.objects.DataMode;
+import de.warsteiner.jobs.utils.objects.DataMode; 
+import de.warsteiner.jobs.utils.objects.jobs.JobAction;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 
@@ -27,7 +31,7 @@ public class PluginManager {
 	private UltimateJobs plugin = UltimateJobs.getPlugin();
 
 	public static final Pattern HEX_PATTERN = Pattern.compile("#(\\w{5}[0-9a-f])#");
-
+ 
 	public boolean isInstalled(String plugin) {
 		Plugin Plugin = Bukkit.getServer().getPluginManager().getPlugin(plugin);
 		if (Plugin != null) {
@@ -47,7 +51,7 @@ public class PluginManager {
 		Date data = new Date();
 		return format.format(data);
 	}
-	
+
 	public String getDateTodayFromCalWithOutSeconds() {
 		DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		Date data = new Date();
@@ -84,7 +88,7 @@ public class PluginManager {
 								plugin.connect();
 
 							}
-						}  
+						}
 						cancel();
 					}
 				}.runTaskAsynchronously(plugin);
@@ -123,17 +127,17 @@ public class PluginManager {
 			Material.BROWN_MUSHROOM, Material.RED_MUSHROOM, Material.CARROTS, Material.WHEAT, Material.POTATOES,
 			Material.BEETROOTS, Material.BAMBOO, Material.COCOA, Material.NETHER_WART);
 
-	public boolean isFullyGrown(Block block) { 
+	public boolean isFullyGrown(Block block) {
 		if (breakingMaterials.contains(block.getType())) {
 			return true;
 		}
 
 		if (block.hasMetadata("placed-by-player") && !bypassmeta.contains(block.getType())) {
 			return false;
-		} 
+		}
 		if (block.getBlockData() == null) {
 			return false;
-		}  
+		}
 		BlockData bdata = block.getBlockData();
 		if (bdata instanceof Ageable) {
 			Ageable age = (Ageable) bdata;

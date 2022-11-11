@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 
-import de.warsteiner.jobs.UltimateJobs;
+import de.warsteiner.jobs.UltimateJobs; 
  
 
 public class JobActionVillagerTrade_Buy implements Listener {
@@ -53,7 +53,7 @@ public class JobActionVillagerTrade_Buy implements Listener {
 	  	        ItemStack result = villagerTradeMeta.getSelectedRecipe().getResult();
 	  	   
 	  	        int amount = result.getAmount();
-	  	    	
+	  	         
 	  	        plugin.getJobWorkManager().executeVilBuyTrade(""+result.getType(), p.getUniqueId(), amount);
 	    	}
 	    	

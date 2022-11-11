@@ -1,5 +1,6 @@
 package de.warsteiner.jobs.jobs;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Cow;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
@@ -19,6 +20,7 @@ public class JobActionMilk implements Listener {
 		Entity clicked = event.getRightClicked();
 		
 		if (clicked instanceof Cow) {  
+			 
 			plugin.getJobWorkManager().executeMilkWork(event);
 		}
 		
