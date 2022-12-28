@@ -46,44 +46,36 @@ public class OfflinePlayerAPI {
 
 	public void createtables() {
 		SQLStatementAPI s = UltimateJobs.getPlugin().getSQLStatementAPI();
-		new BukkitRunnable() {
 
-			@Override
-			public void run() {
+		s.executeUpdate(
+				"CREATE TABLE IF NOT EXISTS playernames (UUID varchar(200), NAME varchar(200), DISPLAY varchar(200))");
+		s.executeUpdate(
+				"CREATE TABLE IF NOT EXISTS playersettings (UUID varchar(200), TYPE varchar(200), MODE varchar(200))");
 
-				s.executeUpdate(
-						"CREATE TABLE IF NOT EXISTS playernames (UUID varchar(200), NAME varchar(200), DISPLAY varchar(200))");
-				s.executeUpdate(
-						"CREATE TABLE IF NOT EXISTS playersettings (UUID varchar(200), TYPE varchar(200), MODE varchar(200))");
+		s.executeUpdate(
+				"CREATE TABLE IF NOT EXISTS job_stats (UUID varchar(200), JOB varchar(200), DATE varchar(200), LEVEL int, EXP double, BROKEN int)");
 
-				s.executeUpdate(
-						"CREATE TABLE IF NOT EXISTS job_stats (UUID varchar(200), JOB varchar(200), DATE varchar(200), LEVEL int, EXP double, BROKEN int)");
+		s.executeUpdate("CREATE TABLE IF NOT EXISTS job_current (UUID varchar(200), JOB varchar(200))");
+		s.executeUpdate(
+				"CREATE TABLE IF NOT EXISTS job_players (UUID varchar(200), DATE varchar(200), POINTS int, MAX int)");
 
-				s.executeUpdate("CREATE TABLE IF NOT EXISTS job_current (UUID varchar(200), JOB varchar(200))");
-				s.executeUpdate(
-						"CREATE TABLE IF NOT EXISTS job_players (UUID varchar(200), DATE varchar(200), POINTS int, MAX int)");
+		s.executeUpdate(
+				"CREATE TABLE IF NOT EXISTS earnings_all (UUID varchar(200), JOB varchar(200), DATE varchar(200), MONEY double)");
 
-				s.executeUpdate(
-						"CREATE TABLE IF NOT EXISTS earnings_all (UUID varchar(200), JOB varchar(200), DATE varchar(200), MONEY double)");
+		s.executeUpdate(
+				"CREATE TABLE IF NOT EXISTS earnings_stats_per_action (UUID varchar(200),IDACTION varchar(200), JOB varchar(200), ID varchar(200), TIMES int, MONEY double)");
 
-				s.executeUpdate(
-						"CREATE TABLE IF NOT EXISTS earnings_stats_per_action (UUID varchar(200),IDACTION varchar(200), JOB varchar(200), ID varchar(200), TIMES int, MONEY double)");
+		s.executeUpdate(
+				"CREATE TABLE IF NOT EXISTS job_dates_joined (UUID varchar(200), JOBID varchar(200), DATE varchar(200))");
 
-				s.executeUpdate(
-						"CREATE TABLE IF NOT EXISTS job_dates_joined (UUID varchar(200), JOBID varchar(200), DATE varchar(200))");
+		s.executeUpdate("CREATE TABLE IF NOT EXISTS jobs_earnings_storage (UUID varchar(200),  AMOUNT double)");
 
-				s.executeUpdate("CREATE TABLE IF NOT EXISTS jobs_earnings_storage (UUID varchar(200),  AMOUNT double)");
+		s.executeUpdate(
+				"CREATE TABLE IF NOT EXISTS jobs_earnings_storage_dates (UUID varchar(200), CDATE varchar(200))");
 
-				s.executeUpdate(
-						"CREATE TABLE IF NOT EXISTS jobs_earnings_storage_dates (UUID varchar(200), CDATE varchar(200))");
+		s.executeUpdate(
+				"CREATE TABLE IF NOT EXISTS job_player_multipliers (UUID varchar(200), NAME varchar(200), PLUGIN varchar(200), TYPE varchar(200), UNTIL varchar(200), WEIGHT varchar(200), VAL double, JOB varchar(200))");
 
-				s.executeUpdate(
-						"CREATE TABLE IF NOT EXISTS job_player_multipliers (UUID varchar(200), NAME varchar(200), PLUGIN varchar(200), TYPE varchar(200), UNTIL varchar(200), WEIGHT varchar(200), VAL double, JOB varchar(200))");
-
-				cancel();
-			}
-
-		}.runTaskAsynchronously(plugin);
 	}
 
 	public boolean existMultiplier(String UUID, String name) {

@@ -18,9 +18,6 @@ public class JobActionBreak implements Listener {
 		plugin.getJobWorkManager().executeBlockBreakWork(event); 
 	}
 	
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlace(BlockPlaceEvent e) {
-		e.getBlock().setMetadata("placed-by-player",  new FixedMetadataValue(UltimateJobs.getPlugin(), "placed-by-player"));
-	}
+	 
 	
 }

@@ -413,8 +413,8 @@ public class JobWorkManager {
 
 		final Block block = event.getBlock();
 		final Material type = event.getBlock().getType();
-
-		if (block.hasMetadata("placed-by-player")) {
+	 
+		if (plugin.getBlockAPI().getPlacedBy(block) != null) {
 			return;
 		}
 
@@ -440,7 +440,7 @@ public class JobWorkManager {
 					finalWork("" + type, UUID, JobAction.BREAK, "break-action", 1, event.getBlock(), null, true, true,
 							false, job);
 
-					block.removeMetadata("placed-by-player", UltimateJobs.getPlugin());
+					plugin.getBlockAPI().removeBlock(block);
 
 					return;
 				}
@@ -689,7 +689,7 @@ public class JobWorkManager {
 				Material d = bl.getType();
 				if (breakingMaterials.contains(d)) {
 
-					if (!bl.hasMetadata("placed-by-player")) {
+					if (plugin.getBlockAPI().getPlacedBy(block) == null) {
 						blocks.add(bl);
 
 					}
@@ -719,7 +719,7 @@ public class JobWorkManager {
 
 							Bukkit.getScheduler().runTask(UltimateJobs.getPlugin(), () -> {
 								blockstocheck.forEach(b -> {
-									b.removeMetadata("placed-by-player", UltimateJobs.getPlugin());
+									plugin.getBlockAPI().removeBlock(b); 
 								});
 							});
 						}
@@ -728,7 +728,7 @@ public class JobWorkManager {
 							finalWork("" + type, UUID, JobAction.FARM_BREAK, "farm-break-action", blocksingle.size(),
 									event.getBlock(), null, true, true, false, job);
 
-							blocksingle.get(0).removeMetadata("placed-by-player", UltimateJobs.getPlugin());
+							plugin.getBlockAPI().removeBlock(blocksingle.get(0)); 
 						}
 					}
 
@@ -800,16 +800,25 @@ public class JobWorkManager {
 				if (getJobOnWork("" + UUID, JobAction.EXPLORE_CHUNK, "CHUNK") != null) {
 
 					Job job = getJobOnWork("" + UUID, JobAction.EXPLORE_CHUNK, "CHUNK");
-
-					HashMap<Job, List<String>> l = plugin.getPlayerChunkAPI().players.get("" + UUID);
-
+ 
 					List<String> playerChunks = null;
 
-					if (!l.containsKey(job)) {
-						playerChunks = new ArrayList<String>();
+					if(plugin.getPlayerChunkAPI().players.containsKey(""+UUID)) {
+						if (!plugin.getPlayerChunkAPI().players.get("" + UUID).containsKey(job)) {
+							playerChunks = new ArrayList<String>();
+						} else {
+							
+
+							HashMap<Job, List<String>> l = plugin.getPlayerChunkAPI().players.get("" + UUID);
+
+							
+							playerChunks = l.get(job);
+						}						
 					} else {
-						playerChunks = l.get(job);
+						playerChunks = new ArrayList<String>();
 					}
+					
+					 
 
 					Chunk from = e.getFrom().getChunk();
 					Chunk to = e.getTo().getChunk();

@@ -67,8 +67,7 @@ public class JobsInventoryClickEvent implements Listener {
 		
 		Material item = e.getCurrentItem().getType();;
 		 
-		 //public void executeCustomItem(final Player player, String prf, Job job, String display_of_item, ItemStack item,
-	//	String about) {
+		
 		if (plugin.getGUIOpenManager().isConfirmGUI(p, e.getView().getTitle()) != null) {
 			Job job = plugin.getGUIOpenManager().isConfirmGUI(p, e.getView().getTitle());
 			plugin.getClickManager().executeCustomItem(p, "AreYouSureGUI_Custom", job, display, item, null);

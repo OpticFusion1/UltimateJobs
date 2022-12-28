@@ -22,11 +22,12 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import de.warsteiner.jobs.api.BlockAPI;
 import de.warsteiner.jobs.api.DailyQuestsAPI;
 import de.warsteiner.jobs.api.DataBaseAPI;
 import de.warsteiner.jobs.api.EffectAPI;
 import de.warsteiner.jobs.api.ItemAPI;
-import de.warsteiner.jobs.api.JobAPI;
+import de.warsteiner.jobs.api.JobAPI; 
 import de.warsteiner.jobs.api.LanguageAPI;
 import de.warsteiner.jobs.api.LevelAPI;
 import de.warsteiner.jobs.api.LocationAPI;
@@ -43,8 +44,8 @@ import de.warsteiner.jobs.command.AdminCommand;
 import de.warsteiner.jobs.command.AdminTabComplete;
 import de.warsteiner.jobs.command.JobTabComplete;
 import de.warsteiner.jobs.command.JobsCommand;
-import de.warsteiner.jobs.command.admincommand.BoostSub; 
-import de.warsteiner.jobs.command.admincommand.ExpSub; 
+import de.warsteiner.jobs.command.admincommand.BoostSub;
+import de.warsteiner.jobs.command.admincommand.ExpSub;
 import de.warsteiner.jobs.command.admincommand.HelpSub;
 import de.warsteiner.jobs.command.admincommand.IDSub;
 import de.warsteiner.jobs.command.admincommand.LanguageSub;
@@ -63,7 +64,7 @@ import de.warsteiner.jobs.command.playercommand.PointsSub;
 import de.warsteiner.jobs.command.playercommand.RankingSub;
 import de.warsteiner.jobs.command.playercommand.RewardsSub;
 import de.warsteiner.jobs.command.playercommand.StatsSub;
-import de.warsteiner.jobs.command.playercommand.WithdrawSub; 
+import de.warsteiner.jobs.command.playercommand.WithdrawSub;
 import de.warsteiner.jobs.jobs.DefaultJobActions;
 import de.warsteiner.jobs.jobs.JobActionAdvancement;
 import de.warsteiner.jobs.jobs.JobActionBreak;
@@ -100,7 +101,7 @@ import de.warsteiner.jobs.manager.GuiAddonManager;
 import de.warsteiner.jobs.manager.GuiManager;
 import de.warsteiner.jobs.manager.GuiOpenManager;
 import de.warsteiner.jobs.manager.JobWorkManager;
-import de.warsteiner.jobs.manager.PluginManager; 
+import de.warsteiner.jobs.manager.PluginManager;
 import de.warsteiner.jobs.utils.BossBarHandler;
 import de.warsteiner.jobs.utils.JsonMessage;
 import de.warsteiner.jobs.utils.Metrics;
@@ -137,7 +138,7 @@ public class UltimateJobs extends JavaPlugin {
 	private ClickManager click;
 	private SubCommandRegistry cmdmanager;
 	private AdminSubCommandRegistry admincmdmanager;
-	 
+
 	private JobWorkManager work;
 	private PluginManager plapi;
 	private FileManager filemanager;
@@ -148,13 +149,14 @@ public class UltimateJobs extends JavaPlugin {
 	private OfflinePlayerAPI dataapi;
 	private JsonMessage js;
 	private LanguageAPI langapi;
+	private BlockAPI bapi;
 
 	private PlayerDataFile loc;
 	private SkullCreatorAPI skull;
 	private LocationAPI locapi;
 	public DataMode mode = null;
 	private ItemAPI i;
-	private DatabaseInit init; 
+	private DatabaseInit init;
 	private GuiOpenManager ogui;
 
 	private PlayerDataFile chunk;
@@ -162,24 +164,26 @@ public class UltimateJobs extends JavaPlugin {
 
 	private ItemsAdderManager aim;
 	private NoteBlockManager ntb;
-	
+
 	private EffectAPI ef;
 	private DailyQuestsAPI qapi;
-	
+
 	private PlayerDataFile data_global;
 	private PlayerDataFile data_stats;
 	private PlayerDataFile data_earnings;
 	private PlayerDataFile data_current_owned;
 	private PlayerDataFile data_other;
 	private PlayerDataFile data_multi;
- 
+	private PlayerDataFile bdata;
+	 
+
 	public void onLoad() {
 
 		plugin = this;
 		plapi = new PluginManager();
 		langapi = new LanguageAPI();
-		filemanager = new FileManager();
- 
+		filemanager = new FileManager(); 
+		
 		createFolders();
 
 		filemanager.generateFiles();
@@ -201,9 +205,9 @@ public class UltimateJobs extends JavaPlugin {
 			WorldGuardManager.setClass();
 			WorldGuardManager.load();
 		}
- 
+
 	}
- 
+
 	@Override
 	public void onEnable() {
 
@@ -228,7 +232,7 @@ public class UltimateJobs extends JavaPlugin {
 			data_current_owned = new PlayerDataFile("cr_ow_jobs");
 			data_other = new PlayerDataFile("other");
 			data_multi = new PlayerDataFile("multipliers");
-			 
+
 			data_multi.create();
 			data_global.create();
 			data_stats.create();
@@ -287,30 +291,65 @@ public class UltimateJobs extends JavaPlugin {
 		createBackups();
 
 		new Metrics(this, 15424);
- 
+
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading Job Events...");
 
 		loadEvents();
-		
+
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading and checking for Jobs...");
 
 		api.loadJobs(getLogger());
 		i.loadItems();
 
 		getLanguageAPI().loadLanguages();
-		
+
 		getDailyQuestsAPI().loadQuests();
- 
 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading basic Events...");
 		loadBasicEvents();
+
+		List<String> players = plugin.getPlayerOfflineAPI().getAllPlayersFromData();
+
+		if (!players.isEmpty() && players != null) {
+			if (plugin.getLocalFileManager().getUtilsConfig().getBoolean("Plugin.DebugMessagesOnStart.PlayerInfo")) {
+				Bukkit.getConsoleSender()
+						.sendMessage(PluginColor.INFO.getPrefix() + "Loading data for " + players.size() + " Players!");
+			}
+			players.forEach((uuid) -> {
+				if (plugin.getLocalFileManager().getUtilsConfig()
+						.getBoolean("Plugin.DebugMessagesOnStart.PlayerInfo")) {
+					Bukkit.getConsoleSender()
+							.sendMessage(PluginColor.INFO.getPrefix() + "Checking Data for " + uuid + "...");
+				}
+				String name = plugin.getPlayerOfflineAPI().getANameFromUUID(uuid);
+				String display = plugin.getPlayerOfflineAPI().getADisplayNameFromUUID(uuid);
+
+				plugin.getPlayerAPI().LoadDataForServerStart(name, display, UUID.fromString(uuid.toString()));
+
+			});
+		}
+
+		Bukkit.getOnlinePlayers().forEach((p) -> {
+			plugin.getPlayerAPI().checkAndLoadIntoOnlineCache(p, p.getName().toLowerCase(), p.getName(),
+					"" + p.getUniqueId());
+		});
+
+		BossBarHandler.g.forEach((d1, d2) -> {
+			BossBarHandler.removeBossBar(d1);
+		});
+
+		getPlayerAPI().calculateRanking();
+		getPlayerAPI().startUtil();
 		
-	  
- 
-		
-		 
-	 
-		if (getLanguageAPI().getLoadedLanguagesAsArray().size() != 0 && getItemAPI().fails.size() == 0 && getAPI().fails.size() == 0) {
+		getBlockAPI().loadBlocks();
+
+		if (getLocalFileManager().getDataConfig().getBoolean("EnableSaving")) {
+			int time = getLocalFileManager().getDataConfig().getInt("SaveDataEvery");
+			getPlayerAPI().startSavingData(time);
+		}
+
+		if (getLanguageAPI().getLoadedLanguagesAsArray().size() != 0 && getItemAPI().fails.size() == 0
+				&& getAPI().fails.size() == 0) {
 			Bukkit.getConsoleSender().sendMessage("§7");
 			Bukkit.getConsoleSender().sendMessage("§7");
 			Bukkit.getConsoleSender().sendMessage(
@@ -325,52 +364,16 @@ public class UltimateJobs extends JavaPlugin {
 					"§a `-----' `-----'`--'   `--'`--'   `--'`--' `--'  `--'   `------' `-----'  `-----' `------' `-----'  ");
 			Bukkit.getConsoleSender().sendMessage("       §aRunning plugin UltimateJobs "
 					+ getDescription().getVersion() + " (" + getDescription().getAPIVersion() + ")");
-			Bukkit.getConsoleSender().sendMessage("       §aRunning UltimateJobs with " + getLoaded().size() + " Jobs ");
+			Bukkit.getConsoleSender()
+					.sendMessage("       §aRunning UltimateJobs with " + getLoaded().size() + " Jobs ");
 			Bukkit.getConsoleSender()
 					.sendMessage("       §aLoaded " + getLanguageAPI().getLanguages().size() + " Languages");
 			Bukkit.getConsoleSender().sendMessage("§7");
 			Bukkit.getConsoleSender().sendMessage("§7");
 		} else {
-			 printFailed();
+			printFailed();
 		}
 
-	 
-
-		List<String> players = plugin.getPlayerOfflineAPI().getAllPlayersFromData();
-		
-		if(!players.isEmpty() && players != null) {
-			if (plugin.getLocalFileManager().getUtilsConfig()
-					.getBoolean("Plugin.DebugMessagesOnStart.PlayerInfo")) {
-			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loading data for "+players.size()+" Players!");
-			}
-			players.forEach((uuid) -> {
-				if (plugin.getLocalFileManager().getUtilsConfig()
-						.getBoolean("Plugin.DebugMessagesOnStart.PlayerInfo")) {
-				Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Checking Data for "+uuid+"...");
-				}
-				String name = plugin.getPlayerOfflineAPI().getANameFromUUID(uuid);
-				String display = plugin.getPlayerOfflineAPI().getADisplayNameFromUUID(uuid);
-				
-				plugin.getPlayerAPI().LoadDataForServerStart(name, display, UUID.fromString(uuid.toString()));
-				
-			});
-		}
-		
-		Bukkit.getOnlinePlayers().forEach((p) -> {
-			plugin.getPlayerAPI().checkAndLoadIntoOnlineCache(p, p.getName().toLowerCase(), p.getName(), ""+p.getUniqueId());
-		});
-	 
-		BossBarHandler.g.forEach((d1, d2) -> {
-			BossBarHandler.removeBossBar(d1);
-		});
-		
-		getPlayerAPI().calculateRanking();
-		getPlayerAPI().startUtil();
-		
-		if(getLocalFileManager().getDataConfig().getBoolean("EnableSaving")) {
-			int time = getLocalFileManager().getDataConfig().getInt("SaveDataEvery");
-			getPlayerAPI().startSavingData(time);
-		}
 	}
 
 	public void printFailed() {
@@ -393,7 +396,7 @@ public class UltimateJobs extends JavaPlugin {
 
 		Bukkit.getPluginManager().disablePlugin(this);
 	}
-	
+
 	/**
 	 * Method to connect to SQL Databases
 	 */
@@ -421,7 +424,7 @@ public class UltimateJobs extends JavaPlugin {
 		}
 
 	}
- 
+
 	public PlayerDataFile getChunkData() {
 		return chunk;
 	}
@@ -463,26 +466,26 @@ public class UltimateJobs extends JavaPlugin {
 	 */
 
 	public void onDisable() {
-		
+
 		BossBarHandler.g.forEach((d1, d2) -> {
 			BossBarHandler.removeBossBar(d1);
 		});
-		 
-		HashMap<String, JobsPlayer> players = plugin.getPlayerAPI().getOfflineCachePlayers(); 
+
+		getBlockAPI().saveBlocks();
+
+		HashMap<String, JobsPlayer> players = plugin.getPlayerAPI().getOfflineCachePlayers();
 		players.forEach((uuid, jb) -> {
-			
-			plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, jb.getName(), jb.getDisplayName()); 
-			 
+
+			plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, jb.getName(), jb.getDisplayName());
+
 		});
-		 
-		HashMap<String, JobsPlayer> players2 = plugin.getPlayerAPI().getOnlinePlayersListed(); 
+
+		HashMap<String, JobsPlayer> players2 = plugin.getPlayerAPI().getOnlinePlayersListed();
 		players2.forEach((uuid, jb) -> {
-			
-			plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, jb.getName(), jb.getDisplayName()); 
-		}); 
-	 
-		 
-		
+
+			plugin.getPlayerOfflineAPI().savePlayerAsFinal(jb, uuid, jb.getName(), jb.getDisplayName());
+		});
+
 		createBackups();
 
 		if (mode.equals(DataMode.SQL)) {
@@ -491,8 +494,8 @@ public class UltimateJobs extends JavaPlugin {
 				Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Closed SQL Connection...");
 			}
 		}
- 
-		plugin.getItemAPI().items.clear(); 
+
+		plugin.getItemAPI().items.clear();
 	}
 
 	/**
@@ -570,11 +573,11 @@ public class UltimateJobs extends JavaPlugin {
 		getAdminSubCommandManager().getSubCommandList().add(new IDSub());
 
 		getAdminSubCommandManager().getSubCommandList().add(new PluginSub());
- 
+
 		getAdminSubCommandManager().getSubCommandList().add(new BoostSub());
 		getAdminSubCommandManager().getSubCommandList().add(new MaxSub());
 		getAdminSubCommandManager().getSubCommandList().add(new LevelSub());
-		getAdminSubCommandManager().getSubCommandList().add(new ExpSub()); 
+		getAdminSubCommandManager().getSubCommandList().add(new ExpSub());
 		getAdminSubCommandManager().getSubCommandList().add(new de.warsteiner.jobs.command.admincommand.PointsSub());
 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Sub-Commands...");
@@ -591,6 +594,9 @@ public class UltimateJobs extends JavaPlugin {
 
 		chunk = new PlayerDataFile("chunk");
 		chunk.create();
+
+		bdata = new PlayerDataFile("blocks");
+		bdata.create();
 
 		loaded = new ArrayList<>();
 		ld = new HashMap<>();
@@ -615,19 +621,27 @@ public class UltimateJobs extends JavaPlugin {
 		ogui = new GuiOpenManager();
 
 		capi = new PlayerChunkAPI();
-		
+
 		ef = new EffectAPI();
 		qapi = new DailyQuestsAPI();
-
+		bapi = new BlockAPI();
+	 
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded Classes...");
 
-		 
 	}
-	
+  
+	public PlayerDataFile getBlockData() {
+		return bdata;
+	}
+
+	public BlockAPI getBlockAPI() {
+		return bapi;
+	}
+
 	public DailyQuestsAPI getDailyQuestsAPI() {
 		return qapi;
 	}
-	
+
 	public EffectAPI getEffectAPI() {
 		return ef;
 	}
@@ -663,27 +677,27 @@ public class UltimateJobs extends JavaPlugin {
 	public PlayerDataFile getGlobalDataFile() {
 		return data_global;
 	}
-	
+
 	public PlayerDataFile getMultipliersDataFile() {
 		return data_multi;
 	}
-	
+
 	public PlayerDataFile getStatsDataFile() {
 		return data_stats;
 	}
-	
+
 	public PlayerDataFile getEarningsDataFile() {
 		return data_earnings;
 	}
-	
+
 	public PlayerDataFile getCrAndOwDataFile() {
 		return data_current_owned;
 	}
-	
+
 	public PlayerDataFile getOtherDataFile() {
 		return data_other;
 	}
- 
+
 	public LanguageAPI getLanguageAPI() {
 		return langapi;
 	}
@@ -764,14 +778,14 @@ public class UltimateJobs extends JavaPlugin {
 		}
 
 		File folder_5 = new File(getDataFolder(), "addons");
-		
+
 		File folder_7 = new File(getDataFolder(), "guis");
-		 
+
 		if (!folder_7.exists()) {
 			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Create GUIs folder...");
 			folder_7.mkdir();
 		}
-		
+
 		if (!folder_5.exists()) {
 			Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Create Addons folder...");
 			folder_5.mkdir();
@@ -783,11 +797,11 @@ public class UltimateJobs extends JavaPlugin {
 
 				getLocalFileManager().createDefaultSongs();
 			}
-			
+
 			File folder_8 = new File(getDataFolder() + "/addons/", "dailyquests");
 			if (!folder_8.exists()) {
 				Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Create Daily-Quests folder...");
-				folder_8.mkdir(); 
+				folder_8.mkdir();
 			}
 		}
 
@@ -798,10 +812,10 @@ public class UltimateJobs extends JavaPlugin {
 	 */
 
 	public void loadBasicEvents() {
-		Bukkit.getPluginManager().registerEvents(new PlayerExistEvent(), this); 
+		Bukkit.getPluginManager().registerEvents(new PlayerExistEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new BlockFireWorkDamage(), this);
 		Bukkit.getPluginManager().registerEvents(new PlayerRewardCommandEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new JobsInventoryClickEvent(), this); 
+		Bukkit.getPluginManager().registerEvents(new JobsInventoryClickEvent(), this);
 		Bukkit.getConsoleSender().sendMessage(PluginColor.INFO.getPrefix() + "Loaded basic Events!");
 	}
 
@@ -885,14 +899,14 @@ public class UltimateJobs extends JavaPlugin {
 		if (cfg.getBoolean("Actions.Enchant")) {
 			Bukkit.getPluginManager().registerEvents(new JobActionEnchant(), this);
 		}
-		
+
 		if (cfg.getBoolean("Actions.PickUp")) {
 			Bukkit.getPluginManager().registerEvents(new JobActionItemPickUp(), this);
 		}
 		if (cfg.getBoolean("Actions.Carve")) {
 			Bukkit.getPluginManager().registerEvents(new JobActionCarve(), this);
 		}
-		
+
 		Bukkit.getPluginManager().registerEvents(new DefaultJobActions(), this);
 
 		if (getPluginManager().isInstalled("MythicMobs")) {

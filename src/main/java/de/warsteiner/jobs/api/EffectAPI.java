@@ -1,9 +1,18 @@
 package de.warsteiner.jobs.api;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 
 import de.warsteiner.jobs.UltimateJobs;
 
@@ -28,5 +37,20 @@ public class EffectAPI {
 			player.playSound(player.getLocation(), sound, (float) vol, (float) pitch);
 		}
 	}
+	
+
+	public void spawnFireworks(Location location) {
+		Location loc = location;
+		Firework fw = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
+		FireworkMeta fwm = fw.getFireworkMeta();
+		fwm.setPower(1);
+		fwm.addEffect(FireworkEffect.builder().withColor(Color.GREEN).flicker(true).build());
+		fw.setFireworkMeta(fwm);
+		fw.detonate();
+		fw.setMetadata("nodamage", (MetadataValue) new FixedMetadataValue((Plugin) plugin, Boolean.valueOf(true)));
+		Firework fw2 = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
+		fw2.setFireworkMeta(fwm);
+	}
+
 	
 }

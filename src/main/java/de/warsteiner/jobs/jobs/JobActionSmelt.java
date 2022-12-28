@@ -1,7 +1,9 @@
 package de.warsteiner.jobs.jobs;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -32,8 +34,15 @@ public class JobActionSmelt implements Listener {
 	      return;
 	    }
 	    
-	    ItemStack item = e.getInventory().getItem(2);
+	    Material cr = e.getCursor().getType();
 	    
+	    if(!cr.equals(Material.AIR)) {
+	    	return;
+	    }
+	    
+	    ItemStack item = e.getInventory().getItem(2);
+	   
+  
 	    int amount = item.getAmount();
 	     
 	    plugin.getJobWorkManager().executeSmelt(""+item.getType(), p.getUniqueId(), amount);

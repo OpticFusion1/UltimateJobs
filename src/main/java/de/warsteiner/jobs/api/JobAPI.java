@@ -81,15 +81,23 @@ public class JobAPI {
 			}
 
 			String lasttime = jb.getSalaryDate();
+			
+			Date date_last = null;
 
-			Date date_last = new Date(lasttime);
-
-			Date date2 = new Date(plugin.getPluginManager().getDateTodayFromCal());
-
-			if (date2.after(date_last)) {
+			try {
+				date_last = new Date(lasttime);
+			} catch (IllegalArgumentException ex) {
 				return true;
-			} else {
-				return false;
+			}
+			 
+			if(date_last != null) {
+				Date date2 = new Date(plugin.getPluginManager().getDateTodayFromCal());
+
+				if (date2.after(date_last)) {
+					return true;
+				} else {
+					return false;
+				}
 			}
 
 		}
@@ -120,43 +128,8 @@ public class JobAPI {
 
 	}
 
-	public String compareData(Block block) {
-
-		List<MetadataValue> values = block.getMetadata("saplingby");
-		if (!values.isEmpty()) {
-
-			for (MetadataValue value : values) {
-				String val = value.value().toString();
-
-				if (val.contains("uuid;")) {
-
-					String[] split = val.split(";");
-
-					String player = split[1];
-
-					return player;
-
-				}
-			}
-
-		}
-		return null;
-
-	}
-
-	public void spawnFireworks(Location location) {
-		Location loc = location;
-		Firework fw = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
-		FireworkMeta fwm = fw.getFireworkMeta();
-		fwm.setPower(1);
-		fwm.addEffect(FireworkEffect.builder().withColor(Color.GREEN).flicker(true).build());
-		fw.setFireworkMeta(fwm);
-		fw.detonate();
-		fw.setMetadata("nodamage", (MetadataValue) new FixedMetadataValue((Plugin) plugin, Boolean.valueOf(true)));
-		Firework fw2 = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
-		fw2.setFireworkMeta(fwm);
-	}
-
+ 
+ 
 	public boolean checkIfJobIsReal(String arg, Player player) {
 
 		JobsPlayer jb = UltimateJobs.getPlugin().getPlayerAPI().getRealJobPlayer("" + player.getUniqueId());

@@ -74,7 +74,7 @@ public class LevelAPI {
 			String name = player.getName();
 
 			if (config.getBoolean("Levels.FireWork")) {
-				UltimateJobs.getPlugin().getAPI().spawnFireworks(player.getLocation());
+				UltimateJobs.getPlugin().getEffectAPI().spawnFireworks(player.getLocation());
 			}
 
 			if (job.hasCustomBroadCastMessageForAll(jb.getUUIDAsString())) {

@@ -26,6 +26,7 @@ LoadJobsFrom: "plugins/UltimateJobs/jobs/"
 
 #
 # Some different plugins can cause issues with UltimateJobs, simple test "true" and "false" to view the best working option
+# check for bukkit events which can be canceled by other plugins
 #
 CancelEvents: false
  
