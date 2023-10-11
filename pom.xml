@@ -3,10 +3,16 @@
     <name>UltimateJobs</name>
     <groupId>de.warsteiner</groupId>
     <artifactId>ultimatejobs</artifactId>
-    <version>Iron-0.5.9</version>
+    <version>1</version>
     <packaging>jar</packaging>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -19,6 +25,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <finalName>UltimateJobs</finalName>
                             <relocations>
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>

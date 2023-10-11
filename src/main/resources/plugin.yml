@@ -1,13 +1,11 @@
-main: de.warsteiner.jobs.UltimateJobs
-version: Iron-0.5.9
 name: UltimateJobs
-author: Warsteiner37
+description: Let players work with this Jobs plugin!
+version: ${project.version}
+authors: [Optic_Fusion1, Warsteiner37]
+main: optic_fusion1.jobs.UltimateJobs
 api-version: 1.14
 depend: [Vault]
 softdepend: [WorldGuard, WorldEdit, PlaceHolderAPI, MythicMobs, ItemsAdder, NoteBlockAPI]
-description: Let Players work with this Jobs Plugin!
-website: https://mc-plugins.org
-
 commands:
   jobs:
     aliases: [job]
